@@ -12,7 +12,7 @@ interface GoalCardProps {
   onDelete: (id: string) => void
   onLinkReward: (goal: Goal) => void
   onEdit: (goal: Goal) => void
-  isRecentlyDone: boolean
+  isRecentlyChanged: boolean
   themeColor: 'blue' | 'rose'
   isDark: boolean
   linkedReward?: Reward
@@ -25,7 +25,7 @@ export function GoalCard({
   onDelete,
   onLinkReward,
   onEdit,
-  isRecentlyDone,
+  isRecentlyChanged,
   themeColor,
   isDark,
   linkedReward
@@ -37,7 +37,7 @@ export function GoalCard({
       className={`group relative px-3 py-2 rounded-lg border transition-all hover:shadow-sm ${
         goal.pinned
           ? (isDark ? 'bg-amber-900/30 border-amber-500/50' : 'bg-amber-50 border-amber-200')
-          : goal.status === 'Done' && !isRecentlyDone
+          : goal.status === 'Done' && !isRecentlyChanged
             ? (isDark ? 'bg-slate-800/50 opacity-60' : 'bg-slate-50 opacity-60')
             : (isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200')
       }`}
@@ -80,7 +80,7 @@ export function GoalCard({
         <StatusBadge
           status={goal.status}
           onChange={(s) => onUpdate({ ...goal, status: s })}
-          isRecentlyDone={isRecentlyDone}
+          isRecentlyChanged={isRecentlyChanged}
           isDark={isDark}
         />
       </div>

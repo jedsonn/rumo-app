@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { User } from '@supabase/supabase-js'
-import { Goal, Blessing, Reward, UserProfile, Quote, DONE_DELAY_MS } from '@/lib/types'
+import { Goal, Blessing, Reward, UserProfile, Quote, GoalStatus, STATUS_DELAY_MS } from '@/lib/types'
 import confetti from 'canvas-confetti'
 
 interface DashboardContextType {
@@ -22,7 +22,7 @@ interface DashboardContextType {
   columnSplit: number
   setColumnSplit: (split: number) => void
   loading: boolean
-  recentlyDone: Set<string>
+  recentlyChanged: Map<string, GoalStatus>
   // Goal operations
   addGoal: (goal: Partial<Goal>) => Promise<void>
   updateGoal: (id: string, updates: Partial<Goal>) => Promise<void>
@@ -74,7 +74,7 @@ export function DashboardProvider({ children, user, initialProfile }: DashboardP
   const [columnSplit, setColumnSplit] = useState(initialProfile?.column_split ?? 50)
   const [loading, setLoading] = useState(true)
   const [toast, setToast] = useState<{ message: string; undoAction?: () => void } | null>(null)
-  const [recentlyDone, setRecentlyDone] = useState<Set<string>>(new Set())
+  const [recentlyChanged, setRecentlyChanged] = useState<Map<string, GoalStatus>>(new Map())
 
   // Apply dark mode
   useEffect(() => {
@@ -178,28 +178,24 @@ export function DashboardProvider({ children, user, initialProfile }: DashboardP
   const updateGoal = useCallback(async (id: string, updates: Partial<Goal>) => {
     const oldGoal = goals.find(g => g.id === id)
 
-    // If status changed to Done, add to recentlyDone set with delay
-    if (updates.status === 'Done' && oldGoal?.status !== 'Done') {
-      setRecentlyDone(prev => new Set([...prev, id]))
-      fireConfetti(isBlue ? ['#3b82f6', '#10b981'] : ['#f43f5e', '#10b981'])
+    // If status changed, track old status for 5 second delay before position changes
+    if (updates.status && oldGoal && updates.status !== oldGoal.status) {
+      // Store old status in map for sorting delay
+      setRecentlyChanged(prev => new Map(prev).set(id, oldGoal.status))
 
-      // Remove from recentlyDone after DONE_DELAY_MS (10 seconds)
+      // Fire confetti if status changed to Done
+      if (updates.status === 'Done') {
+        fireConfetti(isBlue ? ['#3b82f6', '#10b981'] : ['#f43f5e', '#10b981'])
+      }
+
+      // Remove from recentlyChanged after STATUS_DELAY_MS (5 seconds)
       setTimeout(() => {
-        setRecentlyDone(prev => {
-          const next = new Set(prev)
+        setRecentlyChanged(prev => {
+          const next = new Map(prev)
           next.delete(id)
           return next
         })
-      }, DONE_DELAY_MS)
-    }
-
-    // If status changed FROM Done, remove from recentlyDone
-    if (oldGoal?.status === 'Done' && updates.status !== 'Done') {
-      setRecentlyDone(prev => {
-        const next = new Set(prev)
-        next.delete(id)
-        return next
-      })
+      }, STATUS_DELAY_MS)
     }
 
     // Optimistic update
@@ -344,7 +340,7 @@ export function DashboardProvider({ children, user, initialProfile }: DashboardP
         columnSplit,
         setColumnSplit: handleSetColumnSplit,
         loading,
-        recentlyDone,
+        recentlyChanged,
         addGoal,
         updateGoal,
         deleteGoal,
