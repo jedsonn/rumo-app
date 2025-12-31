@@ -7,8 +7,6 @@ import { GoalsColumn } from '@/components/goals/GoalsColumn'
 import { TemplatesModal } from '@/components/goals/TemplatesModal'
 import { Toast } from '@/components/ui/Toast'
 import { VisionBoard } from '@/components/vision/VisionBoard'
-import { HabitsPanel } from '@/components/habits/HabitsPanel'
-import { TimelineView } from '@/components/timeline/TimelineView'
 import { YearEndReview } from '@/components/review/YearEndReview'
 import { QuoteDisplay } from '@/components/motivation/QuoteDisplay'
 import { GoalTemplate } from '@/lib/templates'
@@ -54,8 +52,6 @@ export default function DashboardPage() {
     blessings,
     rewards,
     visionBoardItems,
-    habits,
-    habitCompletions,
     quotes,
     year,
     isBlue,
@@ -72,10 +68,6 @@ export default function DashboardPage() {
     addVisionBoardItem,
     updateVisionBoardItem,
     deleteVisionBoardItem,
-    addHabit,
-    updateHabit,
-    deleteHabit,
-    toggleHabitCompletion,
     showToast,
   } = useDashboard()
 
@@ -423,25 +415,6 @@ export default function DashboardPage() {
               onUpdateItem={updateVisionBoardItem}
               onDeleteItem={deleteVisionBoardItem}
             />
-          </div>
-        )}
-
-        {activeTab === 'habits' && (
-          <div className="max-w-4xl mx-auto h-[calc(100vh-200px)]">
-            <HabitsPanel
-              habits={habits}
-              completions={habitCompletions}
-              onAddHabit={addHabit}
-              onUpdateHabit={updateHabit}
-              onDeleteHabit={deleteHabit}
-              onToggleCompletion={toggleHabitCompletion}
-            />
-          </div>
-        )}
-
-        {activeTab === 'timeline' && (
-          <div className="max-w-3xl mx-auto h-[calc(100vh-200px)]">
-            <TimelineView goals={goals} />
           </div>
         )}
 

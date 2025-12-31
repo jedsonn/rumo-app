@@ -4,12 +4,11 @@ import { useState } from 'react'
 import { useDashboard } from '@/components/providers/DashboardProvider'
 import {
   Moon, Sun, Palette, BarChart3, Trophy, Trash2,
-  ArrowUpDown, Search, LogOut, User, Target, Heart, Gift,
-  Image, Calendar, Clock
+  ArrowUpDown, Search, LogOut, User, Target, Heart, Gift, Image
 } from 'lucide-react'
 import { FocusModeSelector } from './FocusModeSelector'
 
-export type TabType = 'goals' | 'blessings' | 'rewards' | 'vision' | 'habits' | 'timeline'
+export type TabType = 'goals' | 'blessings' | 'rewards' | 'vision'
 
 interface HeaderProps {
   onShowStats: () => void
@@ -64,8 +63,6 @@ export function Header({
   const tabs = [
     { id: 'goals' as const, label: 'Goals', icon: Target },
     { id: 'vision' as const, label: 'Vision', icon: Image },
-    { id: 'habits' as const, label: 'Habits', icon: Calendar },
-    { id: 'timeline' as const, label: 'Timeline', icon: Clock },
     { id: 'blessings' as const, label: 'Blessings', icon: Heart },
     { id: 'rewards' as const, label: 'Rewards', icon: Gift },
   ]
