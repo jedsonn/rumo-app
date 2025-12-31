@@ -14,6 +14,7 @@ interface GoalListProps {
   onDeleteGoal: (id: string) => void
   onLinkReward: (goal: Goal) => void
   onEditGoal: (goal: Goal) => void
+  onShareGoal?: (goal: Goal) => void
   onOpenSuggestions: () => void
   recentlyChanged: Map<string, GoalStatus>
   themeColor: 'blue' | 'rose'
@@ -28,6 +29,7 @@ export function GoalList({
   onAddGoal,
   onUpdateGoal,
   onDeleteGoal,
+  onShareGoal,
   onLinkReward,
   onEditGoal,
   onOpenSuggestions,
@@ -203,6 +205,7 @@ export function GoalList({
               onDelete={onDeleteGoal}
               onLinkReward={onLinkReward}
               onEdit={onEditGoal}
+              onShare={onShareGoal}
               isRecentlyChanged={recentlyChanged.has(goal.id)}
               themeColor={themeColor}
               isDark={isDark}

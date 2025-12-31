@@ -139,3 +139,160 @@ export const REWARD_SUGGESTIONS = [
   "Art supplies 🎨",
   "Plants for the home 🌱",
 ]
+
+// ============ TEMPLATE PACKS - CURATED GOAL COLLECTIONS ============
+
+export interface TemplatePack {
+  id: string
+  name: string
+  emoji: string
+  description: string
+  category: GoalCategory
+  goals: GoalSuggestion[]
+}
+
+export const TEMPLATE_PACKS: TemplatePack[] = [
+  // Personal Packs
+  {
+    id: 'fitness-starter',
+    name: 'Fitness Starter',
+    emoji: '💪',
+    description: 'Get in shape with foundational fitness goals',
+    category: 'Personal',
+    goals: [
+      { goal: "Exercise 3x per week consistently", period: "One-year", action: "Pick a workout routine" },
+      { goal: "Run a 5K without stopping", period: "One-year", action: "Start couch-to-5k program" },
+      { goal: "Lose 10-15 lbs of body fat", period: "One-year", action: "Track calories daily" },
+      { goal: "Build strength routine habit", period: "One-year", action: "Join gym or get equipment" },
+      { goal: "Improve flexibility", period: "One-year", action: "10 min stretching daily" },
+    ]
+  },
+  {
+    id: 'wealth-builder',
+    name: 'Wealth Builder',
+    emoji: '💰',
+    description: 'Build your financial foundation',
+    category: 'Personal',
+    goals: [
+      { goal: "Build 3-month emergency fund", period: "One-year", action: "Set up auto-transfer $X/week" },
+      { goal: "Max out retirement contributions", period: "One-year", action: "Increase 401k percentage" },
+      { goal: "Pay off high-interest debt", period: "One-year", action: "List debts by interest rate" },
+      { goal: "Create monthly budget and stick to it", period: "One-year", action: "Use budgeting app" },
+      { goal: "Start investing regularly", period: "One-year", action: "Open brokerage account" },
+      { goal: "Buy a house", period: "Three-years", action: "Save for down payment" },
+    ]
+  },
+  {
+    id: 'mindfulness',
+    name: 'Mindfulness & Wellness',
+    emoji: '🧘',
+    description: 'Prioritize mental health and inner peace',
+    category: 'Personal',
+    goals: [
+      { goal: "Meditate 10 minutes daily", period: "One-year", action: "Download meditation app" },
+      { goal: "Journal weekly reflections", period: "One-year", action: "Get a nice journal" },
+      { goal: "Sleep 7-8 hours consistently", period: "One-year", action: "Set bedtime alarm" },
+      { goal: "Reduce social media to 30 min/day", period: "One-year", action: "Set app limits" },
+      { goal: "Practice daily gratitude", period: "One-year", action: "Write 3 things each morning" },
+    ]
+  },
+  {
+    id: 'relationships',
+    name: 'Relationship Goals',
+    emoji: '❤️',
+    description: 'Strengthen connections with loved ones',
+    category: 'Personal',
+    goals: [
+      { goal: "Weekly date night with partner", period: "One-year", action: "Schedule recurring date" },
+      { goal: "Call parents/family weekly", period: "One-year", action: "Set Sunday reminder" },
+      { goal: "Reconnect with 5 old friends", period: "One-year", action: "Reach out to 1 this week" },
+      { goal: "Plan monthly quality time with kids", period: "One-year", action: "Book first activity" },
+      { goal: "Host dinner party quarterly", period: "One-year", action: "Pick first date" },
+    ]
+  },
+  {
+    id: 'adventure',
+    name: 'Adventure Seeker',
+    emoji: '🌍',
+    description: 'Experience new places and things',
+    category: 'Personal',
+    goals: [
+      { goal: "Travel to 2 new countries", period: "One-year", action: "Research destinations" },
+      { goal: "Take a solo trip", period: "One-year", action: "Pick dates and destination" },
+      { goal: "Try 12 new restaurants", period: "One-year", action: "Make list of spots" },
+      { goal: "Learn a new skill (surfing, skiing, etc)", period: "One-year", action: "Book first lesson" },
+      { goal: "Complete a bucket list item", period: "One-year", action: "Write the list first!" },
+    ]
+  },
+  // Professional Packs
+  {
+    id: 'career-growth',
+    name: 'Career Growth',
+    emoji: '📈',
+    description: 'Level up in your career',
+    category: 'Professional',
+    goals: [
+      { goal: "Get promoted to next level", period: "One-year", action: "Schedule chat with manager" },
+      { goal: "Negotiate 10-15% raise", period: "One-year", action: "Document achievements" },
+      { goal: "Build relationship with skip-level", period: "One-year", action: "Ask for coffee chat" },
+      { goal: "Lead a high-visibility project", period: "One-year", action: "Volunteer for one" },
+      { goal: "Get featured in company newsletter", period: "One-year", action: "Share a win story" },
+    ]
+  },
+  {
+    id: 'side-hustle',
+    name: 'Side Hustle Starter',
+    emoji: '🚀',
+    description: 'Build income outside your 9-5',
+    category: 'Professional',
+    goals: [
+      { goal: "Launch a side project", period: "One-year", action: "Brainstorm 10 ideas" },
+      { goal: "Make first $1000 from side hustle", period: "One-year", action: "Pick one idea to pursue" },
+      { goal: "Build audience (1000 followers)", period: "One-year", action: "Pick platform and start" },
+      { goal: "Create a digital product", period: "One-year", action: "Outline what you'll make" },
+      { goal: "Turn passion into income stream", period: "Three-years", action: "Define the passion" },
+    ]
+  },
+  {
+    id: 'learning',
+    name: 'Continuous Learning',
+    emoji: '📚',
+    description: 'Never stop growing your skills',
+    category: 'Professional',
+    goals: [
+      { goal: "Complete an industry certification", period: "One-year", action: "Research which one" },
+      { goal: "Read 12 professional books", period: "One-year", action: "Pick first book" },
+      { goal: "Take 3 online courses", period: "One-year", action: "Browse Coursera/Udemy" },
+      { goal: "Learn new programming language/tool", period: "One-year", action: "Pick which one" },
+      { goal: "Attend 2 industry conferences", period: "One-year", action: "Find relevant ones" },
+    ]
+  },
+  {
+    id: 'leadership',
+    name: 'Leadership Track',
+    emoji: '👔',
+    description: 'Develop leadership capabilities',
+    category: 'Professional',
+    goals: [
+      { goal: "Mentor 2 junior colleagues", period: "One-year", action: "Offer to help someone" },
+      { goal: "Improve public speaking skills", period: "One-year", action: "Join Toastmasters" },
+      { goal: "Give 3 presentations at work", period: "One-year", action: "Propose first topic" },
+      { goal: "Build cross-functional relationships", period: "One-year", action: "Meet 5 new people" },
+      { goal: "Lead a team project", period: "One-year", action: "Volunteer to lead" },
+    ]
+  },
+  {
+    id: 'work-life',
+    name: 'Work-Life Balance',
+    emoji: '⚖️',
+    description: 'Reclaim your time and energy',
+    category: 'Professional',
+    goals: [
+      { goal: "Leave work by 6pm every day", period: "One-year", action: "Set calendar block" },
+      { goal: "Take all vacation days", period: "One-year", action: "Plan trips in advance" },
+      { goal: "No work emails after 7pm", period: "One-year", action: "Remove email from phone" },
+      { goal: "Reduce meetings by 25%", period: "One-year", action: "Audit calendar weekly" },
+      { goal: "Take 1 mental health day/quarter", period: "One-year", action: "Schedule first one" },
+    ]
+  },
+]

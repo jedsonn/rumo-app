@@ -48,6 +48,9 @@ export interface UserProfile {
   is_blue_theme: boolean;
   is_dark_mode: boolean;
   column_split: number;
+  check_in_dates: string[]; // Array of ISO date strings for weekly check-ins
+  last_check_in: string | null;
+  email_digest_enabled: boolean;
   created_at: string;
   updated_at: string;
 }

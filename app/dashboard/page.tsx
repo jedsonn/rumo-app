@@ -11,13 +11,15 @@ import { Toast } from '@/components/ui/Toast'
 import { EditGoalModal } from '@/components/goals/EditGoalModal'
 import { SuggestionsModal } from '@/components/modals/SuggestionsModal'
 import { LinkRewardModal } from '@/components/modals/LinkRewardModal'
-import { YearEndReview } from '@/components/review/YearEndReview'
+import { ShareModal } from '@/components/modals/ShareModal'
+import { ReviewModal } from '@/components/modals/ReviewModal'
 import { QuoteDisplay } from '@/components/motivation/QuoteDisplay'
 import { Goal, GoalCategory } from '@/lib/types'
 import { GoalSuggestion } from '@/lib/suggestions'
 
 export default function DashboardPage() {
   const {
+    profile,
     goals,
     blessings,
     rewards,
@@ -55,6 +57,7 @@ export default function DashboardPage() {
   // Goal modals
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null)
   const [linkingGoal, setLinkingGoal] = useState<Goal | null>(null)
+  const [sharingGoal, setSharingGoal] = useState<Goal | null>(null)
 
   // Suggestions modals
   const [suggestionsType, setSuggestionsType] = useState<'goal' | 'blessing' | 'reward' | null>(null)
@@ -98,6 +101,7 @@ export default function DashboardPage() {
         setShowClearAll(false)
         setEditingGoal(null)
         setLinkingGoal(null)
+        setSharingGoal(null)
         setSuggestionsType(null)
       }
     }
@@ -239,6 +243,7 @@ export default function DashboardPage() {
                   onDeleteGoal={deleteGoal}
                   onLinkReward={setLinkingGoal}
                   onEditGoal={setEditingGoal}
+                  onShareGoal={setSharingGoal}
                   onOpenSuggestions={() => openGoalSuggestions('Personal')}
                   recentlyChanged={recentlyChanged}
                   themeColor={themeColor}
@@ -265,6 +270,7 @@ export default function DashboardPage() {
                   onDeleteGoal={deleteGoal}
                   onLinkReward={setLinkingGoal}
                   onEditGoal={setEditingGoal}
+                  onShareGoal={setSharingGoal}
                   onOpenSuggestions={() => openGoalSuggestions('Professional')}
                   recentlyChanged={recentlyChanged}
                   themeColor={themeColor}
@@ -285,6 +291,7 @@ export default function DashboardPage() {
                   onDeleteGoal={deleteGoal}
                   onLinkReward={setLinkingGoal}
                   onEditGoal={setEditingGoal}
+                  onShareGoal={setSharingGoal}
                   onOpenSuggestions={() => openGoalSuggestions('Personal')}
                   recentlyChanged={recentlyChanged}
                   themeColor={themeColor}
@@ -301,6 +308,7 @@ export default function DashboardPage() {
                   onDeleteGoal={deleteGoal}
                   onLinkReward={setLinkingGoal}
                   onEditGoal={setEditingGoal}
+                  onShareGoal={setSharingGoal}
                   onOpenSuggestions={() => openGoalSuggestions('Professional')}
                   recentlyChanged={recentlyChanged}
                   themeColor={themeColor}
@@ -395,11 +403,28 @@ export default function DashboardPage() {
         />
       )}
 
+      {/* Share Goal Modal */}
+      <ShareModal
+        isOpen={sharingGoal !== null}
+        onClose={() => setSharingGoal(null)}
+        goal={sharingGoal}
+        ownerName={profile?.display_name || 'User'}
+        year={year}
+        themeColor={themeColor}
+        isDark={isDark}
+      />
+
       {/* Year-End Review Modal */}
-      <YearEndReview
+      <ReviewModal
         isOpen={showReview}
         onClose={() => setShowReview(false)}
+        goals={goals}
+        blessings={blessings}
+        rewards={rewards}
+        ownerName={profile?.display_name || 'User'}
         year={year}
+        themeColor={themeColor}
+        isDark={isDark}
       />
     </div>
   )
