@@ -44,7 +44,7 @@ export function GoalCard({
     >
       {goal.pinned && <div className="absolute -top-1.5 -left-1.5 text-xs">🔥</div>}
 
-      {/* Row 1: # | Title | $Cost | Period | Status */}
+      {/* Row 1: # | Title | $Cost | Status | Period */}
       <div className="flex items-center gap-2">
         <EditableNumber
           value={goal.number}
@@ -72,15 +72,15 @@ export function GoalCard({
             ${goal.cost.toLocaleString()}
           </span>
         )}
-        <PeriodBadge
-          period={goal.period}
-          onChange={(p) => onUpdate({ ...goal, period: p })}
-          isDark={isDark}
-        />
         <StatusBadge
           status={goal.status}
           onChange={(s) => onUpdate({ ...goal, status: s })}
           isRecentlyChanged={isRecentlyChanged}
+          isDark={isDark}
+        />
+        <PeriodBadge
+          period={goal.period}
+          onChange={(p) => onUpdate({ ...goal, period: p })}
           isDark={isDark}
         />
       </div>
