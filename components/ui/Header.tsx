@@ -204,26 +204,27 @@ export function Header({
       {activeTab === 'goals' && (
         <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
           <div className="max-w-7xl mx-auto px-4 py-2">
-            <div className="flex items-center justify-between gap-4">
-              {/* Left: Focus Mode */}
+            {/* Centered filter row */}
+            <div className="flex items-center justify-center gap-3 flex-wrap">
+              {/* Focus Mode */}
               <div className="hidden md:block">
                 <FocusModeSelector value={focusMode} onChange={setFocusMode} />
               </div>
 
-              {/* Center: Search */}
-              <div className="relative flex-1 max-w-xs">
+              {/* Search */}
+              <div className="relative w-48">
                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search goals..."
-                  className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-9 pr-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
-              {/* Right: Filter Pills - Status and Period together */}
-              <div className="hidden sm:flex items-center gap-1 p-1 bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600">
+              {/* Filter Pills - Status and Period together */}
+              <div className="flex items-center gap-1 p-1 bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600">
                 {/* Status Filter */}
                 {[
                   { value: 'all', label: 'All' },

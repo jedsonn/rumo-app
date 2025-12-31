@@ -78,26 +78,26 @@ export default function DashboardPage() {
   const [isResizing, setIsResizing] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  // Track recently completed goals to delay their repositioning (5 second delay)
-  const [recentlyCompletedIds, setRecentlyCompletedIds] = useState<Set<string>>(new Set())
+  // Track recently changed goals to delay their repositioning (5 second delay for ANY status change)
+  const [recentlyChangedGoals, setRecentlyChangedGoals] = useState<Map<string, string>>(new Map())
   const prevGoalsRef = useRef<typeof goals>([])
 
-  // Detect when a goal is marked as Done and add it to recentlyCompleted
+  // Detect when ANY goal status changes and keep it at current position for 5 seconds
   useEffect(() => {
     const prevGoals = prevGoalsRef.current
     goals.forEach(goal => {
       const prevGoal = prevGoals.find(g => g.id === goal.id)
-      if (prevGoal && prevGoal.status !== 'Done' && goal.status === 'Done') {
-        // Goal was just marked as Done
-        setRecentlyCompletedIds(prev => {
-          const next = new Set(Array.from(prev))
-          next.add(goal.id)
+      if (prevGoal && prevGoal.status !== goal.status) {
+        // Goal status changed - remember the OLD status to keep sorting stable
+        setRecentlyChangedGoals(prev => {
+          const next = new Map(prev)
+          next.set(goal.id, prevGoal.status)
           return next
         })
-        // Remove from recentlyCompleted after 5 seconds
+        // Remove from recentlyChanged after 5 seconds
         setTimeout(() => {
-          setRecentlyCompletedIds(prev => {
-            const next = new Set(Array.from(prev))
+          setRecentlyChangedGoals(prev => {
+            const next = new Map(prev)
             next.delete(goal.id)
             return next
           })
@@ -172,24 +172,24 @@ export default function DashboardPage() {
     result = applyFocusModeFilter(result, focusMode)
 
     // Sort: pinned first, then by status priority, then by number
-    // BUT keep recently completed goals at their position for 5 seconds
+    // BUT keep recently changed goals at their OLD position for 5 seconds
     result.sort((a, b) => {
       if (a.pinned && !b.pinned) return -1
       if (!a.pinned && b.pinned) return 1
 
-      // If a goal was recently completed, treat it as still active for sorting purposes
-      const aStatus = recentlyCompletedIds.has(a.id) && a.status === 'Done' ? 'Doing' : a.status
-      const bStatus = recentlyCompletedIds.has(b.id) && b.status === 'Done' ? 'Doing' : b.status
+      // If a goal status recently changed, use the OLD status for sorting
+      const aStatus = recentlyChangedGoals.get(a.id) || a.status
+      const bStatus = recentlyChangedGoals.get(b.id) || b.status
 
       const statusOrder: Record<string, number> = { 'Doing': 0, 'On Track': 1, 'For Later': 2, 'Done': 3, 'Dropped': 4 }
-      const statusDiff = statusOrder[aStatus] - statusOrder[bStatus]
+      const statusDiff = (statusOrder[aStatus] ?? 2) - (statusOrder[bStatus] ?? 2)
       if (statusDiff !== 0) return statusDiff
 
       return a.number - b.number
     })
 
     return result
-  }, [goals, year, search, statusFilter, periodFilter, focusMode, recentlyCompletedIds])
+  }, [goals, year, search, statusFilter, periodFilter, focusMode, recentlyChangedGoals])
 
   // Resizer handlers
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
