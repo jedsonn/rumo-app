@@ -10,9 +10,10 @@ interface TemplatesModalProps {
   onClose: () => void
   onAddGoals: (goals: GoalTemplate[]) => void
   isBlue: boolean
+  targetCategory?: 'Personal' | 'Professional' | null
 }
 
-export function TemplatesModal({ isOpen, onClose, onAddGoals, isBlue }: TemplatesModalProps) {
+export function TemplatesModal({ isOpen, onClose, onAddGoals, isBlue, targetCategory }: TemplatesModalProps) {
   const [selectedPack, setSelectedPack] = useState<TemplatePack | null>(null)
   const [selectedGoals, setSelectedGoals] = useState<Set<number>>(new Set())
 
@@ -47,8 +48,12 @@ export function TemplatesModal({ isOpen, onClose, onAddGoals, isBlue }: Template
 
   const gradientClass = isBlue ? 'gradient-bg' : 'gradient-bg-pink'
 
+  const modalTitle = selectedPack
+    ? selectedPack.name
+    : `Goal Templates${targetCategory ? ` for ${targetCategory}` : ''}`
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={selectedPack ? selectedPack.name : 'Goal Templates'} size="lg">
+    <Modal isOpen={isOpen} onClose={onClose} title={modalTitle} size="lg">
       {!selectedPack ? (
         // Pack Selection View
         <div className="space-y-3">
@@ -161,7 +166,7 @@ export function TemplatesModal({ isOpen, onClose, onAddGoals, isBlue }: Template
                 className={`px-4 py-2 rounded-lg text-white ${gradientClass} hover:opacity-90 disabled:opacity-50 flex items-center gap-2`}
               >
                 <Plus size={18} />
-                Add {selectedGoals.size} Goals
+                Add {selectedGoals.size} to {targetCategory || 'Goals'}
               </button>
             </div>
           </div>

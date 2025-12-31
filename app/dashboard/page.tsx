@@ -10,7 +10,7 @@ import { VisionBoard } from '@/components/vision/VisionBoard'
 import { YearEndReview } from '@/components/review/YearEndReview'
 import { QuoteDisplay } from '@/components/motivation/QuoteDisplay'
 import { GoalTemplate } from '@/lib/templates'
-import { FocusMode } from '@/lib/types'
+import { FocusMode, GoalCategory } from '@/lib/types'
 import { Plus, Trash2, Sparkles, Check, GripVertical } from 'lucide-react'
 
 // Blessing suggestions
@@ -78,26 +78,26 @@ export default function DashboardPage() {
   const [isResizing, setIsResizing] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  // Track recently completed goals to delay their repositioning (5 second delay)
-  const [recentlyCompletedIds, setRecentlyCompletedIds] = useState<Set<string>>(new Set())
+  // Track recently changed goals to delay their repositioning (5 second delay for ANY status change)
+  const [recentlyChangedGoals, setRecentlyChangedGoals] = useState<Map<string, string>>(new Map())
   const prevGoalsRef = useRef<typeof goals>([])
 
-  // Detect when a goal is marked as Done and add it to recentlyCompleted
+  // Detect when ANY goal status changes and keep it at current position for 5 seconds
   useEffect(() => {
     const prevGoals = prevGoalsRef.current
     goals.forEach(goal => {
       const prevGoal = prevGoals.find(g => g.id === goal.id)
-      if (prevGoal && prevGoal.status !== 'Done' && goal.status === 'Done') {
-        // Goal was just marked as Done
-        setRecentlyCompletedIds(prev => {
-          const next = new Set(Array.from(prev))
-          next.add(goal.id)
+      if (prevGoal && prevGoal.status !== goal.status) {
+        // Goal status changed - remember the OLD status to keep sorting stable
+        setRecentlyChangedGoals(prev => {
+          const next = new Map(prev)
+          next.set(goal.id, prevGoal.status)
           return next
         })
-        // Remove from recentlyCompleted after 5 seconds
+        // Remove from recentlyChanged after 5 seconds
         setTimeout(() => {
-          setRecentlyCompletedIds(prev => {
-            const next = new Set(Array.from(prev))
+          setRecentlyChangedGoals(prev => {
+            const next = new Map(prev)
             next.delete(goal.id)
             return next
           })
@@ -112,7 +112,7 @@ export default function DashboardPage() {
   const [showReview, setShowReview] = useState(false)
   const [showImportExport, setShowImportExport] = useState(false)
   const [showClearAll, setShowClearAll] = useState(false)
-  const [showTemplates, setShowTemplates] = useState(false)
+  const [templatesForCategory, setTemplatesForCategory] = useState<GoalCategory | null>(null)
 
   // Blessing/Reward form states
   const [blessingValue, setBlessingValue] = useState('')
@@ -172,24 +172,24 @@ export default function DashboardPage() {
     result = applyFocusModeFilter(result, focusMode)
 
     // Sort: pinned first, then by status priority, then by number
-    // BUT keep recently completed goals at their position for 5 seconds
+    // BUT keep recently changed goals at their OLD position for 5 seconds
     result.sort((a, b) => {
       if (a.pinned && !b.pinned) return -1
       if (!a.pinned && b.pinned) return 1
 
-      // If a goal was recently completed, treat it as still active for sorting purposes
-      const aStatus = recentlyCompletedIds.has(a.id) && a.status === 'Done' ? 'Doing' : a.status
-      const bStatus = recentlyCompletedIds.has(b.id) && b.status === 'Done' ? 'Doing' : b.status
+      // If a goal status recently changed, use the OLD status for sorting
+      const aStatus = recentlyChangedGoals.get(a.id) || a.status
+      const bStatus = recentlyChangedGoals.get(b.id) || b.status
 
       const statusOrder: Record<string, number> = { 'Doing': 0, 'On Track': 1, 'For Later': 2, 'Done': 3, 'Dropped': 4 }
-      const statusDiff = statusOrder[aStatus] - statusOrder[bStatus]
+      const statusDiff = (statusOrder[aStatus] ?? 2) - (statusOrder[bStatus] ?? 2)
       if (statusDiff !== 0) return statusDiff
 
       return a.number - b.number
     })
 
     return result
-  }, [goals, year, search, statusFilter, periodFilter, focusMode, recentlyCompletedIds])
+  }, [goals, year, search, statusFilter, periodFilter, focusMode, recentlyChangedGoals])
 
   // Resizer handlers
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
@@ -231,25 +231,28 @@ export default function DashboardPage() {
         setShowReview(false)
         setShowImportExport(false)
         setShowClearAll(false)
-        setShowTemplates(false)
+        setTemplatesForCategory(null)
       }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
-  // Handle adding goals from templates
+  // Handle adding goals from templates - use the category that opened the modal
   const handleAddGoalsFromTemplates = async (templates: GoalTemplate[]) => {
-    for (const template of templates) {
-      const categoryGoals = goals.filter(g => g.category === template.category)
-      const maxNum = Math.max(0, ...categoryGoals.map(g => g.number))
+    if (!templatesForCategory) return
 
+    const targetCategory = templatesForCategory
+    const categoryGoals = goals.filter(g => g.category === targetCategory)
+    let nextNum = Math.max(0, ...categoryGoals.map(g => g.number)) + 1
+
+    for (const template of templates) {
       await addGoal({
-        number: maxNum + 1,
+        number: nextNum++,
         year,
         goal: template.goal,
         period: template.period,
-        category: template.category,
+        category: targetCategory, // Use the clicked category, NOT template.category
         status: 'Doing',
         action: template.action,
         cost: 0,
@@ -258,7 +261,7 @@ export default function DashboardPage() {
         linked_reward_id: null,
       })
     }
-    showToast(`Added ${templates.length} goals from template!`)
+    showToast(`Added ${templates.length} goals to ${targetCategory}!`)
   }
 
   // Blessing handlers
@@ -364,7 +367,7 @@ export default function DashboardPage() {
             >
               {/* Personal Column */}
               <div style={{ width: `${columnSplit}%` }} className="pr-1 overflow-hidden">
-                <GoalsColumn category="Personal" filteredGoals={filteredGoals} onOpenTemplates={() => setShowTemplates(true)} onGoalAdded={handleGoalAdded} />
+                <GoalsColumn category="Personal" filteredGoals={filteredGoals} onOpenTemplates={() => setTemplatesForCategory('Personal')} onGoalAdded={handleGoalAdded} />
               </div>
 
               {/* Resizer */}
@@ -391,17 +394,17 @@ export default function DashboardPage() {
 
               {/* Professional Column */}
               <div style={{ width: `${100 - columnSplit}%` }} className="pl-1 overflow-hidden">
-                <GoalsColumn category="Professional" filteredGoals={filteredGoals} onOpenTemplates={() => setShowTemplates(true)} onGoalAdded={handleGoalAdded} />
+                <GoalsColumn category="Professional" filteredGoals={filteredGoals} onOpenTemplates={() => setTemplatesForCategory('Professional')} onGoalAdded={handleGoalAdded} />
               </div>
             </div>
 
             {/* Mobile: Stacked columns */}
             <div className="md:hidden space-y-6">
               <div className="min-h-[40vh]">
-                <GoalsColumn category="Personal" filteredGoals={filteredGoals} onOpenTemplates={() => setShowTemplates(true)} onGoalAdded={handleGoalAdded} />
+                <GoalsColumn category="Personal" filteredGoals={filteredGoals} onOpenTemplates={() => setTemplatesForCategory('Personal')} onGoalAdded={handleGoalAdded} />
               </div>
               <div className="min-h-[40vh]">
-                <GoalsColumn category="Professional" filteredGoals={filteredGoals} onOpenTemplates={() => setShowTemplates(true)} onGoalAdded={handleGoalAdded} />
+                <GoalsColumn category="Professional" filteredGoals={filteredGoals} onOpenTemplates={() => setTemplatesForCategory('Professional')} onGoalAdded={handleGoalAdded} />
               </div>
             </div>
           </>
@@ -601,10 +604,11 @@ export default function DashboardPage() {
 
       {/* Templates Modal */}
       <TemplatesModal
-        isOpen={showTemplates}
-        onClose={() => setShowTemplates(false)}
+        isOpen={templatesForCategory !== null}
+        onClose={() => setTemplatesForCategory(null)}
         onAddGoals={handleAddGoalsFromTemplates}
         isBlue={isBlue}
+        targetCategory={templatesForCategory}
       />
 
       {/* Year-End Review Modal */}
