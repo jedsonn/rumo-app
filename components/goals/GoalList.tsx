@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Goal, GoalCategory, Reward } from '@/lib/types'
+import { Goal, GoalCategory, GoalStatus, Reward } from '@/lib/types'
 import { GoalCard } from './GoalCard'
 import { User, Briefcase, ArrowUpDown, Sparkles, Plus, Target } from 'lucide-react'
 
@@ -15,12 +15,12 @@ interface GoalListProps {
   onLinkReward: (goal: Goal) => void
   onEditGoal: (goal: Goal) => void
   onOpenSuggestions: () => void
-  recentlyDone: Set<string>
+  recentlyChanged: Map<string, GoalStatus>
   themeColor: 'blue' | 'rose'
   isDark: boolean
 }
 
-// GoalList - column with stats header, add form, goals (matches template EXACTLY)
+// GoalList - column with stats header, add form, goals
 export function GoalList({
   category,
   goals,
@@ -31,7 +31,7 @@ export function GoalList({
   onLinkReward,
   onEditGoal,
   onOpenSuggestions,
-  recentlyDone,
+  recentlyChanged,
   themeColor,
   isDark
 }: GoalListProps) {
@@ -41,22 +41,26 @@ export function GoalList({
   // Filter goals by category
   const categoryGoals = useMemo(() => goals.filter(g => g.category === category), [goals, category])
 
-  // Sort goals
+  // Sort goals - use OLD status for recently changed goals during 5s delay
   const sortedGoals = useMemo(() => {
     const sorted = [...categoryGoals]
     if (sortBy === 'number') {
       sorted.sort((a, b) => a.number - b.number)
     } else {
       // Smart sort: pinned first, then by status priority, then by number
-      const statusOrder = { 'Doing': 0, 'On Track': 1, 'For Later': 2, 'Done': 3, 'Dropped': 4 }
+      // Use OLD status if goal was recently changed (during 5s delay)
+      const statusOrder: Record<GoalStatus, number> = { 'Doing': 0, 'On Track': 1, 'For Later': 2, 'Done': 3, 'Dropped': 4 }
       sorted.sort((a, b) => {
         if (a.pinned !== b.pinned) return a.pinned ? -1 : 1
-        if (a.status !== b.status) return statusOrder[a.status] - statusOrder[b.status]
+        // Get effective status (old status if recently changed, else current)
+        const aStatus = recentlyChanged.get(a.id) || a.status
+        const bStatus = recentlyChanged.get(b.id) || b.status
+        if (aStatus !== bStatus) return statusOrder[aStatus] - statusOrder[bStatus]
         return a.number - b.number
       })
     }
     return sorted
-  }, [categoryGoals, sortBy])
+  }, [categoryGoals, sortBy, recentlyChanged])
 
   // Calculate stats
   const stats = useMemo(() => ({
@@ -157,8 +161,8 @@ export function GoalList({
           placeholder={`Add ${category.toLowerCase()} goal...`}
           className={`flex-1 px-3 py-1.5 rounded-lg text-sm border ${
             isDark
-              ? `bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-${themeColor}-500`
-              : `bg-slate-50 border-slate-200 text-slate-800 placeholder-slate-400 focus:border-${themeColor}-400`
+              ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
+              : 'bg-slate-50 border-slate-200 text-slate-800 placeholder-slate-400'
           } outline-none`}
         />
         <button
@@ -199,7 +203,7 @@ export function GoalList({
               onDelete={onDeleteGoal}
               onLinkReward={onLinkReward}
               onEdit={onEditGoal}
-              isRecentlyDone={recentlyDone.has(goal.id)}
+              isRecentlyChanged={recentlyChanged.has(goal.id)}
               themeColor={themeColor}
               isDark={isDark}
               linkedReward={rewards.find(r => r.id === goal.linked_reward_id)}

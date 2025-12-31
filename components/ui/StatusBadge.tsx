@@ -6,12 +6,12 @@ import { CountdownRing } from './CountdownRing'
 interface StatusBadgeProps {
   status: GoalStatus
   onChange: (status: GoalStatus) => void
-  isRecentlyDone?: boolean
+  isRecentlyChanged?: boolean
   isDark: boolean
 }
 
-// StatusBadge - tap-to-cycle status (matches template EXACTLY)
-export function StatusBadge({ status, onChange, isRecentlyDone, isDark }: StatusBadgeProps) {
+// StatusBadge - tap-to-cycle status
+export function StatusBadge({ status, onChange, isRecentlyChanged, isDark }: StatusBadgeProps) {
   const cycle = () => {
     const idx = STATUSES.indexOf(status)
     onChange(STATUSES[(idx + 1) % STATUSES.length])
@@ -28,7 +28,7 @@ export function StatusBadge({ status, onChange, isRecentlyDone, isDark }: Status
       >
         {status}
       </button>
-      {isRecentlyDone && <CountdownRing />}
+      {isRecentlyChanged && <CountdownRing />}
     </div>
   )
 }

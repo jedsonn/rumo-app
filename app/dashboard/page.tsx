@@ -28,7 +28,7 @@ export default function DashboardPage() {
     columnSplit,
     setColumnSplit,
     loading,
-    recentlyDone,
+    recentlyChanged,
     addGoal,
     updateGoal,
     deleteGoal,
@@ -240,7 +240,7 @@ export default function DashboardPage() {
                   onLinkReward={setLinkingGoal}
                   onEditGoal={setEditingGoal}
                   onOpenSuggestions={() => openGoalSuggestions('Personal')}
-                  recentlyDone={recentlyDone}
+                  recentlyChanged={recentlyChanged}
                   themeColor={themeColor}
                   isDark={isDark}
                 />
@@ -266,7 +266,7 @@ export default function DashboardPage() {
                   onLinkReward={setLinkingGoal}
                   onEditGoal={setEditingGoal}
                   onOpenSuggestions={() => openGoalSuggestions('Professional')}
-                  recentlyDone={recentlyDone}
+                  recentlyChanged={recentlyChanged}
                   themeColor={themeColor}
                   isDark={isDark}
                 />
@@ -286,7 +286,7 @@ export default function DashboardPage() {
                   onLinkReward={setLinkingGoal}
                   onEditGoal={setEditingGoal}
                   onOpenSuggestions={() => openGoalSuggestions('Personal')}
-                  recentlyDone={recentlyDone}
+                  recentlyChanged={recentlyChanged}
                   themeColor={themeColor}
                   isDark={isDark}
                 />
@@ -302,7 +302,7 @@ export default function DashboardPage() {
                   onLinkReward={setLinkingGoal}
                   onEditGoal={setEditingGoal}
                   onOpenSuggestions={() => openGoalSuggestions('Professional')}
-                  recentlyDone={recentlyDone}
+                  recentlyChanged={recentlyChanged}
                   themeColor={themeColor}
                   isDark={isDark}
                 />

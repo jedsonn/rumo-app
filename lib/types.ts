@@ -65,7 +65,7 @@ export const STATUSES: GoalStatus[] = ['Doing', 'On Track', 'For Later', 'Done',
 export const PERIODS: GoalPeriod[] = ['One-year', 'Three-years', 'Five-years'];
 export const CATEGORIES: GoalCategory[] = ['Personal', 'Professional'];
 export const PERIOD_ORDER: Record<GoalPeriod, number> = { 'One-year': 1, 'Three-years': 3, 'Five-years': 5 };
-export const DONE_DELAY_MS = 10000; // 10 seconds before Done moves to bottom
+export const STATUS_DELAY_MS = 5000; // 5 seconds before goal moves position after status change
 
 // Status colors matching template EXACTLY
 export const STATUS_COLORS_LIGHT: Record<GoalStatus, string> = {
