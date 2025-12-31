@@ -4,11 +4,10 @@ import { useState } from 'react'
 import { useDashboard } from '@/components/providers/DashboardProvider'
 import {
   Moon, Sun, Palette, BarChart3, Trophy, Trash2,
-  ArrowUpDown, Search, LogOut, User, Target, Heart, Gift, Image
+  Upload, Download, Search, Target, Heart, Gift, Check, X
 } from 'lucide-react'
-import { FocusModeSelector } from './FocusModeSelector'
 
-export type TabType = 'goals' | 'blessings' | 'rewards' | 'vision'
+export type TabType = 'goals' | 'blessings' | 'rewards'
 
 interface HeaderProps {
   onShowStats: () => void
@@ -47,230 +46,230 @@ export function Header({
     toggleDarkMode,
     isBlue,
     toggleTheme,
-    focusMode,
-    setFocusMode,
     logout
   } = useDashboard()
 
-  const [showUserMenu, setShowUserMenu] = useState(false)
-
-  const currentYear = new Date().getFullYear()
-  const years = [currentYear - 1, currentYear, currentYear + 1, currentYear + 2]
+  const [isEditingHeader, setIsEditingHeader] = useState(false)
+  const [editName, setEditName] = useState(profile?.display_name || '')
+  const [editYear, setEditYear] = useState(year)
 
   const gradientClass = isBlue ? 'gradient-text' : 'gradient-text-pink'
   const displayName = profile?.display_name || 'My'
 
-  const tabs = [
-    { id: 'goals' as const, label: 'Goals', icon: Target },
-    { id: 'vision' as const, label: 'Vision', icon: Image },
-    { id: 'blessings' as const, label: 'Blessings', icon: Heart },
-    { id: 'rewards' as const, label: 'Rewards', icon: Gift },
-  ]
+  const handleSaveHeader = async () => {
+    if (editName.trim()) {
+      const { createClient } = await import('@/lib/supabase/client')
+      const supabase = createClient()
+      await supabase
+        .from('profiles')
+        .update({ display_name: editName.trim() })
+        .eq('id', profile?.id)
+    }
+    setYear(editYear)
+    setIsEditingHeader(false)
+    if (editName.trim() && editName !== displayName) {
+      window.location.reload()
+    }
+  }
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-b border-slate-200 dark:border-slate-700">
-      {/* Row 1: Logo, Tabs, Actions */}
-      <div className="max-w-7xl mx-auto px-4 py-2">
-        <div className="flex items-center justify-between gap-4">
-          {/* Left: Logo and Title */}
-          <div className="flex items-center gap-3 shrink-0">
-            <div className="w-9 h-9 rounded-xl gradient-bg flex items-center justify-center shadow-sm">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14M13 6l6 6-6 6" />
-              </svg>
-            </div>
-            <div className="hidden sm:block">
-              <h1 className="text-base font-serif font-semibold leading-tight">
-                <span className={gradientClass}>{displayName}'s</span>
-                <span className="text-slate-800 dark:text-slate-100"> Goals</span>
-              </h1>
-              <select
-                value={year}
-                onChange={(e) => setYear(parseInt(e.target.value))}
-                className="text-xs font-medium text-slate-500 dark:text-slate-400 bg-transparent cursor-pointer hover:text-blue-500 focus:outline-none"
-              >
-                {years.map(y => (
-                  <option key={y} value={y} className="bg-white dark:bg-slate-800">{y}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Center: Tabs */}
-          <div className="flex-1 flex justify-center">
-            <div className="flex gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
-              {tabs.map((tab) => {
-                const Icon = tab.icon
-                const isActive = activeTab === tab.id
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                      isActive
-                        ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-800 dark:text-slate-100'
-                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-                    }`}
-                  >
-                    <Icon size={14} />
-                    <span className="hidden lg:inline">{tab.label}</span>
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-
-          {/* Right: Actions */}
-          <div className="flex items-center gap-1 shrink-0">
-            <button
-              onClick={toggleDarkMode}
-              className={`p-2 rounded-lg transition-colors ${isDark ? 'bg-slate-700 text-yellow-400' : 'hover:bg-slate-100 text-slate-500'}`}
-              title={isDark ? 'Light mode' : 'Dark mode'}
-            >
-              {isDark ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-            <button
-              onClick={toggleTheme}
-              className={`p-2 rounded-lg ${isBlue ? 'text-blue-500' : 'text-rose-500'} hover:bg-slate-100 dark:hover:bg-slate-700`}
-              title="Toggle theme color"
-            >
-              <Palette size={18} />
-            </button>
-            <button
-              onClick={onShowStats}
-              className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500"
-              title="Stats"
-            >
-              <BarChart3 size={18} />
-            </button>
-            <button
-              onClick={onShowReview}
-              className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold text-white text-xs ${isBlue ? 'gradient-bg' : 'gradient-bg-pink'} hover:opacity-90`}
-            >
-              <Trophy size={14} />
-              Review
-            </button>
-
-            {/* User Menu */}
-            <div className="relative ml-1">
-              <button
-                onClick={() => setShowUserMenu(!showUserMenu)}
-                className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500"
-              >
-                <User size={18} />
-              </button>
-              {showUserMenu && (
-                <>
-                  <div className="fixed inset-0 z-10" onClick={() => setShowUserMenu(false)} />
-                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 z-20 overflow-hidden">
-                    <div className="p-3 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50">
-                      <p className="font-medium text-sm text-slate-800 dark:text-slate-100 truncate">
-                        {profile?.display_name || 'User'}
-                      </p>
-                      <p className="text-xs text-slate-500 truncate">{profile?.email}</p>
-                    </div>
-                    <div className="p-1">
-                      <button
-                        onClick={onShowImportExport}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
-                      >
-                        <ArrowUpDown size={16} />
-                        Import/Export
-                      </button>
-                      <button
-                        onClick={onShowClearAll}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
-                      >
-                        <Trash2 size={16} />
-                        Clear All Data
-                      </button>
-                      <button
-                        onClick={logout}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
-                      >
-                        <LogOut size={16} />
-                        Sign out
-                      </button>
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
+    <header className={`border-b shadow-sm px-4 py-3 sticky top-0 z-40 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white'}`}>
+      <div className="flex justify-between items-center relative">
+        {/* Left: Action buttons */}
+        <div className="flex gap-1.5 items-center">
+          <button
+            onClick={toggleDarkMode}
+            className={`p-2 rounded-full ${isDark ? 'bg-slate-700 text-yellow-400' : 'hover:bg-slate-100 text-slate-500'}`}
+            title={isDark ? 'Light mode' : 'Dark mode'}
+          >
+            {isDark ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
+          <button
+            onClick={toggleTheme}
+            className={`p-2 rounded-full ${isBlue ? 'bg-blue-100 text-blue-500' : 'bg-rose-100 text-rose-500'}`}
+            title="Toggle theme color"
+          >
+            <Palette size={18} />
+          </button>
+          <button
+            onClick={onShowImportExport}
+            className={`p-2 rounded-full ${isDark ? 'hover:bg-slate-700 text-slate-400' : 'hover:bg-slate-100 text-slate-500'}`}
+            title="Import"
+          >
+            <Upload size={18} />
+          </button>
+          <button
+            onClick={onShowStats}
+            className={`p-2 rounded-full ${isDark ? 'hover:bg-slate-700 text-slate-400' : 'hover:bg-slate-100 text-slate-500'}`}
+            title="Stats Dashboard"
+          >
+            <BarChart3 size={18} />
+          </button>
+          <button
+            onClick={onShowClearAll}
+            className={`p-2 rounded-full ${isDark ? 'hover:bg-red-900/50 text-slate-400 hover:text-red-400' : 'hover:bg-red-100 text-slate-500 hover:text-red-500'}`}
+            title="Clear All Data"
+          >
+            <Trash2 size={18} />
+          </button>
         </div>
-      </div>
 
-      {/* Row 2: Filters (only on Goals tab) */}
-      {activeTab === 'goals' && (
-        <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
-          <div className="max-w-7xl mx-auto px-4 py-2">
-            {/* Centered filter row */}
-            <div className="flex items-center justify-center gap-3 flex-wrap">
-              {/* Focus Mode */}
-              <div className="hidden md:block">
-                <FocusModeSelector value={focusMode} onChange={setFocusMode} />
-              </div>
-
-              {/* Search */}
-              <div className="relative w-48">
-                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+        {/* Center: Title and Tabs */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+          {/* Editable Title */}
+          <div
+            className="group cursor-pointer mb-1.5"
+            onClick={() => {
+              setEditName(displayName === 'My' ? '' : displayName)
+              setEditYear(year)
+              setIsEditingHeader(true)
+            }}
+          >
+            {isEditingHeader ? (
+              <div className={`flex gap-2 items-center p-2 rounded-xl shadow-lg border ${isDark ? 'bg-slate-700 border-slate-600' : 'bg-white border-slate-200'}`} onClick={e => e.stopPropagation()}>
                 <input
                   type="text"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search goals..."
-                  className="w-full pl-9 pr-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  value={editName}
+                  onChange={e => setEditName(e.target.value)}
+                  placeholder="Name"
+                  className={`border rounded px-2 py-1 w-24 text-center font-bold text-sm ${isDark ? 'bg-slate-600 border-slate-500 text-white' : 'border-slate-300'}`}
+                  autoFocus
                 />
+                <input
+                  type="number"
+                  value={editYear}
+                  onChange={e => setEditYear(parseInt(e.target.value) || year)}
+                  className={`border rounded px-2 py-1 w-16 text-center font-bold text-sm ${isDark ? 'bg-slate-600 border-slate-500 text-white' : 'border-slate-300'}`}
+                />
+                <button
+                  onClick={handleSaveHeader}
+                  className={`p-1 rounded text-white ${isBlue ? 'bg-blue-500' : 'bg-rose-500'}`}
+                >
+                  <Check size={14} />
+                </button>
+                <button
+                  onClick={() => setIsEditingHeader(false)}
+                  className="p-1 rounded bg-slate-400 text-white"
+                >
+                  <X size={14} />
+                </button>
               </div>
+            ) : (
+              <h1 className={`text-lg font-serif font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                <span className={gradientClass}>{displayName}&apos;s</span> Goals {year}
+              </h1>
+            )}
+          </div>
 
-              {/* Filter Pills - Status and Period together */}
-              <div className="flex items-center gap-1 p-1 bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600">
-                {/* Status Filter */}
-                {[
-                  { value: 'all', label: 'All' },
-                  { value: 'active', label: 'Active' },
-                  { value: 'done', label: 'Done' },
-                ].map(opt => (
-                  <button
-                    key={opt.value}
-                    onClick={() => setStatusFilter(opt.value)}
-                    className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
-                      statusFilter === opt.value
-                        ? `${isBlue ? 'bg-blue-500' : 'bg-rose-500'} text-white`
-                        : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600'
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-
-                {/* Divider */}
-                <div className="w-px h-4 bg-slate-200 dark:bg-slate-600 mx-1" />
-
-                {/* Period Filter */}
-                {[
-                  { value: 'all', label: 'All' },
-                  { value: 'One-year', label: '1yr' },
-                  { value: 'Three-years', label: '3yr' },
-                  { value: 'Five-years', label: '5yr' },
-                ].map(opt => (
-                  <button
-                    key={`period-${opt.value}`}
-                    onClick={() => setPeriodFilter(opt.value)}
-                    className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
-                      periodFilter === opt.value
-                        ? `${isBlue ? 'bg-blue-500' : 'bg-rose-500'} text-white`
-                        : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600'
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </div>
+          {/* Tabs */}
+          <div className={`flex gap-1 p-0.5 rounded-full ${isDark ? 'bg-slate-700' : 'bg-slate-100'}`}>
+            <button
+              onClick={() => setActiveTab('goals')}
+              className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 ${
+                activeTab === 'goals'
+                  ? `${isDark ? 'bg-slate-600 shadow' : 'bg-white shadow'} ${isBlue ? 'text-blue-600' : 'text-rose-600'}`
+                  : isDark ? 'text-slate-400' : 'text-slate-500'
+              }`}
+            >
+              <Target size={12} /> Goals
+            </button>
+            <button
+              onClick={() => setActiveTab('blessings')}
+              className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 ${
+                activeTab === 'blessings'
+                  ? `${isDark ? 'bg-slate-600 shadow' : 'bg-white shadow'} text-amber-600`
+                  : isDark ? 'text-slate-400' : 'text-slate-500'
+              }`}
+            >
+              <Heart size={12} /> Blessings
+            </button>
+            <button
+              onClick={() => setActiveTab('rewards')}
+              className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 ${
+                activeTab === 'rewards'
+                  ? `${isDark ? 'bg-slate-600 shadow' : 'bg-white shadow'} text-emerald-600`
+                  : isDark ? 'text-slate-400' : 'text-slate-500'
+              }`}
+            >
+              <Gift size={12} /> Rewards
+            </button>
           </div>
         </div>
-      )}
+
+        {/* Right: Search, Filters, Review */}
+        <div className="flex gap-1.5 items-center">
+          {/* Search */}
+          <div className="relative hidden md:block">
+            <Search size={14} className={`absolute left-2.5 top-1/2 -translate-y-1/2 ${isDark ? 'text-slate-500' : 'text-slate-400'}`} />
+            <input
+              type="text"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search..."
+              className={`pl-8 pr-3 py-1.5 border rounded-full text-sm w-32 focus:outline-none focus:ring-2 ${
+                isDark
+                  ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:ring-blue-500'
+                  : 'border-slate-200 focus:ring-blue-500'
+              }`}
+            />
+          </div>
+
+          {/* Status Filter */}
+          <div className={`flex p-0.5 rounded-full ${isDark ? 'bg-slate-700' : 'bg-slate-100'}`}>
+            {[
+              { value: 'all', label: 'All' },
+              { value: 'active', label: 'Active' },
+              { value: 'done', label: 'Done' },
+            ].map(opt => (
+              <button
+                key={opt.value}
+                onClick={() => setStatusFilter(opt.value)}
+                className={`px-2 py-1 rounded-full text-[10px] font-bold transition-all ${
+                  statusFilter === opt.value
+                    ? `${isDark ? 'bg-slate-600 shadow' : 'bg-white shadow'} ${
+                        opt.value === 'done' ? 'text-emerald-600' : opt.value === 'active' ? 'text-blue-600' : (isDark ? 'text-slate-200' : 'text-slate-700')
+                      }`
+                    : isDark ? 'text-slate-400' : 'text-slate-500'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Period Filter */}
+          <div className={`flex p-0.5 rounded-full ${isDark ? 'bg-slate-700' : 'bg-slate-100'}`}>
+            {[
+              { value: 'all', label: 'All' },
+              { value: 'One-year', label: '1yr', color: 'sky' },
+              { value: 'Three-years', label: '3yr', color: 'amber' },
+              { value: 'Five-years', label: '5yr', color: 'violet' },
+            ].map(opt => (
+              <button
+                key={opt.value}
+                onClick={() => setPeriodFilter(opt.value)}
+                className={`px-2 py-1 rounded-full text-[10px] font-bold transition-all ${
+                  periodFilter === opt.value
+                    ? opt.color
+                      ? `${isDark ? `bg-${opt.color}-900/50 text-${opt.color}-400` : `bg-${opt.color}-100 text-${opt.color}-700`} shadow`
+                      : `${isDark ? 'bg-slate-600 shadow text-slate-200' : 'bg-white shadow text-slate-700'}`
+                    : isDark ? 'text-slate-400' : 'text-slate-500'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Review Button */}
+          <button
+            onClick={onShowReview}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold text-white text-sm ${isBlue ? 'bg-blue-500 hover:bg-blue-600' : 'bg-rose-500 hover:bg-rose-600'}`}
+          >
+            <Trophy size={14} /> Review
+          </button>
+        </div>
+      </div>
     </header>
   )
 }

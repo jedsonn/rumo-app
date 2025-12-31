@@ -25,7 +25,14 @@ export function AddGoalForm({ category, onOpenTemplates, onGoalAdded }: AddGoalF
       category,
       period: 'One-year',
       status: 'Doing',
-      number: 1, // Will be auto-incremented by the backend
+      number: 1,
+      action: null,
+      cost: 0,
+      notes: null,
+      pinned: false,
+      linked_reward_id: null,
+      progress: 0,
+      due_date: null,
     })
 
     setValue('')

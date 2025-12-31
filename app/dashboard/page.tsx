@@ -6,11 +6,10 @@ import { Header, TabType } from '@/components/ui/Header'
 import { GoalsColumn } from '@/components/goals/GoalsColumn'
 import { TemplatesModal } from '@/components/goals/TemplatesModal'
 import { Toast } from '@/components/ui/Toast'
-import { VisionBoard } from '@/components/vision/VisionBoard'
 import { YearEndReview } from '@/components/review/YearEndReview'
 import { QuoteDisplay } from '@/components/motivation/QuoteDisplay'
 import { GoalTemplate } from '@/lib/templates'
-import { FocusMode, GoalCategory } from '@/lib/types'
+import { GoalCategory } from '@/lib/types'
 import { Plus, Trash2, Sparkles, Check, GripVertical } from 'lucide-react'
 
 // Blessing suggestions
@@ -51,13 +50,11 @@ export default function DashboardPage() {
     goals,
     blessings,
     rewards,
-    visionBoardItems,
     quotes,
     year,
     isBlue,
     columnSplit,
     setColumnSplit,
-    focusMode,
     loading,
     addGoal,
     addBlessing,
@@ -65,9 +62,6 @@ export default function DashboardPage() {
     addReward,
     updateReward,
     deleteReward,
-    addVisionBoardItem,
-    updateVisionBoardItem,
-    deleteVisionBoardItem,
     showToast,
   } = useDashboard()
 
@@ -119,34 +113,6 @@ export default function DashboardPage() {
   const [rewardText, setRewardText] = useState('')
   const [rewardCost, setRewardCost] = useState('')
 
-  // Apply focus mode filter
-  const applyFocusModeFilter = (goalsList: typeof goals, mode: FocusMode) => {
-    const twoWeeksAgo = new Date()
-    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14)
-
-    switch (mode) {
-      case 'active':
-        return goalsList.filter(g => ['Doing', 'On Track'].includes(g.status))
-      case 'pinned':
-        return goalsList.filter(g => g.pinned)
-      case 'stale':
-        return goalsList.filter(g => {
-          const updatedAt = new Date(g.updated_at)
-          return updatedAt < twoWeeksAgo && g.status !== 'Done' && g.status !== 'Dropped'
-        })
-      case 'this-week':
-        const weekFromNow = new Date()
-        weekFromNow.setDate(weekFromNow.getDate() + 7)
-        return goalsList.filter(g => {
-          if (!g.due_date) return false
-          const dueDate = new Date(g.due_date)
-          return dueDate <= weekFromNow && g.status !== 'Done'
-        })
-      default:
-        return goalsList
-    }
-  }
-
   // Filter and sort goals
   const filteredGoals = useMemo(() => {
     let result = goals.filter(g => g.year === year)
@@ -168,9 +134,6 @@ export default function DashboardPage() {
       result = result.filter(g => g.period === periodFilter)
     }
 
-    // Apply focus mode
-    result = applyFocusModeFilter(result, focusMode)
-
     // Sort: pinned first, then by status priority, then by number
     // BUT keep recently changed goals at their OLD position for 5 seconds
     result.sort((a, b) => {
@@ -189,7 +152,7 @@ export default function DashboardPage() {
     })
 
     return result
-  }, [goals, year, search, statusFilter, periodFilter, focusMode, recentlyChangedGoals])
+  }, [goals, year, search, statusFilter, periodFilter, recentlyChangedGoals])
 
   // Resizer handlers
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
@@ -303,11 +266,11 @@ export default function DashboardPage() {
 
   // Reset filters when a goal is added so the new goal is visible
   const handleGoalAdded = useCallback(() => {
-    if (statusFilter !== 'all' || periodFilter !== 'all' || focusMode !== 'all') {
+    if (statusFilter !== 'all' || periodFilter !== 'all') {
       setStatusFilter('all')
       setPeriodFilter('all')
     }
-  }, [statusFilter, periodFilter, focusMode])
+  }, [statusFilter, periodFilter])
 
   // Stats calculations
   const rewardStats = useMemo(() => ({
@@ -408,17 +371,6 @@ export default function DashboardPage() {
               </div>
             </div>
           </>
-        )}
-
-        {activeTab === 'vision' && (
-          <div className="h-[calc(100vh-200px)]">
-            <VisionBoard
-              items={visionBoardItems}
-              onAddItem={addVisionBoardItem}
-              onUpdateItem={updateVisionBoardItem}
-              onDeleteItem={deleteVisionBoardItem}
-            />
-          </div>
         )}
 
         {activeTab === 'blessings' && (
