@@ -10,7 +10,7 @@ import { VisionBoard } from '@/components/vision/VisionBoard'
 import { YearEndReview } from '@/components/review/YearEndReview'
 import { QuoteDisplay } from '@/components/motivation/QuoteDisplay'
 import { GoalTemplate } from '@/lib/templates'
-import { FocusMode } from '@/lib/types'
+import { FocusMode, GoalCategory } from '@/lib/types'
 import { Plus, Trash2, Sparkles, Check, GripVertical } from 'lucide-react'
 
 // Blessing suggestions
@@ -112,7 +112,7 @@ export default function DashboardPage() {
   const [showReview, setShowReview] = useState(false)
   const [showImportExport, setShowImportExport] = useState(false)
   const [showClearAll, setShowClearAll] = useState(false)
-  const [showTemplates, setShowTemplates] = useState(false)
+  const [templatesForCategory, setTemplatesForCategory] = useState<GoalCategory | null>(null)
 
   // Blessing/Reward form states
   const [blessingValue, setBlessingValue] = useState('')
@@ -231,25 +231,28 @@ export default function DashboardPage() {
         setShowReview(false)
         setShowImportExport(false)
         setShowClearAll(false)
-        setShowTemplates(false)
+        setTemplatesForCategory(null)
       }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
-  // Handle adding goals from templates
+  // Handle adding goals from templates - use the category that opened the modal
   const handleAddGoalsFromTemplates = async (templates: GoalTemplate[]) => {
-    for (const template of templates) {
-      const categoryGoals = goals.filter(g => g.category === template.category)
-      const maxNum = Math.max(0, ...categoryGoals.map(g => g.number))
+    if (!templatesForCategory) return
 
+    const targetCategory = templatesForCategory
+    const categoryGoals = goals.filter(g => g.category === targetCategory)
+    let nextNum = Math.max(0, ...categoryGoals.map(g => g.number)) + 1
+
+    for (const template of templates) {
       await addGoal({
-        number: maxNum + 1,
+        number: nextNum++,
         year,
         goal: template.goal,
         period: template.period,
-        category: template.category,
+        category: targetCategory, // Use the clicked category, NOT template.category
         status: 'Doing',
         action: template.action,
         cost: 0,
@@ -258,7 +261,7 @@ export default function DashboardPage() {
         linked_reward_id: null,
       })
     }
-    showToast(`Added ${templates.length} goals from template!`)
+    showToast(`Added ${templates.length} goals to ${targetCategory}!`)
   }
 
   // Blessing handlers
@@ -364,7 +367,7 @@ export default function DashboardPage() {
             >
               {/* Personal Column */}
               <div style={{ width: `${columnSplit}%` }} className="pr-1 overflow-hidden">
-                <GoalsColumn category="Personal" filteredGoals={filteredGoals} onOpenTemplates={() => setShowTemplates(true)} onGoalAdded={handleGoalAdded} />
+                <GoalsColumn category="Personal" filteredGoals={filteredGoals} onOpenTemplates={() => setTemplatesForCategory('Personal')} onGoalAdded={handleGoalAdded} />
               </div>
 
               {/* Resizer */}
@@ -391,17 +394,17 @@ export default function DashboardPage() {
 
               {/* Professional Column */}
               <div style={{ width: `${100 - columnSplit}%` }} className="pl-1 overflow-hidden">
-                <GoalsColumn category="Professional" filteredGoals={filteredGoals} onOpenTemplates={() => setShowTemplates(true)} onGoalAdded={handleGoalAdded} />
+                <GoalsColumn category="Professional" filteredGoals={filteredGoals} onOpenTemplates={() => setTemplatesForCategory('Professional')} onGoalAdded={handleGoalAdded} />
               </div>
             </div>
 
             {/* Mobile: Stacked columns */}
             <div className="md:hidden space-y-6">
               <div className="min-h-[40vh]">
-                <GoalsColumn category="Personal" filteredGoals={filteredGoals} onOpenTemplates={() => setShowTemplates(true)} onGoalAdded={handleGoalAdded} />
+                <GoalsColumn category="Personal" filteredGoals={filteredGoals} onOpenTemplates={() => setTemplatesForCategory('Personal')} onGoalAdded={handleGoalAdded} />
               </div>
               <div className="min-h-[40vh]">
-                <GoalsColumn category="Professional" filteredGoals={filteredGoals} onOpenTemplates={() => setShowTemplates(true)} onGoalAdded={handleGoalAdded} />
+                <GoalsColumn category="Professional" filteredGoals={filteredGoals} onOpenTemplates={() => setTemplatesForCategory('Professional')} onGoalAdded={handleGoalAdded} />
               </div>
             </div>
           </>
@@ -601,10 +604,11 @@ export default function DashboardPage() {
 
       {/* Templates Modal */}
       <TemplatesModal
-        isOpen={showTemplates}
-        onClose={() => setShowTemplates(false)}
+        isOpen={templatesForCategory !== null}
+        onClose={() => setTemplatesForCategory(null)}
         onAddGoals={handleAddGoalsFromTemplates}
         isBlue={isBlue}
+        targetCategory={templatesForCategory}
       />
 
       {/* Year-End Review Modal */}
