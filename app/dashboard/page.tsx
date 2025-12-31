@@ -2,12 +2,18 @@
 
 import { useState, useMemo, useRef, useCallback, useEffect } from 'react'
 import { useDashboard } from '@/components/providers/DashboardProvider'
-import { Header } from '@/components/ui/Header'
+import { Header, TabType } from '@/components/ui/Header'
 import { GoalsColumn } from '@/components/goals/GoalsColumn'
 import { TemplatesModal } from '@/components/goals/TemplatesModal'
 import { Toast } from '@/components/ui/Toast'
+import { VisionBoard } from '@/components/vision/VisionBoard'
+import { HabitsPanel } from '@/components/habits/HabitsPanel'
+import { TimelineView } from '@/components/timeline/TimelineView'
+import { YearEndReview } from '@/components/review/YearEndReview'
+import { QuoteDisplay } from '@/components/motivation/QuoteDisplay'
 import { GoalTemplate } from '@/lib/templates'
-import { Plus, Trash2, Sparkles, RefreshCw, Check, GripVertical } from 'lucide-react'
+import { FocusMode } from '@/lib/types'
+import { Plus, Trash2, Sparkles, Check, GripVertical } from 'lucide-react'
 
 // Blessing suggestions
 const BLESSING_SUGGESTIONS = [
@@ -30,16 +36,16 @@ const BLESSING_SUGGESTIONS = [
 
 // Reward suggestions
 const REWARD_SUGGESTIONS = [
-  { text: "Nice specialty coffee ☕", cost: 8 },
-  { text: "Movie night with popcorn 🎬", cost: 25 },
+  { text: "Nice specialty coffee", cost: 8 },
+  { text: "Movie night with popcorn", cost: 25 },
   { text: "Sleep in on Saturday", cost: 0 },
-  { text: "New book from wishlist 📚", cost: 20 },
-  { text: "Fancy dinner out 🍽️", cost: 100 },
-  { text: "Spa day or massage 💆", cost: 150 },
-  { text: "Concert or show tickets 🎵", cost: 120 },
-  { text: "New clothes shopping spree 👔", cost: 200 },
-  { text: "Weekend getaway 🏖️", cost: 500 },
-  { text: "New gadget or tech 📱", cost: 300 },
+  { text: "New book from wishlist", cost: 20 },
+  { text: "Fancy dinner out", cost: 100 },
+  { text: "Spa day or massage", cost: 150 },
+  { text: "Concert or show tickets", cost: 120 },
+  { text: "New clothes shopping spree", cost: 200 },
+  { text: "Weekend getaway", cost: 500 },
+  { text: "New gadget or tech", cost: 300 },
 ]
 
 export default function DashboardPage() {
@@ -47,10 +53,15 @@ export default function DashboardPage() {
     goals,
     blessings,
     rewards,
+    visionBoardItems,
+    habits,
+    habitCompletions,
+    quotes,
     year,
     isBlue,
     columnSplit,
     setColumnSplit,
+    focusMode,
     loading,
     addGoal,
     addBlessing,
@@ -58,10 +69,17 @@ export default function DashboardPage() {
     addReward,
     updateReward,
     deleteReward,
+    addVisionBoardItem,
+    updateVisionBoardItem,
+    deleteVisionBoardItem,
+    addHabit,
+    updateHabit,
+    deleteHabit,
+    toggleHabitCompletion,
     showToast,
   } = useDashboard()
 
-  const [activeTab, setActiveTab] = useState<'goals' | 'blessings' | 'rewards'>('goals')
+  const [activeTab, setActiveTab] = useState<TabType>('goals')
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [periodFilter, setPeriodFilter] = useState('all')
@@ -79,6 +97,34 @@ export default function DashboardPage() {
   const [blessingValue, setBlessingValue] = useState('')
   const [rewardText, setRewardText] = useState('')
   const [rewardCost, setRewardCost] = useState('')
+
+  // Apply focus mode filter
+  const applyFocusModeFilter = (goalsList: typeof goals, mode: FocusMode) => {
+    const twoWeeksAgo = new Date()
+    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14)
+
+    switch (mode) {
+      case 'active':
+        return goalsList.filter(g => ['Doing', 'On Track'].includes(g.status))
+      case 'pinned':
+        return goalsList.filter(g => g.pinned)
+      case 'stale':
+        return goalsList.filter(g => {
+          const updatedAt = new Date(g.updated_at)
+          return updatedAt < twoWeeksAgo && g.status !== 'Done' && g.status !== 'Dropped'
+        })
+      case 'this-week':
+        const weekFromNow = new Date()
+        weekFromNow.setDate(weekFromNow.getDate() + 7)
+        return goalsList.filter(g => {
+          if (!g.due_date) return false
+          const dueDate = new Date(g.due_date)
+          return dueDate <= weekFromNow && g.status !== 'Done'
+        })
+      default:
+        return goalsList
+    }
+  }
 
   // Filter and sort goals
   const filteredGoals = useMemo(() => {
@@ -101,6 +147,9 @@ export default function DashboardPage() {
       result = result.filter(g => g.period === periodFilter)
     }
 
+    // Apply focus mode
+    result = applyFocusModeFilter(result, focusMode)
+
     // Sort: pinned first, then by status priority, then by number
     result.sort((a, b) => {
       if (a.pinned && !b.pinned) return -1
@@ -114,7 +163,7 @@ export default function DashboardPage() {
     })
 
     return result
-  }, [goals, year, search, statusFilter, periodFilter])
+  }, [goals, year, search, statusFilter, periodFilter, focusMode])
 
   // Resizer handlers
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
@@ -265,12 +314,19 @@ export default function DashboardPage() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-4 pb-16">
+        {/* Motivational Quote - show on all tabs */}
+        {quotes.length > 0 && (
+          <div className="mb-4">
+            <QuoteDisplay quotes={quotes} compact />
+          </div>
+        )}
+
         {activeTab === 'goals' && (
           <>
             {/* Desktop: Two columns with resizer */}
             <div
               ref={containerRef}
-              className="hidden md:flex gap-0 h-[calc(100vh-160px)] relative"
+              className="hidden md:flex gap-0 h-[calc(100vh-200px)] relative"
             >
               {/* Personal Column */}
               <div style={{ width: `${columnSplit}%` }} className="pr-1 overflow-hidden">
@@ -317,13 +373,43 @@ export default function DashboardPage() {
           </>
         )}
 
+        {activeTab === 'vision' && (
+          <div className="h-[calc(100vh-200px)]">
+            <VisionBoard
+              items={visionBoardItems}
+              onAddItem={addVisionBoardItem}
+              onUpdateItem={updateVisionBoardItem}
+              onDeleteItem={deleteVisionBoardItem}
+            />
+          </div>
+        )}
+
+        {activeTab === 'habits' && (
+          <div className="max-w-4xl mx-auto h-[calc(100vh-200px)]">
+            <HabitsPanel
+              habits={habits}
+              completions={habitCompletions}
+              onAddHabit={addHabit}
+              onUpdateHabit={updateHabit}
+              onDeleteHabit={deleteHabit}
+              onToggleCompletion={toggleHabitCompletion}
+            />
+          </div>
+        )}
+
+        {activeTab === 'timeline' && (
+          <div className="max-w-3xl mx-auto h-[calc(100vh-200px)]">
+            <TimelineView goals={goals} />
+          </div>
+        )}
+
         {activeTab === 'blessings' && (
           <div className="max-w-2xl mx-auto">
             <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-amber-100 dark:border-amber-900/50 overflow-hidden">
               {/* Header */}
               <div className="p-4 border-b border-amber-100 dark:border-amber-900/50 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20">
                 <div className="flex items-center gap-2 mb-1">
-                  <h2 className="font-serif font-bold text-lg text-amber-700 dark:text-amber-400">🙏 Blessings</h2>
+                  <h2 className="font-serif font-bold text-lg text-amber-700 dark:text-amber-400">Blessings</h2>
                   <span className="text-xs font-bold px-2 py-0.5 rounded-full border bg-white dark:bg-slate-700 text-amber-500 border-amber-200 dark:border-amber-800">
                     {blessings.length}
                   </span>
@@ -354,7 +440,7 @@ export default function DashboardPage() {
               <div className="max-h-[60vh] overflow-y-auto p-3 space-y-2">
                 {blessings.length === 0 ? (
                   <div className="text-center py-16 text-amber-400/50 dark:text-amber-500/50">
-                    <span className="text-4xl">🌟</span>
+                    <span className="text-4xl">*</span>
                     <p className="mt-2 text-sm">Add your first blessing!</p>
                   </div>
                 ) : (
@@ -388,19 +474,19 @@ export default function DashboardPage() {
               {/* Header */}
               <div className="p-4 border-b border-purple-100 dark:border-purple-900/50 bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20">
                 <div className="flex items-center gap-2 mb-1">
-                  <h2 className="font-serif font-bold text-lg text-purple-700 dark:text-purple-400">🎁 Rewards</h2>
+                  <h2 className="font-serif font-bold text-lg text-purple-700 dark:text-purple-400">Rewards</h2>
                   <span className="text-xs font-bold px-2 py-0.5 rounded-full border bg-white dark:bg-slate-700 text-purple-500 border-purple-200 dark:border-purple-800">
                     {rewardStats.total}
                   </span>
                   {rewardStats.earned > 0 && (
                     <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400">
-                      ✓ {rewardStats.earned} earned
+                      {rewardStats.earned} earned
                     </span>
                   )}
                 </div>
                 <p className="text-xs text-purple-600/70 dark:text-purple-400/70">Treat yourself when you achieve your goals!</p>
                 <div className="text-[10px] mt-1 text-slate-400 dark:text-slate-500">
-                  Total: ${rewardStats.totalValue.toLocaleString()} • Earned: ${rewardStats.earnedValue.toLocaleString()}
+                  Total: ${rewardStats.totalValue.toLocaleString()} | Earned: ${rewardStats.earnedValue.toLocaleString()}
                 </div>
               </div>
 
@@ -435,7 +521,7 @@ export default function DashboardPage() {
               <div className="max-h-[60vh] overflow-y-auto p-3 space-y-2">
                 {rewards.length === 0 ? (
                   <div className="text-center py-16 text-purple-400/50 dark:text-purple-500/50">
-                    <span className="text-4xl">🎁</span>
+                    <span className="text-4xl">*</span>
                     <p className="mt-2 text-sm">Add rewards to motivate yourself!</p>
                   </div>
                 ) : (
@@ -490,7 +576,7 @@ export default function DashboardPage() {
             </svg>
           </div>
           <span className={isBlue ? 'gradient-text font-bold' : 'gradient-text-pink font-bold'}>Rumo</span>
-          <span>—</span>
+          <span>-</span>
           <span>Set your direction</span>
         </div>
       </footer>
@@ -504,6 +590,13 @@ export default function DashboardPage() {
         onClose={() => setShowTemplates(false)}
         onAddGoals={handleAddGoalsFromTemplates}
         isBlue={isBlue}
+      />
+
+      {/* Year-End Review Modal */}
+      <YearEndReview
+        isOpen={showReview}
+        onClose={() => setShowReview(false)}
+        year={year}
       />
     </div>
   )

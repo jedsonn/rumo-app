@@ -3,7 +3,10 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { User } from '@supabase/supabase-js'
-import { Goal, Blessing, Reward, UserProfile } from '@/lib/types'
+import {
+  Goal, Blessing, Reward, UserProfile, VisionBoardItem, Habit,
+  HabitCompletion, GoalMilestone, GoalProgressNote, Quote, FocusMode
+} from '@/lib/types'
 import confetti from 'canvas-confetti'
 
 interface DashboardContextType {
@@ -12,6 +15,12 @@ interface DashboardContextType {
   goals: Goal[]
   blessings: Blessing[]
   rewards: Reward[]
+  visionBoardItems: VisionBoardItem[]
+  habits: Habit[]
+  habitCompletions: HabitCompletion[]
+  milestones: GoalMilestone[]
+  progressNotes: GoalProgressNote[]
+  quotes: Quote[]
   year: number
   setYear: (year: number) => void
   isBlue: boolean
@@ -20,6 +29,8 @@ interface DashboardContextType {
   toggleDarkMode: () => void
   columnSplit: number
   setColumnSplit: (split: number) => void
+  focusMode: FocusMode
+  setFocusMode: (mode: FocusMode) => void
   loading: boolean
   // Goal operations
   addGoal: (goal: Partial<Goal>) => Promise<void>
@@ -32,6 +43,22 @@ interface DashboardContextType {
   addReward: (reward: Partial<Reward>) => Promise<void>
   updateReward: (id: string, updates: Partial<Reward>) => Promise<void>
   deleteReward: (id: string) => Promise<void>
+  // Vision Board operations
+  addVisionBoardItem: (item: Partial<VisionBoardItem>) => Promise<void>
+  updateVisionBoardItem: (id: string, updates: Partial<VisionBoardItem>) => Promise<void>
+  deleteVisionBoardItem: (id: string) => Promise<void>
+  // Habit operations
+  addHabit: (habit: Partial<Habit>) => Promise<void>
+  updateHabit: (id: string, updates: Partial<Habit>) => Promise<void>
+  deleteHabit: (id: string) => Promise<void>
+  toggleHabitCompletion: (habitId: string, date: string) => Promise<void>
+  // Milestone operations
+  addMilestone: (goalId: string, title: string) => Promise<void>
+  updateMilestone: (id: string, updates: Partial<GoalMilestone>) => Promise<void>
+  deleteMilestone: (id: string) => Promise<void>
+  // Progress Note operations
+  addProgressNote: (goalId: string, content: string, progressPercent?: number) => Promise<void>
+  deleteProgressNote: (id: string) => Promise<void>
   // Toast
   showToast: (message: string, undoAction?: () => void) => void
   toast: { message: string; undoAction?: () => void } | null
@@ -63,10 +90,17 @@ export function DashboardProvider({ children, user, initialProfile }: DashboardP
   const [goals, setGoals] = useState<Goal[]>([])
   const [blessings, setBlessings] = useState<Blessing[]>([])
   const [rewards, setRewards] = useState<Reward[]>([])
+  const [visionBoardItems, setVisionBoardItems] = useState<VisionBoardItem[]>([])
+  const [habits, setHabits] = useState<Habit[]>([])
+  const [habitCompletions, setHabitCompletions] = useState<HabitCompletion[]>([])
+  const [milestones, setMilestones] = useState<GoalMilestone[]>([])
+  const [progressNotes, setProgressNotes] = useState<GoalProgressNote[]>([])
+  const [quotes, setQuotes] = useState<Quote[]>([])
   const [year, setYear] = useState(new Date().getFullYear())
   const [isBlue, setIsBlue] = useState(initialProfile?.is_blue_theme ?? true)
   const [isDark, setIsDark] = useState(initialProfile?.is_dark_mode ?? false)
   const [columnSplit, setColumnSplit] = useState(initialProfile?.column_split ?? 50)
+  const [focusMode, setFocusModeState] = useState<FocusMode>(initialProfile?.focus_mode ?? 'all')
   const [loading, setLoading] = useState(true)
   const [toast, setToast] = useState<{ message: string; undoAction?: () => void } | null>(null)
 
@@ -80,15 +114,37 @@ export function DashboardProvider({ children, user, initialProfile }: DashboardP
     async function fetchData() {
       setLoading(true)
 
-      const [goalsRes, blessingsRes, rewardsRes] = await Promise.all([
+      const [
+        goalsRes,
+        blessingsRes,
+        rewardsRes,
+        visionRes,
+        habitsRes,
+        completionsRes,
+        milestonesRes,
+        notesRes,
+        quotesRes
+      ] = await Promise.all([
         supabase.from('goals').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
         supabase.from('blessings').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
         supabase.from('rewards').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
+        supabase.from('vision_board_items').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
+        supabase.from('habits').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
+        supabase.from('habit_completions').select('*').eq('user_id', user.id),
+        supabase.from('goal_milestones').select('*').eq('user_id', user.id).order('sort_order', { ascending: true }),
+        supabase.from('goal_progress_notes').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
+        supabase.from('quotes').select('*'),
       ])
 
       if (goalsRes.data) setGoals(goalsRes.data)
       if (blessingsRes.data) setBlessings(blessingsRes.data)
       if (rewardsRes.data) setRewards(rewardsRes.data)
+      if (visionRes.data) setVisionBoardItems(visionRes.data)
+      if (habitsRes.data) setHabits(habitsRes.data)
+      if (completionsRes.data) setHabitCompletions(completionsRes.data)
+      if (milestonesRes.data) setMilestones(milestonesRes.data)
+      if (notesRes.data) setProgressNotes(notesRes.data)
+      if (quotesRes.data) setQuotes(quotesRes.data)
 
       setLoading(false)
     }
@@ -125,6 +181,11 @@ export function DashboardProvider({ children, user, initialProfile }: DashboardP
     updateProfilePrefs({ column_split: split })
   }, [updateProfilePrefs])
 
+  const setFocusMode = useCallback((mode: FocusMode) => {
+    setFocusModeState(mode)
+    updateProfilePrefs({ focus_mode: mode })
+  }, [updateProfilePrefs])
+
   // Fire confetti
   const fireConfetti = useCallback((colors: string[] = ['#3b82f6', '#8b5cf6', '#22c55e']) => {
     confetti({
@@ -150,6 +211,7 @@ export function DashboardProvider({ children, user, initialProfile }: DashboardP
       .insert({
         user_id: user.id,
         year,
+        progress: 0,
         ...goalData,
       })
       .select()
@@ -287,6 +349,223 @@ export function DashboardProvider({ children, user, initialProfile }: DashboardP
     }
   }, [supabase, rewards, showToast])
 
+  // Vision Board operations
+  const addVisionBoardItem = useCallback(async (itemData: Partial<VisionBoardItem>) => {
+    const { data, error } = await supabase
+      .from('vision_board_items')
+      .insert({
+        user_id: user.id,
+        ...itemData,
+      })
+      .select()
+      .single()
+
+    if (data && !error) {
+      setVisionBoardItems(prev => [data, ...prev])
+      showToast('Vision board item added')
+    }
+  }, [supabase, user.id, showToast])
+
+  const updateVisionBoardItem = useCallback(async (id: string, updates: Partial<VisionBoardItem>) => {
+    const oldItem = visionBoardItems.find(i => i.id === id)
+
+    setVisionBoardItems(prev => prev.map(i => i.id === id ? { ...i, ...updates } : i))
+
+    const { error } = await supabase.from('vision_board_items').update(updates).eq('id', id)
+
+    if (error && oldItem) {
+      setVisionBoardItems(prev => prev.map(i => i.id === id ? oldItem : i))
+    }
+  }, [supabase, visionBoardItems])
+
+  const deleteVisionBoardItem = useCallback(async (id: string) => {
+    const item = visionBoardItems.find(i => i.id === id)
+    if (!item) return
+
+    setVisionBoardItems(prev => prev.filter(i => i.id !== id))
+
+    const { error } = await supabase.from('vision_board_items').delete().eq('id', id)
+
+    if (error) {
+      setVisionBoardItems(prev => [item, ...prev])
+    } else {
+      showToast('Vision board item deleted')
+    }
+  }, [supabase, visionBoardItems, showToast])
+
+  // Habit operations
+  const addHabit = useCallback(async (habitData: Partial<Habit>) => {
+    const { data, error } = await supabase
+      .from('habits')
+      .insert({
+        user_id: user.id,
+        ...habitData,
+      })
+      .select()
+      .single()
+
+    if (data && !error) {
+      setHabits(prev => [data, ...prev])
+      showToast('Habit created')
+    }
+  }, [supabase, user.id, showToast])
+
+  const updateHabit = useCallback(async (id: string, updates: Partial<Habit>) => {
+    const oldHabit = habits.find(h => h.id === id)
+
+    setHabits(prev => prev.map(h => h.id === id ? { ...h, ...updates } : h))
+
+    const { error } = await supabase.from('habits').update(updates).eq('id', id)
+
+    if (error && oldHabit) {
+      setHabits(prev => prev.map(h => h.id === id ? oldHabit : h))
+    }
+  }, [supabase, habits])
+
+  const deleteHabit = useCallback(async (id: string) => {
+    const habit = habits.find(h => h.id === id)
+    if (!habit) return
+
+    setHabits(prev => prev.filter(h => h.id !== id))
+    // Also remove related completions
+    setHabitCompletions(prev => prev.filter(c => c.habit_id !== id))
+
+    const { error } = await supabase.from('habits').delete().eq('id', id)
+
+    if (error) {
+      setHabits(prev => [habit, ...prev])
+    } else {
+      showToast('Habit deleted')
+    }
+  }, [supabase, habits, showToast])
+
+  const toggleHabitCompletion = useCallback(async (habitId: string, date: string) => {
+    const existing = habitCompletions.find(c => c.habit_id === habitId && c.completed_date === date)
+
+    if (existing) {
+      // Remove completion
+      setHabitCompletions(prev => prev.filter(c => c.id !== existing.id))
+      await supabase.from('habit_completions').delete().eq('id', existing.id)
+    } else {
+      // Add completion
+      const { data, error } = await supabase
+        .from('habit_completions')
+        .insert({
+          user_id: user.id,
+          habit_id: habitId,
+          completed_date: date,
+        })
+        .select()
+        .single()
+
+      if (data && !error) {
+        setHabitCompletions(prev => [...prev, data])
+        // Check if this is today and fire confetti
+        const today = new Date().toISOString().split('T')[0]
+        if (date === today) {
+          fireConfetti(isBlue ? ['#3b82f6', '#22c55e'] : ['#ec4899', '#22c55e'])
+        }
+      }
+    }
+  }, [supabase, habitCompletions, user.id, isBlue, fireConfetti])
+
+  // Milestone operations
+  const addMilestone = useCallback(async (goalId: string, title: string) => {
+    const goalMilestones = milestones.filter(m => m.goal_id === goalId)
+    const maxOrder = goalMilestones.length > 0
+      ? Math.max(...goalMilestones.map(m => m.sort_order))
+      : 0
+
+    const { data, error } = await supabase
+      .from('goal_milestones')
+      .insert({
+        user_id: user.id,
+        goal_id: goalId,
+        title,
+        sort_order: maxOrder + 1,
+      })
+      .select()
+      .single()
+
+    if (data && !error) {
+      setMilestones(prev => [...prev, data])
+    }
+  }, [supabase, user.id, milestones])
+
+  const updateMilestone = useCallback(async (id: string, updates: Partial<GoalMilestone>) => {
+    const oldMilestone = milestones.find(m => m.id === id)
+
+    setMilestones(prev => prev.map(m => m.id === id ? { ...m, ...updates } : m))
+
+    // If completing a milestone, check if all milestones for that goal are done
+    if (updates.completed && oldMilestone) {
+      const goalMilestones = milestones.filter(m => m.goal_id === oldMilestone.goal_id)
+      const allComplete = goalMilestones.every(m =>
+        m.id === id ? updates.completed : m.completed
+      )
+      if (allComplete && goalMilestones.length > 0) {
+        fireConfetti(isBlue ? ['#3b82f6', '#22c55e', '#fbbf24'] : ['#ec4899', '#22c55e', '#fbbf24'])
+      }
+    }
+
+    const { error } = await supabase.from('goal_milestones').update(updates).eq('id', id)
+
+    if (error && oldMilestone) {
+      setMilestones(prev => prev.map(m => m.id === id ? oldMilestone : m))
+    }
+  }, [supabase, milestones, isBlue, fireConfetti])
+
+  const deleteMilestone = useCallback(async (id: string) => {
+    const milestone = milestones.find(m => m.id === id)
+    if (!milestone) return
+
+    setMilestones(prev => prev.filter(m => m.id !== id))
+
+    const { error } = await supabase.from('goal_milestones').delete().eq('id', id)
+
+    if (error) {
+      setMilestones(prev => [...prev, milestone])
+    }
+  }, [supabase, milestones])
+
+  // Progress Note operations
+  const addProgressNote = useCallback(async (goalId: string, content: string, progressPercent?: number) => {
+    const { data, error } = await supabase
+      .from('goal_progress_notes')
+      .insert({
+        user_id: user.id,
+        goal_id: goalId,
+        content,
+        progress_percent: progressPercent ?? null,
+      })
+      .select()
+      .single()
+
+    if (data && !error) {
+      setProgressNotes(prev => [data, ...prev])
+
+      // Also update goal progress if provided
+      if (progressPercent !== undefined) {
+        updateGoal(goalId, { progress: progressPercent })
+      }
+
+      showToast('Progress note added')
+    }
+  }, [supabase, user.id, updateGoal, showToast])
+
+  const deleteProgressNote = useCallback(async (id: string) => {
+    const note = progressNotes.find(n => n.id === id)
+    if (!note) return
+
+    setProgressNotes(prev => prev.filter(n => n.id !== id))
+
+    const { error } = await supabase.from('goal_progress_notes').delete().eq('id', id)
+
+    if (error) {
+      setProgressNotes(prev => [note, ...prev])
+    }
+  }, [supabase, progressNotes])
+
   // Logout
   const logout = useCallback(async () => {
     await supabase.auth.signOut()
@@ -301,6 +580,12 @@ export function DashboardProvider({ children, user, initialProfile }: DashboardP
         goals,
         blessings,
         rewards,
+        visionBoardItems,
+        habits,
+        habitCompletions,
+        milestones,
+        progressNotes,
+        quotes,
         year,
         setYear,
         isBlue,
@@ -309,6 +594,8 @@ export function DashboardProvider({ children, user, initialProfile }: DashboardP
         toggleDarkMode,
         columnSplit,
         setColumnSplit: handleSetColumnSplit,
+        focusMode,
+        setFocusMode,
         loading,
         addGoal,
         updateGoal,
@@ -318,6 +605,18 @@ export function DashboardProvider({ children, user, initialProfile }: DashboardP
         addReward,
         updateReward,
         deleteReward,
+        addVisionBoardItem,
+        updateVisionBoardItem,
+        deleteVisionBoardItem,
+        addHabit,
+        updateHabit,
+        deleteHabit,
+        toggleHabitCompletion,
+        addMilestone,
+        updateMilestone,
+        deleteMilestone,
+        addProgressNote,
+        deleteProgressNote,
         showToast,
         toast,
         clearToast,

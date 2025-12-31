@@ -4,8 +4,12 @@ import { useState } from 'react'
 import { useDashboard } from '@/components/providers/DashboardProvider'
 import {
   Moon, Sun, Palette, BarChart3, Trophy, Trash2,
-  ArrowUpDown, Search, LogOut, User, Target, Heart, Gift
+  ArrowUpDown, Search, LogOut, User, Target, Heart, Gift,
+  Image, Calendar, Clock, Focus
 } from 'lucide-react'
+import { FocusModeSelector } from './FocusModeSelector'
+
+export type TabType = 'goals' | 'blessings' | 'rewards' | 'vision' | 'habits' | 'timeline'
 
 interface HeaderProps {
   onShowStats: () => void
@@ -18,8 +22,8 @@ interface HeaderProps {
   setStatusFilter: (filter: string) => void
   periodFilter: string
   setPeriodFilter: (filter: string) => void
-  activeTab: 'goals' | 'blessings' | 'rewards'
-  setActiveTab: (tab: 'goals' | 'blessings' | 'rewards') => void
+  activeTab: TabType
+  setActiveTab: (tab: TabType) => void
 }
 
 export function Header({
@@ -44,6 +48,8 @@ export function Header({
     toggleDarkMode,
     isBlue,
     toggleTheme,
+    focusMode,
+    setFocusMode,
     logout
   } = useDashboard()
 
@@ -54,6 +60,15 @@ export function Header({
 
   const gradientClass = isBlue ? 'gradient-text' : 'gradient-text-pink'
   const displayName = profile?.display_name || 'My'
+
+  const tabs = [
+    { id: 'goals' as const, label: 'Goals', icon: Target, color: '' },
+    { id: 'vision' as const, label: 'Vision', icon: Image, color: 'text-indigo-600 dark:text-indigo-400' },
+    { id: 'habits' as const, label: 'Habits', icon: Calendar, color: 'text-teal-600 dark:text-teal-400' },
+    { id: 'timeline' as const, label: 'Timeline', icon: Clock, color: 'text-sky-600 dark:text-sky-400' },
+    { id: 'blessings' as const, label: 'Blessings', icon: Heart, color: 'text-amber-600 dark:text-amber-400' },
+    { id: 'rewards' as const, label: 'Rewards', icon: Gift, color: 'text-purple-600 dark:text-purple-400' },
+  ]
 
   return (
     <header className="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-700">
@@ -123,44 +138,35 @@ export function Header({
             </div>
             {/* Tabs */}
             <div className="flex gap-0.5 p-0.5 bg-slate-100 dark:bg-slate-800 rounded-full">
-              <button
-                onClick={() => setActiveTab('goals')}
-                className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium transition-all ${
-                  activeTab === 'goals'
-                    ? 'bg-white dark:bg-slate-700 shadow text-slate-800 dark:text-slate-100'
-                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-                }`}
-              >
-                <Target size={12} />
-                Goals
-              </button>
-              <button
-                onClick={() => setActiveTab('blessings')}
-                className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium transition-all ${
-                  activeTab === 'blessings'
-                    ? 'bg-white dark:bg-slate-700 shadow text-amber-600 dark:text-amber-400'
-                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-                }`}
-              >
-                <Heart size={12} />
-                Blessings
-              </button>
-              <button
-                onClick={() => setActiveTab('rewards')}
-                className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium transition-all ${
-                  activeTab === 'rewards'
-                    ? 'bg-white dark:bg-slate-700 shadow text-purple-600 dark:text-purple-400'
-                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-                }`}
-              >
-                <Gift size={12} />
-                Rewards
-              </button>
+              {tabs.map((tab) => {
+                const Icon = tab.icon
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center gap-1 px-2 md:px-3 py-1 rounded-full text-[10px] md:text-xs font-medium transition-all ${
+                      activeTab === tab.id
+                        ? `bg-white dark:bg-slate-700 shadow ${tab.color || 'text-slate-800 dark:text-slate-100'}`
+                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                    }`}
+                  >
+                    <Icon size={12} />
+                    <span className="hidden md:inline">{tab.label}</span>
+                  </button>
+                )
+              })}
             </div>
           </div>
 
           {/* Right Side - Filters and User */}
           <div className="flex items-center gap-1 md:gap-2">
+            {/* Focus Mode - only show on goals tab */}
+            {activeTab === 'goals' && (
+              <div className="hidden lg:block">
+                <FocusModeSelector value={focusMode} onChange={setFocusMode} />
+              </div>
+            )}
+
             {/* Search */}
             <div className="relative hidden md:block">
               <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -173,48 +179,52 @@ export function Header({
               />
             </div>
 
-            {/* Status Filter Pills */}
-            <div className="hidden sm:flex gap-0 p-0.5 bg-slate-100 dark:bg-slate-700 rounded-full">
-              {[
-                { value: 'all', label: 'All' },
-                { value: 'active', label: 'Active', activeClass: 'text-blue-600 dark:text-blue-400' },
-                { value: 'done', label: 'Done', activeClass: 'text-emerald-600 dark:text-emerald-400' },
-              ].map(opt => (
-                <button
-                  key={opt.value}
-                  onClick={() => setStatusFilter(opt.value)}
-                  className={`px-2 py-1 rounded-full text-[10px] font-bold transition-all ${
-                    statusFilter === opt.value
-                      ? `bg-white dark:bg-slate-600 shadow ${opt.activeClass || 'text-slate-700 dark:text-slate-200'}`
-                      : 'text-slate-500 dark:text-slate-400'
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
+            {/* Status Filter Pills - only show on goals tab */}
+            {activeTab === 'goals' && (
+              <div className="hidden sm:flex gap-0 p-0.5 bg-slate-100 dark:bg-slate-700 rounded-full">
+                {[
+                  { value: 'all', label: 'All' },
+                  { value: 'active', label: 'Active', activeClass: 'text-blue-600 dark:text-blue-400' },
+                  { value: 'done', label: 'Done', activeClass: 'text-emerald-600 dark:text-emerald-400' },
+                ].map(opt => (
+                  <button
+                    key={opt.value}
+                    onClick={() => setStatusFilter(opt.value)}
+                    className={`px-2 py-1 rounded-full text-[10px] font-bold transition-all ${
+                      statusFilter === opt.value
+                        ? `bg-white dark:bg-slate-600 shadow ${opt.activeClass || 'text-slate-700 dark:text-slate-200'}`
+                        : 'text-slate-500 dark:text-slate-400'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            )}
 
-            {/* Period Filter Pills */}
-            <div className="hidden md:flex gap-0 p-0.5 bg-slate-100 dark:bg-slate-700 rounded-full">
-              {[
-                { value: 'all', label: 'All' },
-                { value: 'One-year', label: '1yr', activeClass: 'text-sky-600 dark:text-sky-400' },
-                { value: 'Three-years', label: '3yr', activeClass: 'text-amber-600 dark:text-amber-400' },
-                { value: 'Five-years', label: '5yr', activeClass: 'text-violet-600 dark:text-violet-400' },
-              ].map(opt => (
-                <button
-                  key={opt.value}
-                  onClick={() => setPeriodFilter(opt.value)}
-                  className={`px-2 py-1 rounded-full text-[10px] font-bold transition-all ${
-                    periodFilter === opt.value
-                      ? `bg-white dark:bg-slate-600 shadow ${opt.activeClass || 'text-slate-700 dark:text-slate-200'}`
-                      : 'text-slate-500 dark:text-slate-400'
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
+            {/* Period Filter Pills - only show on goals tab */}
+            {activeTab === 'goals' && (
+              <div className="hidden md:flex gap-0 p-0.5 bg-slate-100 dark:bg-slate-700 rounded-full">
+                {[
+                  { value: 'all', label: 'All' },
+                  { value: 'One-year', label: '1yr', activeClass: 'text-sky-600 dark:text-sky-400' },
+                  { value: 'Three-years', label: '3yr', activeClass: 'text-amber-600 dark:text-amber-400' },
+                  { value: 'Five-years', label: '5yr', activeClass: 'text-violet-600 dark:text-violet-400' },
+                ].map(opt => (
+                  <button
+                    key={opt.value}
+                    onClick={() => setPeriodFilter(opt.value)}
+                    className={`px-2 py-1 rounded-full text-[10px] font-bold transition-all ${
+                      periodFilter === opt.value
+                        ? `bg-white dark:bg-slate-600 shadow ${opt.activeClass || 'text-slate-700 dark:text-slate-200'}`
+                        : 'text-slate-500 dark:text-slate-400'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* Review Button */}
             <button
