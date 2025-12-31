@@ -86,6 +86,35 @@ export default function DashboardPage() {
   const [isResizing, setIsResizing] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
+  // Track recently completed goals to delay their repositioning (5 second delay)
+  const [recentlyCompletedIds, setRecentlyCompletedIds] = useState<Set<string>>(new Set())
+  const prevGoalsRef = useRef<typeof goals>([])
+
+  // Detect when a goal is marked as Done and add it to recentlyCompleted
+  useEffect(() => {
+    const prevGoals = prevGoalsRef.current
+    goals.forEach(goal => {
+      const prevGoal = prevGoals.find(g => g.id === goal.id)
+      if (prevGoal && prevGoal.status !== 'Done' && goal.status === 'Done') {
+        // Goal was just marked as Done
+        setRecentlyCompletedIds(prev => {
+          const next = new Set(Array.from(prev))
+          next.add(goal.id)
+          return next
+        })
+        // Remove from recentlyCompleted after 5 seconds
+        setTimeout(() => {
+          setRecentlyCompletedIds(prev => {
+            const next = new Set(Array.from(prev))
+            next.delete(goal.id)
+            return next
+          })
+        }, 5000)
+      }
+    })
+    prevGoalsRef.current = goals
+  }, [goals])
+
   // Modal states
   const [showStats, setShowStats] = useState(false)
   const [showReview, setShowReview] = useState(false)
@@ -151,19 +180,24 @@ export default function DashboardPage() {
     result = applyFocusModeFilter(result, focusMode)
 
     // Sort: pinned first, then by status priority, then by number
+    // BUT keep recently completed goals at their position for 5 seconds
     result.sort((a, b) => {
       if (a.pinned && !b.pinned) return -1
       if (!a.pinned && b.pinned) return 1
 
+      // If a goal was recently completed, treat it as still active for sorting purposes
+      const aStatus = recentlyCompletedIds.has(a.id) && a.status === 'Done' ? 'Doing' : a.status
+      const bStatus = recentlyCompletedIds.has(b.id) && b.status === 'Done' ? 'Doing' : b.status
+
       const statusOrder: Record<string, number> = { 'Doing': 0, 'On Track': 1, 'For Later': 2, 'Done': 3, 'Dropped': 4 }
-      const statusDiff = statusOrder[a.status] - statusOrder[b.status]
+      const statusDiff = statusOrder[aStatus] - statusOrder[bStatus]
       if (statusDiff !== 0) return statusDiff
 
       return a.number - b.number
     })
 
     return result
-  }, [goals, year, search, statusFilter, periodFilter, focusMode])
+  }, [goals, year, search, statusFilter, periodFilter, focusMode, recentlyCompletedIds])
 
   // Resizer handlers
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
@@ -272,6 +306,14 @@ export default function DashboardPage() {
     await updateReward(id, { earned: !earned })
   }
 
+  // Reset filters when a goal is added so the new goal is visible
+  const handleGoalAdded = useCallback(() => {
+    if (statusFilter !== 'all' || periodFilter !== 'all' || focusMode !== 'all') {
+      setStatusFilter('all')
+      setPeriodFilter('all')
+    }
+  }, [statusFilter, periodFilter, focusMode])
+
   // Stats calculations
   const rewardStats = useMemo(() => ({
     total: rewards.length,
@@ -330,7 +372,7 @@ export default function DashboardPage() {
             >
               {/* Personal Column */}
               <div style={{ width: `${columnSplit}%` }} className="pr-1 overflow-hidden">
-                <GoalsColumn category="Personal" filteredGoals={filteredGoals} onOpenTemplates={() => setShowTemplates(true)} />
+                <GoalsColumn category="Personal" filteredGoals={filteredGoals} onOpenTemplates={() => setShowTemplates(true)} onGoalAdded={handleGoalAdded} />
               </div>
 
               {/* Resizer */}
@@ -357,17 +399,17 @@ export default function DashboardPage() {
 
               {/* Professional Column */}
               <div style={{ width: `${100 - columnSplit}%` }} className="pl-1 overflow-hidden">
-                <GoalsColumn category="Professional" filteredGoals={filteredGoals} onOpenTemplates={() => setShowTemplates(true)} />
+                <GoalsColumn category="Professional" filteredGoals={filteredGoals} onOpenTemplates={() => setShowTemplates(true)} onGoalAdded={handleGoalAdded} />
               </div>
             </div>
 
             {/* Mobile: Stacked columns */}
             <div className="md:hidden space-y-6">
               <div className="min-h-[40vh]">
-                <GoalsColumn category="Personal" filteredGoals={filteredGoals} onOpenTemplates={() => setShowTemplates(true)} />
+                <GoalsColumn category="Personal" filteredGoals={filteredGoals} onOpenTemplates={() => setShowTemplates(true)} onGoalAdded={handleGoalAdded} />
               </div>
               <div className="min-h-[40vh]">
-                <GoalsColumn category="Professional" filteredGoals={filteredGoals} onOpenTemplates={() => setShowTemplates(true)} />
+                <GoalsColumn category="Professional" filteredGoals={filteredGoals} onOpenTemplates={() => setShowTemplates(true)} onGoalAdded={handleGoalAdded} />
               </div>
             </div>
           </>

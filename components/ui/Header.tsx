@@ -225,50 +225,49 @@ export function Header({
                 />
               </div>
 
-              {/* Right: Filter Pills */}
-              <div className="flex items-center gap-3">
+              {/* Right: Filter Pills - Status and Period together */}
+              <div className="hidden sm:flex items-center gap-1 p-1 bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600">
                 {/* Status Filter */}
-                <div className="hidden sm:flex items-center gap-1 p-1 bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600">
-                  {[
-                    { value: 'all', label: 'All' },
-                    { value: 'active', label: 'Active' },
-                    { value: 'done', label: 'Done' },
-                  ].map(opt => (
-                    <button
-                      key={opt.value}
-                      onClick={() => setStatusFilter(opt.value)}
-                      className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
-                        statusFilter === opt.value
-                          ? `${isBlue ? 'bg-blue-500' : 'bg-rose-500'} text-white`
-                          : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600'
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                {[
+                  { value: 'all', label: 'All' },
+                  { value: 'active', label: 'Active' },
+                  { value: 'done', label: 'Done' },
+                ].map(opt => (
+                  <button
+                    key={opt.value}
+                    onClick={() => setStatusFilter(opt.value)}
+                    className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                      statusFilter === opt.value
+                        ? `${isBlue ? 'bg-blue-500' : 'bg-rose-500'} text-white`
+                        : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+
+                {/* Divider */}
+                <div className="w-px h-4 bg-slate-200 dark:bg-slate-600 mx-1" />
 
                 {/* Period Filter */}
-                <div className="hidden md:flex items-center gap-1 p-1 bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600">
-                  {[
-                    { value: 'all', label: 'All' },
-                    { value: 'One-year', label: '1yr' },
-                    { value: 'Three-years', label: '3yr' },
-                    { value: 'Five-years', label: '5yr' },
-                  ].map(opt => (
-                    <button
-                      key={opt.value}
-                      onClick={() => setPeriodFilter(opt.value)}
-                      className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
-                        periodFilter === opt.value
-                          ? `${isBlue ? 'bg-blue-500' : 'bg-rose-500'} text-white`
-                          : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600'
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                {[
+                  { value: 'all', label: 'All' },
+                  { value: 'One-year', label: '1yr' },
+                  { value: 'Three-years', label: '3yr' },
+                  { value: 'Five-years', label: '5yr' },
+                ].map(opt => (
+                  <button
+                    key={`period-${opt.value}`}
+                    onClick={() => setPeriodFilter(opt.value)}
+                    className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                      periodFilter === opt.value
+                        ? `${isBlue ? 'bg-blue-500' : 'bg-rose-500'} text-white`
+                        : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
               </div>
             </div>
           </div>

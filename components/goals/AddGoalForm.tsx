@@ -8,9 +8,10 @@ import { Plus, Sparkles } from 'lucide-react'
 interface AddGoalFormProps {
   category: GoalCategory
   onOpenTemplates?: () => void
+  onGoalAdded?: () => void
 }
 
-export function AddGoalForm({ category, onOpenTemplates }: AddGoalFormProps) {
+export function AddGoalForm({ category, onOpenTemplates, onGoalAdded }: AddGoalFormProps) {
   const { addGoal, isBlue } = useDashboard()
   const [value, setValue] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
@@ -29,6 +30,7 @@ export function AddGoalForm({ category, onOpenTemplates }: AddGoalFormProps) {
 
     setValue('')
     inputRef.current?.focus()
+    onGoalAdded?.()
   }
 
   const focusColor = isBlue
