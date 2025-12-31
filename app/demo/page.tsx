@@ -16,15 +16,15 @@ import confetti from 'canvas-confetti'
 
 // ============ SAMPLE DATA ============
 const SAMPLE_GOALS: Goal[] = [
-  { id: '1', user_id: 'demo', number: 1, year: new Date().getFullYear(), goal: "Run a half marathon", period: "One-year", category: "Personal", status: "Doing", action: "Follow 12-week training plan", cost: 150, notes: "Signed up for spring race", pinned: true, linked_reward_id: null, created_at: '', updated_at: '' },
-  { id: '2', user_id: 'demo', number: 2, year: new Date().getFullYear(), goal: "Read 24 books this year", period: "One-year", category: "Personal", status: "On Track", action: "Finish current book this week", cost: 0, notes: "12 books done so far", pinned: false, linked_reward_id: null, created_at: '', updated_at: '' },
-  { id: '3', user_id: 'demo', number: 3, year: new Date().getFullYear(), goal: "Build emergency fund to $15K", period: "One-year", category: "Personal", status: "Doing", action: "Automate $500/month transfer", cost: 0, notes: "", pinned: false, linked_reward_id: null, created_at: '', updated_at: '' },
-  { id: '4', user_id: 'demo', number: 4, year: new Date().getFullYear(), goal: "Learn conversational Spanish", period: "Three-years", category: "Personal", status: "For Later", action: "Research language apps", cost: 200, notes: "Start after marathon", pinned: false, linked_reward_id: null, created_at: '', updated_at: '' },
-  { id: '5', user_id: 'demo', number: 5, year: new Date().getFullYear(), goal: "Buy a house", period: "Five-years", category: "Personal", status: "Doing", action: "Research neighborhoods", cost: 50000, notes: "Saving for down payment", pinned: false, linked_reward_id: null, created_at: '', updated_at: '' },
-  { id: '6', user_id: 'demo', number: 1, year: new Date().getFullYear(), goal: "Get promoted to Senior level", period: "One-year", category: "Professional", status: "Doing", action: "Schedule career chat with manager", cost: 0, notes: "", pinned: true, linked_reward_id: '201', created_at: '', updated_at: '' },
-  { id: '7', user_id: 'demo', number: 2, year: new Date().getFullYear(), goal: "Complete AWS certification", period: "One-year", category: "Professional", status: "On Track", action: "Finish practice exams", cost: 300, notes: "Exam scheduled for next month", pinned: false, linked_reward_id: null, created_at: '', updated_at: '' },
-  { id: '8', user_id: 'demo', number: 3, year: new Date().getFullYear(), goal: "Present at industry conference", period: "One-year", category: "Professional", status: "Done", action: "", cost: 500, notes: "Presented at TechConf!", pinned: false, linked_reward_id: null, created_at: '', updated_at: '' },
-  { id: '9', user_id: 'demo', number: 4, year: new Date().getFullYear(), goal: "Build side project and launch", period: "One-year", category: "Professional", status: "For Later", action: "Brainstorm project ideas", cost: 100, notes: "", pinned: false, linked_reward_id: null, created_at: '', updated_at: '' },
+  { id: '1', user_id: 'demo', number: 1, year: new Date().getFullYear(), goal: "Run a half marathon", period: "One-year", category: "Personal", status: "Doing", action: "Follow 12-week training plan", cost: 150, notes: "Signed up for spring race", pinned: true, linked_reward_id: null, progress: 25, due_date: null, created_at: '', updated_at: '' },
+  { id: '2', user_id: 'demo', number: 2, year: new Date().getFullYear(), goal: "Read 24 books this year", period: "One-year", category: "Personal", status: "On Track", action: "Finish current book this week", cost: 0, notes: "12 books done so far", pinned: false, linked_reward_id: null, progress: 50, due_date: null, created_at: '', updated_at: '' },
+  { id: '3', user_id: 'demo', number: 3, year: new Date().getFullYear(), goal: "Build emergency fund to $15K", period: "One-year", category: "Personal", status: "Doing", action: "Automate $500/month transfer", cost: 0, notes: "", pinned: false, linked_reward_id: null, progress: 30, due_date: null, created_at: '', updated_at: '' },
+  { id: '4', user_id: 'demo', number: 4, year: new Date().getFullYear(), goal: "Learn conversational Spanish", period: "Three-years", category: "Personal", status: "For Later", action: "Research language apps", cost: 200, notes: "Start after marathon", pinned: false, linked_reward_id: null, progress: 0, due_date: null, created_at: '', updated_at: '' },
+  { id: '5', user_id: 'demo', number: 5, year: new Date().getFullYear(), goal: "Buy a house", period: "Five-years", category: "Personal", status: "Doing", action: "Research neighborhoods", cost: 50000, notes: "Saving for down payment", pinned: false, linked_reward_id: null, progress: 10, due_date: null, created_at: '', updated_at: '' },
+  { id: '6', user_id: 'demo', number: 1, year: new Date().getFullYear(), goal: "Get promoted to Senior level", period: "One-year", category: "Professional", status: "Doing", action: "Schedule career chat with manager", cost: 0, notes: "", pinned: true, linked_reward_id: '201', progress: 40, due_date: null, created_at: '', updated_at: '' },
+  { id: '7', user_id: 'demo', number: 2, year: new Date().getFullYear(), goal: "Complete AWS certification", period: "One-year", category: "Professional", status: "On Track", action: "Finish practice exams", cost: 300, notes: "Exam scheduled for next month", pinned: false, linked_reward_id: null, progress: 75, due_date: null, created_at: '', updated_at: '' },
+  { id: '8', user_id: 'demo', number: 3, year: new Date().getFullYear(), goal: "Present at industry conference", period: "One-year", category: "Professional", status: "Done", action: "", cost: 500, notes: "Presented at TechConf!", pinned: false, linked_reward_id: null, progress: 100, due_date: null, created_at: '', updated_at: '' },
+  { id: '9', user_id: 'demo', number: 4, year: new Date().getFullYear(), goal: "Build side project and launch", period: "One-year", category: "Professional", status: "For Later", action: "Brainstorm project ideas", cost: 100, notes: "", pinned: false, linked_reward_id: null, progress: 0, due_date: null, created_at: '', updated_at: '' },
 ]
 
 const SAMPLE_BLESSINGS: Blessing[] = [
@@ -279,6 +279,8 @@ export default function DemoPage() {
       notes: null,
       pinned: false,
       linked_reward_id: null,
+      progress: 0,
+      due_date: null,
       created_at: '',
       updated_at: ''
     }])
@@ -352,6 +354,8 @@ export default function DemoPage() {
         notes: null,
         pinned: false,
         linked_reward_id: null,
+        progress: 0,
+        due_date: null,
         created_at: '',
         updated_at: ''
       }])

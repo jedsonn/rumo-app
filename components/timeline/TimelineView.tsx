@@ -68,7 +68,7 @@ export function TimelineView({ goals }: TimelineViewProps) {
 
           {periods.map((period, idx) => {
             const progress = getProgress(period.goals)
-            const colorClasses = {
+            const colorMap = {
               sky: {
                 bg: 'bg-sky-500',
                 light: 'bg-sky-100 dark:bg-sky-900/40',
@@ -87,7 +87,8 @@ export function TimelineView({ goals }: TimelineViewProps) {
                 text: 'text-violet-700 dark:text-violet-300',
                 border: 'border-violet-200 dark:border-violet-800',
               },
-            }[period.color]
+            }
+            const colorClasses = colorMap[period.color as keyof typeof colorMap]
 
             return (
               <div key={period.label} className="relative mb-8 last:mb-0">

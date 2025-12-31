@@ -139,7 +139,7 @@ export function YearEndReview({ isOpen, onClose, year }: YearEndReviewProps) {
               ? 'Great progress! Keep pushing forward!'
               : stats.completionRate >= 25
               ? 'Good start! Next year will be even better!'
-              : 'Every step counts. You've got this!'}
+              : 'Every step counts. You have got this!'}
           </p>
         </div>
       ),
@@ -219,7 +219,7 @@ export function YearEndReview({ isOpen, onClose, year }: YearEndReviewProps) {
         <div className="text-center py-8">
           <div className="text-6xl mb-6">🚀</div>
           <p className="text-xl text-slate-600 dark:text-slate-300 mb-4">
-            You've done amazing things this year.
+            You have done amazing things this year.
           </p>
           <p className="text-lg text-slate-500 dark:text-slate-400 mb-6">
             Keep dreaming big and setting bold goals. The best is yet to come!
