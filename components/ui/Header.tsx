@@ -4,11 +4,10 @@ import { useState } from 'react'
 import { useDashboard } from '@/components/providers/DashboardProvider'
 import {
   Moon, Sun, Palette, BarChart3, Trophy, Trash2,
-  ArrowUpDown, Search, LogOut, User, Target, Heart, Gift, Image
+  ArrowUpDown, Search, LogOut, Target, Heart, Gift, Pencil, Check, X
 } from 'lucide-react'
-import { FocusModeSelector } from './FocusModeSelector'
 
-export type TabType = 'goals' | 'blessings' | 'rewards' | 'vision'
+export type TabType = 'goals' | 'blessings' | 'rewards'
 
 interface HeaderProps {
   onShowStats: () => void
@@ -47,12 +46,12 @@ export function Header({
     toggleDarkMode,
     isBlue,
     toggleTheme,
-    focusMode,
-    setFocusMode,
     logout
   } = useDashboard()
 
   const [showUserMenu, setShowUserMenu] = useState(false)
+  const [isEditingName, setIsEditingName] = useState(false)
+  const [editName, setEditName] = useState(profile?.display_name || '')
 
   const currentYear = new Date().getFullYear()
   const years = [currentYear - 1, currentYear, currentYear + 1, currentYear + 2]
@@ -62,62 +61,85 @@ export function Header({
 
   const tabs = [
     { id: 'goals' as const, label: 'Goals', icon: Target },
-    { id: 'vision' as const, label: 'Vision', icon: Image },
     { id: 'blessings' as const, label: 'Blessings', icon: Heart },
     { id: 'rewards' as const, label: 'Rewards', icon: Gift },
   ]
 
+  const handleSaveName = async () => {
+    if (editName.trim()) {
+      // Update profile via Supabase
+      const { createClient } = await import('@/lib/supabase/client')
+      const supabase = createClient()
+      await supabase
+        .from('profiles')
+        .update({ display_name: editName.trim() })
+        .eq('id', profile?.id)
+
+      // Force page refresh to get updated profile
+      window.location.reload()
+    }
+    setIsEditingName(false)
+  }
+
   return (
     <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-b border-slate-200 dark:border-slate-700">
-      {/* Row 1: Logo, Tabs, Actions */}
-      <div className="max-w-7xl mx-auto px-4 py-2">
-        <div className="flex items-center justify-between gap-4">
-          {/* Left: Logo and Title */}
-          <div className="flex items-center gap-3 shrink-0">
-            <div className="w-9 h-9 rounded-xl gradient-bg flex items-center justify-center shadow-sm">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14M13 6l6 6-6 6" />
-              </svg>
-            </div>
-            <div className="hidden sm:block">
-              <h1 className="text-base font-serif font-semibold leading-tight">
-                <span className={gradientClass}>{displayName}'s</span>
-                <span className="text-slate-800 dark:text-slate-100"> Goals</span>
-              </h1>
-              <select
-                value={year}
-                onChange={(e) => setYear(parseInt(e.target.value))}
-                className="text-xs font-medium text-slate-500 dark:text-slate-400 bg-transparent cursor-pointer hover:text-blue-500 focus:outline-none"
-              >
-                {years.map(y => (
-                  <option key={y} value={y} className="bg-white dark:bg-slate-800">{y}</option>
-                ))}
-              </select>
-            </div>
+      {/* Row 1: Centered Title - Username's Goals (Year) */}
+      <div className="max-w-7xl mx-auto px-4 py-3">
+        <div className="flex items-center justify-between">
+          {/* Left: Logo */}
+          <div className="w-9 h-9 rounded-xl gradient-bg flex items-center justify-center shadow-sm shrink-0">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
           </div>
 
-          {/* Center: Tabs */}
-          <div className="flex-1 flex justify-center">
-            <div className="flex gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
-              {tabs.map((tab) => {
-                const Icon = tab.icon
-                const isActive = activeTab === tab.id
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                      isActive
-                        ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-800 dark:text-slate-100'
-                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-                    }`}
-                  >
-                    <Icon size={14} />
-                    <span className="hidden lg:inline">{tab.label}</span>
-                  </button>
-                )
-              })}
-            </div>
+          {/* Center: Title with editable username */}
+          <div className="flex-1 flex flex-col items-center">
+            {isEditingName ? (
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  className="px-2 py-1 text-lg font-serif font-semibold border-2 border-blue-500 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none w-32 text-center"
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleSaveName()
+                    if (e.key === 'Escape') setIsEditingName(false)
+                  }}
+                />
+                <button onClick={handleSaveName} className="p-1 text-green-500 hover:bg-green-100 dark:hover:bg-green-900/30 rounded">
+                  <Check size={18} />
+                </button>
+                <button onClick={() => setIsEditingName(false)} className="p-1 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded">
+                  <X size={18} />
+                </button>
+              </div>
+            ) : (
+              <h1 className="text-lg font-serif font-semibold flex items-center gap-1.5 group">
+                <span className={gradientClass}>{displayName}&apos;s</span>
+                <span className="text-slate-800 dark:text-slate-100">Goals</span>
+                <button
+                  onClick={() => {
+                    setEditName(displayName === 'My' ? '' : displayName)
+                    setIsEditingName(true)
+                  }}
+                  className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-blue-500 transition-opacity"
+                  title="Edit name"
+                >
+                  <Pencil size={14} />
+                </button>
+              </h1>
+            )}
+            <select
+              value={year}
+              onChange={(e) => setYear(parseInt(e.target.value))}
+              className="text-xs font-medium text-slate-500 dark:text-slate-400 bg-transparent cursor-pointer hover:text-blue-500 focus:outline-none"
+            >
+              {years.map(y => (
+                <option key={y} value={y} className="bg-white dark:bg-slate-800">{y}</option>
+              ))}
+            </select>
           </div>
 
           {/* Right: Actions */}
@@ -155,9 +177,9 @@ export function Header({
             <div className="relative ml-1">
               <button
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500"
+                className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600"
               >
-                <User size={18} />
+                {displayName.charAt(0).toUpperCase()}
               </button>
               {showUserMenu && (
                 <>
@@ -200,17 +222,39 @@ export function Header({
         </div>
       </div>
 
-      {/* Row 2: Filters (only on Goals tab) */}
+      {/* Row 2: Tabs */}
+      <div className="border-t border-slate-100 dark:border-slate-800">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex justify-center py-2">
+            <div className="flex gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
+              {tabs.map((tab) => {
+                const Icon = tab.icon
+                const isActive = activeTab === tab.id
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                      isActive
+                        ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-800 dark:text-slate-100'
+                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                    }`}
+                  >
+                    <Icon size={16} />
+                    {tab.label}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Row 3: Filters (only on Goals tab) */}
       {activeTab === 'goals' && (
         <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
           <div className="max-w-7xl mx-auto px-4 py-2">
-            {/* Centered filter row */}
             <div className="flex items-center justify-center gap-3 flex-wrap">
-              {/* Focus Mode */}
-              <div className="hidden md:block">
-                <FocusModeSelector value={focusMode} onChange={setFocusMode} />
-              </div>
-
               {/* Search */}
               <div className="relative w-48">
                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
