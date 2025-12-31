@@ -4,7 +4,7 @@ import { Goal, Reward } from '@/lib/types'
 import { EditableNumber } from '@/components/ui/EditableNumber'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { PeriodBadge } from '@/components/ui/PeriodBadge'
-import { Flame, Gift, Pencil, Trash2 } from 'lucide-react'
+import { Flame, Gift, Pencil, Trash2, Share2 } from 'lucide-react'
 
 interface GoalCardProps {
   goal: Goal
@@ -12,6 +12,7 @@ interface GoalCardProps {
   onDelete: (id: string) => void
   onLinkReward: (goal: Goal) => void
   onEdit: (goal: Goal) => void
+  onShare?: (goal: Goal) => void
   isRecentlyChanged: boolean
   themeColor: 'blue' | 'rose'
   isDark: boolean
@@ -25,6 +26,7 @@ export function GoalCard({
   onDelete,
   onLinkReward,
   onEdit,
+  onShare,
   isRecentlyChanged,
   themeColor,
   isDark,
@@ -105,6 +107,15 @@ export function GoalCard({
           )}
         </div>
         <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+          {goal.status === 'Done' && onShare && (
+            <button
+              onClick={() => onShare(goal)}
+              className={`p-0.5 ${isDark ? 'text-blue-400 hover:text-blue-300' : 'text-blue-500 hover:text-blue-600'}`}
+              title="Share achievement"
+            >
+              <Share2 size={12} />
+            </button>
+          )}
           <button
             onClick={togglePin}
             className={`p-0.5 ${
