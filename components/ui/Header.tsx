@@ -4,12 +4,11 @@ import { useState } from 'react'
 import { useDashboard } from '@/components/providers/DashboardProvider'
 import {
   Moon, Sun, Palette, BarChart3, Trophy, Trash2,
-  ArrowUpDown, Search, LogOut, User, Target, Heart, Gift,
-  Image, Calendar, Clock, Focus
+  ArrowUpDown, Search, LogOut, User, Target, Heart, Gift, Image
 } from 'lucide-react'
 import { FocusModeSelector } from './FocusModeSelector'
 
-export type TabType = 'goals' | 'blessings' | 'rewards' | 'vision' | 'habits' | 'timeline'
+export type TabType = 'goals' | 'blessings' | 'rewards' | 'vision'
 
 interface HeaderProps {
   onShowStats: () => void
@@ -62,174 +61,91 @@ export function Header({
   const displayName = profile?.display_name || 'My'
 
   const tabs = [
-    { id: 'goals' as const, label: 'Goals', icon: Target, color: '' },
-    { id: 'vision' as const, label: 'Vision', icon: Image, color: 'text-indigo-600 dark:text-indigo-400' },
-    { id: 'habits' as const, label: 'Habits', icon: Calendar, color: 'text-teal-600 dark:text-teal-400' },
-    { id: 'timeline' as const, label: 'Timeline', icon: Clock, color: 'text-sky-600 dark:text-sky-400' },
-    { id: 'blessings' as const, label: 'Blessings', icon: Heart, color: 'text-amber-600 dark:text-amber-400' },
-    { id: 'rewards' as const, label: 'Rewards', icon: Gift, color: 'text-purple-600 dark:text-purple-400' },
+    { id: 'goals' as const, label: 'Goals', icon: Target },
+    { id: 'vision' as const, label: 'Vision', icon: Image },
+    { id: 'blessings' as const, label: 'Blessings', icon: Heart },
+    { id: 'rewards' as const, label: 'Rewards', icon: Gift },
   ]
 
   return (
-    <header className="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-700">
-      <div className="max-w-7xl mx-auto px-4 py-3">
-        {/* Main Row */}
-        <div className="flex items-center justify-between">
-          {/* Left Side - Action Buttons */}
-          <div className="flex items-center gap-0.5 md:gap-1">
-            <button
-              onClick={toggleDarkMode}
-              className={`p-1.5 md:p-2 rounded-lg ${isDark ? 'bg-slate-700 text-yellow-400' : 'hover:bg-slate-100 text-slate-500'}`}
-              title={isDark ? 'Light mode' : 'Dark mode'}
-            >
-              {isDark ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-            <button
-              onClick={toggleTheme}
-              className={`p-1.5 md:p-2 rounded-lg ${isBlue ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-500' : 'bg-rose-100 dark:bg-rose-900/50 text-rose-500'}`}
-              title="Toggle theme color"
-            >
-              <Palette size={18} />
-            </button>
-            <button
-              onClick={onShowImportExport}
-              className="hidden sm:block p-1.5 md:p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400"
-              title="Import/Export"
-            >
-              <ArrowUpDown size={18} />
-            </button>
-            <button
-              onClick={onShowStats}
-              className="p-1.5 md:p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400"
-              title="Stats"
-            >
-              <BarChart3 size={18} />
-            </button>
-            <button
-              onClick={onShowClearAll}
-              className="hidden sm:block p-1.5 md:p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-red-400 hover:text-red-500"
-              title="Clear All"
-            >
-              <Trash2 size={18} />
-            </button>
+    <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-b border-slate-200 dark:border-slate-700">
+      {/* Row 1: Logo, Tabs, Actions */}
+      <div className="max-w-7xl mx-auto px-4 py-2">
+        <div className="flex items-center justify-between gap-4">
+          {/* Left: Logo and Title */}
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="w-9 h-9 rounded-xl gradient-bg flex items-center justify-center shadow-sm">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </div>
+            <div className="hidden sm:block">
+              <h1 className="text-base font-serif font-semibold leading-tight">
+                <span className={gradientClass}>{displayName}'s</span>
+                <span className="text-slate-800 dark:text-slate-100"> Goals</span>
+              </h1>
+              <select
+                value={year}
+                onChange={(e) => setYear(parseInt(e.target.value))}
+                className="text-xs font-medium text-slate-500 dark:text-slate-400 bg-transparent cursor-pointer hover:text-blue-500 focus:outline-none"
+              >
+                {years.map(y => (
+                  <option key={y} value={y} className="bg-white dark:bg-slate-800">{y}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          {/* Center - Logo, Title, and Tabs */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-            <div className="flex items-center gap-2 mb-1.5">
-              <div className="w-8 h-8 rounded-lg gradient-bg flex items-center justify-center">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14M13 6l6 6-6 6" />
-                </svg>
-              </div>
-              <h1 className="text-lg font-serif font-semibold">
-                <span className={gradientClass}>{displayName}'s</span>
-                <span className="text-slate-800 dark:text-slate-100"> Goals </span>
-                <select
-                  value={year}
-                  onChange={(e) => setYear(parseInt(e.target.value))}
-                  className="font-serif font-semibold bg-transparent text-slate-800 dark:text-slate-100 cursor-pointer hover:text-blue-500 dark:hover:text-blue-400 focus:outline-none"
-                >
-                  {years.map(y => (
-                    <option key={y} value={y} className="bg-white dark:bg-slate-800">{y}</option>
-                  ))}
-                </select>
-              </h1>
-            </div>
-            {/* Tabs */}
-            <div className="flex gap-0.5 p-0.5 bg-slate-100 dark:bg-slate-800 rounded-full">
+          {/* Center: Tabs */}
+          <div className="flex-1 flex justify-center">
+            <div className="flex gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
               {tabs.map((tab) => {
                 const Icon = tab.icon
+                const isActive = activeTab === tab.id
                 return (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-1 px-2 md:px-3 py-1 rounded-full text-[10px] md:text-xs font-medium transition-all ${
-                      activeTab === tab.id
-                        ? `bg-white dark:bg-slate-700 shadow ${tab.color || 'text-slate-800 dark:text-slate-100'}`
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                      isActive
+                        ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-800 dark:text-slate-100'
                         : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                     }`}
                   >
-                    <Icon size={12} />
-                    <span className="hidden md:inline">{tab.label}</span>
+                    <Icon size={14} />
+                    <span className="hidden lg:inline">{tab.label}</span>
                   </button>
                 )
               })}
             </div>
           </div>
 
-          {/* Right Side - Filters and User */}
-          <div className="flex items-center gap-1 md:gap-2">
-            {/* Focus Mode - only show on goals tab */}
-            {activeTab === 'goals' && (
-              <div className="hidden lg:block">
-                <FocusModeSelector value={focusMode} onChange={setFocusMode} />
-              </div>
-            )}
-
-            {/* Search */}
-            <div className="relative hidden md:block">
-              <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search..."
-                className="w-28 lg:w-36 pl-8 pr-2 py-1.5 rounded-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            {/* Status Filter Pills - only show on goals tab */}
-            {activeTab === 'goals' && (
-              <div className="hidden sm:flex gap-0 p-0.5 bg-slate-100 dark:bg-slate-700 rounded-full">
-                {[
-                  { value: 'all', label: 'All' },
-                  { value: 'active', label: 'Active', activeClass: 'text-blue-600 dark:text-blue-400' },
-                  { value: 'done', label: 'Done', activeClass: 'text-emerald-600 dark:text-emerald-400' },
-                ].map(opt => (
-                  <button
-                    key={opt.value}
-                    onClick={() => setStatusFilter(opt.value)}
-                    className={`px-2 py-1 rounded-full text-[10px] font-bold transition-all ${
-                      statusFilter === opt.value
-                        ? `bg-white dark:bg-slate-600 shadow ${opt.activeClass || 'text-slate-700 dark:text-slate-200'}`
-                        : 'text-slate-500 dark:text-slate-400'
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {/* Period Filter Pills - only show on goals tab */}
-            {activeTab === 'goals' && (
-              <div className="hidden md:flex gap-0 p-0.5 bg-slate-100 dark:bg-slate-700 rounded-full">
-                {[
-                  { value: 'all', label: 'All' },
-                  { value: 'One-year', label: '1yr', activeClass: 'text-sky-600 dark:text-sky-400' },
-                  { value: 'Three-years', label: '3yr', activeClass: 'text-amber-600 dark:text-amber-400' },
-                  { value: 'Five-years', label: '5yr', activeClass: 'text-violet-600 dark:text-violet-400' },
-                ].map(opt => (
-                  <button
-                    key={opt.value}
-                    onClick={() => setPeriodFilter(opt.value)}
-                    className={`px-2 py-1 rounded-full text-[10px] font-bold transition-all ${
-                      periodFilter === opt.value
-                        ? `bg-white dark:bg-slate-600 shadow ${opt.activeClass || 'text-slate-700 dark:text-slate-200'}`
-                        : 'text-slate-500 dark:text-slate-400'
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {/* Review Button */}
+          {/* Right: Actions */}
+          <div className="flex items-center gap-1 shrink-0">
+            <button
+              onClick={toggleDarkMode}
+              className={`p-2 rounded-lg transition-colors ${isDark ? 'bg-slate-700 text-yellow-400' : 'hover:bg-slate-100 text-slate-500'}`}
+              title={isDark ? 'Light mode' : 'Dark mode'}
+            >
+              {isDark ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+            <button
+              onClick={toggleTheme}
+              className={`p-2 rounded-lg ${isBlue ? 'text-blue-500' : 'text-rose-500'} hover:bg-slate-100 dark:hover:bg-slate-700`}
+              title="Toggle theme color"
+            >
+              <Palette size={18} />
+            </button>
+            <button
+              onClick={onShowStats}
+              className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500"
+              title="Stats"
+            >
+              <BarChart3 size={18} />
+            </button>
             <button
               onClick={onShowReview}
-              className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold text-white text-xs ${isBlue ? 'gradient-bg' : 'gradient-bg-pink'}`}
+              className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold text-white text-xs ${isBlue ? 'gradient-bg' : 'gradient-bg-pink'} hover:opacity-90`}
             >
               <Trophy size={14} />
               Review
@@ -239,27 +155,43 @@ export function Header({
             <div className="relative ml-1">
               <button
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="p-1.5 md:p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400"
+                className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500"
               >
                 <User size={18} />
               </button>
               {showUserMenu && (
                 <>
                   <div className="fixed inset-0 z-10" onClick={() => setShowUserMenu(false)} />
-                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 z-20">
-                    <div className="p-3 border-b border-slate-200 dark:border-slate-700">
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 z-20 overflow-hidden">
+                    <div className="p-3 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50">
                       <p className="font-medium text-sm text-slate-800 dark:text-slate-100 truncate">
                         {profile?.display_name || 'User'}
                       </p>
                       <p className="text-xs text-slate-500 truncate">{profile?.email}</p>
                     </div>
-                    <button
-                      onClick={logout}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-slate-100 dark:hover:bg-slate-700"
-                    >
-                      <LogOut size={16} />
-                      Sign out
-                    </button>
+                    <div className="p-1">
+                      <button
+                        onClick={onShowImportExport}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+                      >
+                        <ArrowUpDown size={16} />
+                        Import/Export
+                      </button>
+                      <button
+                        onClick={onShowClearAll}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
+                      >
+                        <Trash2 size={16} />
+                        Clear All Data
+                      </button>
+                      <button
+                        onClick={logout}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+                      >
+                        <LogOut size={16} />
+                        Sign out
+                      </button>
+                    </div>
                   </div>
                 </>
               )}
@@ -267,6 +199,77 @@ export function Header({
           </div>
         </div>
       </div>
+
+      {/* Row 2: Filters (only on Goals tab) */}
+      {activeTab === 'goals' && (
+        <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
+          <div className="max-w-7xl mx-auto px-4 py-2">
+            <div className="flex items-center justify-between gap-4">
+              {/* Left: Focus Mode */}
+              <div className="hidden md:block">
+                <FocusModeSelector value={focusMode} onChange={setFocusMode} />
+              </div>
+
+              {/* Center: Search */}
+              <div className="relative flex-1 max-w-xs">
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search goals..."
+                  className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              {/* Right: Filter Pills - Status and Period together */}
+              <div className="hidden sm:flex items-center gap-1 p-1 bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600">
+                {/* Status Filter */}
+                {[
+                  { value: 'all', label: 'All' },
+                  { value: 'active', label: 'Active' },
+                  { value: 'done', label: 'Done' },
+                ].map(opt => (
+                  <button
+                    key={opt.value}
+                    onClick={() => setStatusFilter(opt.value)}
+                    className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                      statusFilter === opt.value
+                        ? `${isBlue ? 'bg-blue-500' : 'bg-rose-500'} text-white`
+                        : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+
+                {/* Divider */}
+                <div className="w-px h-4 bg-slate-200 dark:bg-slate-600 mx-1" />
+
+                {/* Period Filter */}
+                {[
+                  { value: 'all', label: 'All' },
+                  { value: 'One-year', label: '1yr' },
+                  { value: 'Three-years', label: '3yr' },
+                  { value: 'Five-years', label: '5yr' },
+                ].map(opt => (
+                  <button
+                    key={`period-${opt.value}`}
+                    onClick={() => setPeriodFilter(opt.value)}
+                    className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                      periodFilter === opt.value
+                        ? `${isBlue ? 'bg-blue-500' : 'bg-rose-500'} text-white`
+                        : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   )
 }

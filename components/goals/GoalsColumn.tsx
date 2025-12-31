@@ -11,11 +11,12 @@ interface GoalsColumnProps {
   category: GoalCategory
   filteredGoals: Goal[]
   onOpenTemplates?: () => void
+  onGoalAdded?: () => void
   sortBy?: 'number' | 'smart'
   onToggleSort?: () => void
 }
 
-export function GoalsColumn({ category, filteredGoals, onOpenTemplates, sortBy = 'number', onToggleSort }: GoalsColumnProps) {
+export function GoalsColumn({ category, filteredGoals, onOpenTemplates, onGoalAdded, sortBy = 'number', onToggleSort }: GoalsColumnProps) {
   const { isBlue } = useDashboard()
 
   const categoryGoals = useMemo(() => {
@@ -94,7 +95,7 @@ export function GoalsColumn({ category, filteredGoals, onOpenTemplates, sortBy =
 
       {/* Add Goal Form */}
       <div className="p-3 border-b border-slate-200 dark:border-slate-700 flex-none">
-        <AddGoalForm category={category} onOpenTemplates={onOpenTemplates} />
+        <AddGoalForm category={category} onOpenTemplates={onOpenTemplates} onGoalAdded={onGoalAdded} />
       </div>
 
       {/* Goals List */}
