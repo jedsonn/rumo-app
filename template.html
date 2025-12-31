@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rumo</title>
+    <link rel="icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAAAIAC3AwAAFgAAAIlQTkcNChoKAAAADUlIRFIAAAAQAAAAEAgGAAAAH/P/YQAAA35JREFUeJxlk1toHFUcxv//c87MZmZnd3a7WTcmTUxT4y1UqpZqEQwJXkBEkbh5UBAptoXig1bBC+hmRYigWGJRyUNBtKGwAWkrVFIpScBbHkSQtpYk2Fua+2aT3c3szpw55+9DfPDyvf8+voffhwAAb0yVdv+i7SE/ZDuiSqMDQHGDyWYbFluU//5re5yx3DiJfA+G8J8gXbhg3jl/x09/Jo0HoAxg1gBSGmA7A2ixAFoM5bcZwcuv77NP5HIk8vl/l+BQuZz++FuaVT8vOGYMoH5fGwbahISv6FZG1Gpz3uYKSFH1yJuPxY5mC8QLWdCISFsLiHDPwV/Plq+JJ5Suap4xOfXcDRKjENms6SQStjdw3ZFq4C5VP3irL/ZuLkdsYAAIEQkBAB45NPXsCrZ8I/Wm0p7kES61++Btnh8mHdqoKEsr3mqK8Pa0I+JQ/uLtA+5hoi0WAQiHz8xbn03WZuoYbUYWhqhN3hYrfqrjzbsC6fbq4kZoShBNHML2pCtsKBb6n1t7cWSkU7LuHPBDT7d425rsr0Q6DRS1FDW6uAiJ3u/7Lj3leqWxhHBFpEbaW9di/koxqC+n+k8OWx/l86jZLV2jBAB4bzs7aVk+UdQySUgNqcyuZ851dp0Z2Pakq0tfxsFCw1NaV5SxerWkitf0858P/p5k91zMEgBQ1NCho4FiiqGjBdiKAfraRAC9NHZurXZ1Fh3NiXkayAtRlRRbWilyNgHAAACuT5t9dtVmsXUVuNUIi9xcmj51+JWpFx798YSBnUcWZi9pv7jMIz6TThBjJCun8p/0rCIAYaFw0Rj9IfOHD/EOpWtSSi5S1vUP2+Zx59xNu3+9uhiWZVEkYnF5l3O/UfZmvuPbp/vTo1lPACBNjM302trpYLKs6rWawVVJ7XDj+9eLVoaCVWUJQ/jKCuPQaIT6xsjlx3e/NJmHEIBQAAOorqkDvLxBWq6RYQXQ1JTmpWJDhrSnLctk6KNq5JZosDeGjk489CqME+ZggOUBNebGryR+O23N8svVJBohOJkUqk0Asx6SWdfAAkIihhLn3jl+fu9gFgp8FLIaYEtl1rWy6amUeaP28E4WdLayimFjGDFRR0yGlsOYZSrhrBw8fn7vYHf3uPgn/LeJAPuPze1brSSGVVk2GZshmgFBRCLFfFjgbPm9Y193nc51k8hP/v/OfwEIdK+YFR2L/wAAAABJRU5ErkJggg==">
+    <link rel="apple-touch-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAAAIAC3AwAAFgAAAIlQTkcNChoKAAAADUlIRFIAAAAQAAAAEAgGAAAAH/P/YQAAA35JREFUeJxlk1toHFUcxv//c87MZmZnd3a7WTcmTUxT4y1UqpZqEQwJXkBEkbh5UBAptoXig1bBC+hmRYigWGJRyUNBtKGwAWkrVFIpScBbHkSQtpYk2Fua+2aT3c3szpw55+9DfPDyvf8+voffhwAAb0yVdv+i7SE/ZDuiSqMDQHGDyWYbFluU//5re5yx3DiJfA+G8J8gXbhg3jl/x09/Jo0HoAxg1gBSGmA7A2ixAFoM5bcZwcuv77NP5HIk8vl/l+BQuZz++FuaVT8vOGYMoH5fGwbahISv6FZG1Gpz3uYKSFH1yJuPxY5mC8QLWdCISFsLiHDPwV/Plq+JJ5Suap4xOfXcDRKjENms6SQStjdw3ZFq4C5VP3irL/ZuLkdsYAAIEQkBAB45NPXsCrZ8I/Wm0p7kES61++Btnh8mHdqoKEsr3mqK8Pa0I+JQ/uLtA+5hoi0WAQiHz8xbn03WZuoYbUYWhqhN3hYrfqrjzbsC6fbq4kZoShBNHML2pCtsKBb6n1t7cWSkU7LuHPBDT7d425rsr0Q6DRS1FDW6uAiJ3u/7Lj3leqWxhHBFpEbaW9di/koxqC+n+k8OWx/l86jZLV2jBAB4bzs7aVk+UdQySUgNqcyuZ851dp0Z2Pakq0tfxsFCw1NaV5SxerWkitf0858P/p5k91zMEgBQ1NCho4FiiqGjBdiKAfraRAC9NHZurXZ1Fh3NiXkayAtRlRRbWilyNgHAAACuT5t9dtVmsXUVuNUIi9xcmj51+JWpFx798YSBnUcWZi9pv7jMIz6TThBjJCun8p/0rCIAYaFw0Rj9IfOHD/EOpWtSSi5S1vUP2+Zx59xNu3+9uhiWZVEkYnF5l3O/UfZmvuPbp/vTo1lPACBNjM302trpYLKs6rWawVVJ7XDj+9eLVoaCVWUJQ/jKCuPQaIT6xsjlx3e/NJmHEIBQAAOorqkDvLxBWq6RYQXQ1JTmpWJDhrSnLctk6KNq5JZosDeGjk489CqME+ZggOUBNebGryR+O23N8svVJBohOJkUqk0Asx6SWdfAAkIihhLn3jl+fu9gFgp8FLIaYEtl1rWy6amUeaP28E4WdLayimFjGDFRR0yGlsOYZSrhrBw8fn7vYHf3uPgn/LeJAPuPze1brSSGVVk2GZshmgFBRCLFfFjgbPm9Y193nc51k8hP/v/OfwEIdK+YFR2L/wAAAABJRU5ErkJggg==">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Rumo">
+    <meta name="theme-color" content="#3b82f6">
+    <link rel="manifest" href="data:application/json,{
+        &quot;name&quot;: &quot;Rumo&quot;,
+        &quot;short_name&quot;: &quot;Rumo&quot;,
+        &quot;description&quot;: &quot;Track your personal and professional goals&quot;,
+        &quot;start_url&quot;: &quot;.&quot;,
+        &quot;display&quot;: &quot;standalone&quot;,
+        &quot;background_color&quot;: &quot;%23f8fafc&quot;,
+        &quot;theme_color&quot;: &quot;%233b82f6&quot;,
+        &quot;icons&quot;: [{
+            &quot;src&quot;: &quot;data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>&quot;,
+            &quot;sizes&quot;: &quot;any&quot;,
+            &quot;type&quot;: &quot;image/svg+xml&quot;
+        }]
+    }">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
+        
+        body, html { height: 100%; overflow: hidden; font-family: 'Inter', sans-serif; }
+        .font-serif { font-family: 'Playfair Display', serif; }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        
+        .slide-up { animation: slideUp 0.3s ease-out forwards; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        .countdown-ring { animation: countdown 10s linear forwards; }
+        @keyframes countdown { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 44; } }
+    </style>
+</head>
+<body>
+    <div id="root" class="h-full"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef, useCallback } = React;
+
+        // ========== CONSTANTS ==========
+        const PERIODS = ["One-year", "Three-years", "Five-years"];
+        const STATUSES = ["Doing", "On Track", "For Later", "Done", "Dropped"];
+        const PERIOD_ORDER = { "One-year": 1, "Two-years": 2, "Three-years": 3, "Five-years": 4 };
+        const DONE_DELAY_MS = 10000; // 10 seconds before Done moves to bottom
+
+        // ========== SUGGESTIONS (Generic/Universal) ==========
+        const SUGGESTIONS = {
+            Personal: [
+                // Health & Fitness
+                { goal: "Lose 5 lbs", period: "One-year", action: "Track calories" },
+                { goal: "Gain 5 lbs of muscle", period: "One-year", action: "Start lifting" },
+                { goal: "Exercise 3x per week", period: "One-year", action: "Pick a routine" },
+                { goal: "Run a 5K", period: "One-year", action: "Start training" },
+                { goal: "Sleep 8 hours consistently", period: "One-year", action: "Set bedtime" },
+                { goal: "Drink more water daily", period: "One-year", action: "Get water bottle" },
+                { goal: "Quit a bad habit", period: "One-year", action: "Identify triggers" },
+                // Travel & Experiences
+                { goal: "Travel to a new country", period: "One-year", action: "Research destinations" },
+                { goal: "Visit family abroad", period: "One-year", action: "Check flight prices" },
+                { goal: "Take a road trip", period: "One-year", action: "Plan route" },
+                { goal: "Plan a weekend getaway", period: "One-year", action: "Pick dates" },
+                // Family & Relationships
+                { goal: "Spend more quality time with family", period: "One-year", action: "Schedule weekly time" },
+                { goal: "Call parents weekly", period: "One-year", action: "Set reminder" },
+                { goal: "Plan monthly date nights", period: "One-year", action: "Book first one" },
+                { goal: "Reconnect with old friends", period: "One-year", action: "Reach out to 3" },
+                // Finance
+                { goal: "Save for emergency fund", period: "One-year", action: "Set up auto-transfer" },
+                { goal: "Start retirement contributions", period: "One-year", action: "Open account" },
+                { goal: "Pay off credit card debt", period: "One-year", action: "List all debts" },
+                { goal: "Create and stick to a budget", period: "One-year", action: "Track spending" },
+                { goal: "Buy a house", period: "Three-years", action: "Save for down payment" },
+                // Learning & Growth
+                { goal: "Learn a new language", period: "One-year", action: "Download app" },
+                { goal: "Read 12 books this year", period: "One-year", action: "Pick first book" },
+                { goal: "Take an online course", period: "One-year", action: "Browse courses" },
+                { goal: "Learn to cook new recipes", period: "One-year", action: "Find cookbook" },
+                { goal: "Pick up a new hobby", period: "One-year", action: "Try 3 things" },
+                // Wellness & Mindfulness
+                { goal: "Meditate daily", period: "One-year", action: "Start with 5 min" },
+                { goal: "Practice daily gratitude", period: "One-year", action: "Get journal" },
+                { goal: "Reduce screen time", period: "One-year", action: "Set app limits" },
+                { goal: "Journal weekly", period: "One-year", action: "Buy notebook" },
+                // Home
+                { goal: "Declutter the house", period: "One-year", action: "One room at a time" },
+                { goal: "Start a garden", period: "One-year", action: "Plan what to grow" },
+                { goal: "Complete home improvement project", period: "One-year", action: "Make list" },
+                // Long-term
+                { goal: "Start a family", period: "Three-years", action: "Discuss timeline" },
+                { goal: "Get married", period: "Three-years", action: "Plan proposal" },
+                { goal: "Achieve work-life balance", period: "One-year", action: "Set boundaries" },
+            ],
+            Professional: [
+                // Career Growth
+                { goal: "Get promoted", period: "One-year", action: "Talk to manager" },
+                { goal: "Ask for a raise", period: "One-year", action: "Document wins" },
+                { goal: "Update resume", period: "One-year", action: "List achievements" },
+                { goal: "Network with 5 new people", period: "One-year", action: "Attend event" },
+                { goal: "Find a mentor", period: "One-year", action: "Identify candidates" },
+                { goal: "Switch to dream job", period: "Three-years", action: "Define dream job" },
+                // Skills & Learning
+                { goal: "Learn a new professional skill", period: "One-year", action: "Pick skill" },
+                { goal: "Get a certification", period: "One-year", action: "Research options" },
+                { goal: "Attend a conference", period: "One-year", action: "Find relevant ones" },
+                { goal: "Give a presentation", period: "One-year", action: "Propose topic" },
+                { goal: "Improve public speaking", period: "One-year", action: "Join Toastmasters" },
+                // Research & Academic
+                { goal: "Submit paper to top journal", period: "One-year", action: "Polish manuscript" },
+                { goal: "Get R&R to accept", period: "One-year", action: "Address comments" },
+                { goal: "Start new research project", period: "One-year", action: "Write proposal" },
+                { goal: "Present at major conference", period: "One-year", action: "Submit abstract" },
+                { goal: "Collaborate with new coauthor", period: "One-year", action: "Reach out" },
+                { goal: "Write a book", period: "Three-years", action: "Create outline" },
+                // Teaching & Mentoring
+                { goal: "Improve teaching evaluations", period: "One-year", action: "Get feedback" },
+                { goal: "Have fun teaching", period: "One-year", action: "Try new methods" },
+                { goal: "Mentor a junior colleague", period: "One-year", action: "Offer help" },
+                // Work-Life
+                { goal: "Leave work on time", period: "One-year", action: "Set hard stop" },
+                { goal: "Take all vacation days", period: "One-year", action: "Plan ahead" },
+                { goal: "Set better work boundaries", period: "One-year", action: "Define hours" },
+                { goal: "Reduce meetings by 25%", period: "One-year", action: "Audit calendar" },
+                // Entrepreneurship
+                { goal: "Start a side project", period: "One-year", action: "Brainstorm ideas" },
+                { goal: "Launch a business", period: "Three-years", action: "Write plan" },
+                { goal: "Build passive income stream", period: "Three-years", action: "Research options" },
+                // Finance
+                { goal: "Increase salary by 20%", period: "Three-years", action: "Plan path" },
+                { goal: "Reach financial milestone", period: "Five-years", action: "Set target" },
+            ]
+        };
+
+        const BLESSING_SUGGESTIONS = [
+            "Good health this year 💪",
+            "Loving family and friends 💕",
+            "A roof over my head 🏠",
+            "Steady income and job security 💼",
+            "Achieved a personal goal 🎯",
+            "Made a new friend 🤝",
+            "Learned something new 📚",
+            "Overcame a challenge 💪",
+            "Had a great vacation ✈️",
+            "Received unexpected good news 🎉",
+            "Someone showed me kindness 🙏",
+            "Enjoyed quality time with loved ones",
+            "Found peace in a difficult situation",
+            "Celebrated a milestone 🎊",
+            "Grateful for second chances",
+            "Good food on the table 🍽️",
+            "Access to clean water and shelter",
+            "Supportive colleagues at work",
+            "Personal growth and self-improvement",
+            "A moment of pure joy today ☀️",
+        ];
+
+        // --- Initial Data ---
+        const INITIAL_GOALS = [
+            // ========== PERSONAL - ONE YEAR ==========
+            { id: 1, number: 1, year: 2026, goal: "File Taxes (maximize deductions from wedding/business)", period: "One-year", category: "Personal", status: "Doing", action: "Plan for 2026 filing", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 2, number: 2, year: 2026, goal: "Fix and sell Prius", period: "One-year", category: "Personal", status: "Doing", action: "List by March 2026", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 3, number: 3, year: 2026, goal: "Check tumor by end of year (follow-up MRI)", period: "One-year", category: "Personal", status: "Doing", action: "Schedule for Q4", cost: 0, notes: "", subtasks: [], pinned: true },
+            { id: 4, number: 4, year: 2026, goal: "Write 50 more books on Kindle", period: "One-year", category: "Personal", status: "Doing", action: "4-5 books per month", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 5, number: 5, year: 2026, goal: "Learn how to paint house/change floors", period: "One-year", category: "Personal", status: "Doing", action: "Summer project", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 6, number: 6, year: 2026, goal: "Get dental lenses and fix sensitivity", period: "One-year", category: "Personal", status: "Doing", action: "Schedule with Dr. Vilma", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 7, number: 7, year: 2026, goal: "Complete body transformation", period: "One-year", category: "Personal", status: "Doing", action: "Sprint distance first", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 8, number: 8, year: 2026, goal: "Host dinner parties for neighbors", period: "One-year", category: "Personal", status: "Doing", action: "Once per quarter", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 9, number: 9, year: 2026, goal: "1 date night with Cassia every month", period: "One-year", category: "Personal", status: "Doing", action: "Wednesday nights", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 10, number: 10, year: 2026, goal: "Learn advanced grilling techniques", period: "One-year", category: "Personal", status: "Doing", action: "BBQ masterclass", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 11, number: 11, year: 2026, goal: "Increase retirement contributions to max", period: "One-year", category: "Personal", status: "Doing", action: "$23,000 401k + Roth", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 12, number: 12, year: 2026, goal: "Generate $10K from rental property", period: "One-year", category: "Personal", status: "Doing", action: "Optimize pricing", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 13, number: 13, year: 2026, goal: "Start 529 education savings plan", period: "One-year", category: "Personal", status: "Doing", action: "$500/month", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 14, number: 14, year: 2026, goal: "Get LASIK consultation", period: "One-year", category: "Personal", status: "Doing", action: "Research best doctors", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 15, number: 15, year: 2026, goal: "Morning meditation routine (10 min)", period: "One-year", category: "Personal", status: "Doing", action: "Use Headspace app", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 16, number: 16, year: 2026, goal: "Learn Spanish", period: "One-year", category: "Personal", status: "Doing", action: "Duolingo + tutor", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 17, number: 17, year: 2026, goal: "Take parents on special trip", period: "One-year", category: "Personal", status: "Doing", action: "Europe or cruise", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 18, number: 18, year: 2026, goal: "Create family photo albums (digital + physical)", period: "One-year", category: "Personal", status: "Doing", action: "Organize by year", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 19, number: 19, year: 2026, goal: "Church involvement - join small group", period: "One-year", category: "Personal", status: "Doing", action: "Weekly attendance", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 20, number: 20, year: 2026, goal: "Host exchange student from Brazil", period: "One-year", category: "Personal", status: "Doing", action: "Summer 2026", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 21, number: 21, year: 2026, goal: "Complete home gym setup", period: "One-year", category: "Personal", status: "Doing", action: "Add squat rack", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 22, number: 22, year: 2026, goal: "Learn cocktail making (10 signature drinks)", period: "One-year", category: "Personal", status: "Doing", action: "Bartending course", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 23, number: 23, year: 2026, goal: "Volunteer monthly at local charity", period: "One-year", category: "Personal", status: "Doing", action: "Food bank or literacy", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 24, number: 24, year: 2026, goal: "Plan and take 'no devices' vacation", period: "One-year", category: "Personal", status: "Doing", action: "1 week minimum", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 25, number: 25, year: 2026, goal: "Improve social media presence", period: "One-year", category: "Personal", status: "Doing", action: "Professional photos", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 26, number: 26, year: 2026, goal: "Read 12 books (1 per month)", period: "One-year", category: "Personal", status: "Doing", action: "Mix of genres", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 27, number: 27, year: 2026, goal: "Annual health screening with advanced metrics", period: "One-year", category: "Personal", status: "Doing", action: "Include heart scan", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 28, number: 28, year: 2026, goal: "Learn home automation/smart house advanced", period: "One-year", category: "Personal", status: "Doing", action: "Programming skills", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 29, number: 29, year: 2026, goal: "Take professional family photos", period: "One-year", category: "Personal", status: "Doing", action: "Spring and fall", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 30, number: 30, year: 2026, goal: "Plan pregnancy timeline with Cassia", period: "One-year", category: "Personal", status: "Doing", action: "Fertility consultation", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 31, number: 31, year: 2026, goal: "Travel to 2 different countries", period: "One-year", category: "Personal", status: "Doing", action: "Amsterdam, Czech Republic", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 32, number: 32, year: 2026, goal: "Create company", period: "One-year", category: "Personal", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 33, number: 33, year: 2026, goal: "Go on Sabbatical", period: "One-year", category: "Personal", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 34, number: 34, year: 2026, goal: "Plan visiting or Sabbatical", period: "One-year", category: "Personal", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 35, number: 35, year: 2026, goal: "Remove AIs not using (save money)", period: "One-year", category: "Personal", status: "Doing", action: "Gamma, Perplexity, Gemini, ChatGPT Pro?", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 36, number: 36, year: 2026, goal: "Change Cassia's Car", period: "One-year", category: "Personal", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            // ========== PERSONAL - THREE YEARS ==========
+            { id: 37, number: 37, year: 2026, goal: "First child (Benjamin or Bella)", period: "Three-years", category: "Personal", status: "Doing", action: "Start trying 2026", cost: 0, notes: "", subtasks: [], pinned: true },
+            { id: 38, number: 38, year: 2026, goal: "Procedure to remove fat in chest/nipples", period: "Three-years", category: "Personal", status: "Doing", action: "Research surgeons", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 39, number: 39, year: 2026, goal: "Buy new car for growing family (SUV)", period: "Three-years", category: "Personal", status: "Doing", action: "Tahoe or Escalade", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 40, number: 40, year: 2026, goal: "Achieve $2M net worth", period: "Three-years", category: "Personal", status: "Doing", action: "Track quarterly", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 41, number: 41, year: 2026, goal: "Own 3+ rental properties", period: "Three-years", category: "Personal", status: "Doing", action: "One per year", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 42, number: 42, year: 2026, goal: "Complete major home addition (pool/outdoor)", period: "Three-years", category: "Personal", status: "Doing", action: "Design in 2026", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 43, number: 43, year: 2026, goal: "Get private pilot license", period: "Three-years", category: "Personal", status: "Doing", action: "Start lessons 2027", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 44, number: 44, year: 2026, goal: "Tattoo with Cassia in Brazil", period: "Three-years", category: "Personal", status: "Doing", action: "Meaningful design", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 45, number: 45, year: 2026, goal: "Parents healthier (continue support)", period: "Three-years", category: "Personal", status: "Doing", action: "Medical support", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 46, number: 46, year: 2026, goal: "Join country club or social club", period: "Three-years", category: "Personal", status: "Doing", action: "Golf membership", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 47, number: 47, year: 2026, goal: "Run for HOA board or community leadership", period: "Three-years", category: "Personal", status: "Doing", action: "Build reputation", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 48, number: 48, year: 2026, goal: "Complete Ironman 70.3", period: "Three-years", category: "Personal", status: "Doing", action: "Train gradually", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 49, number: 49, year: 2026, goal: "Launch family foundation", period: "Three-years", category: "Personal", status: "Doing", action: "$100K initial", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 50, number: 50, year: 2026, goal: "Learn another language fluently (Spanish)", period: "Three-years", category: "Personal", status: "Doing", action: "Immersion program", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 51, number: 51, year: 2026, goal: "Write personal memoir/family history", period: "Three-years", category: "Personal", status: "Doing", action: "Interview parents", cost: 0, notes: "", subtasks: [], pinned: false },
+            // ========== PERSONAL - FIVE YEARS ==========
+            { id: 52, number: 52, year: 2026, goal: "Two children in happy family", period: "Five-years", category: "Personal", status: "Doing", action: "Benjamin & Bella", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 53, number: 53, year: 2026, goal: "Passive income > $10K-30K/year", period: "Five-years", category: "Personal", status: "Doing", action: "Multiple streams", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 54, number: 54, year: 2026, goal: "Own vacation home (beach or mountain)", period: "Five-years", category: "Personal", status: "Doing", action: "Brazil", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 55, number: 55, year: 2026, goal: "U.S. Citizenship achieved", period: "Five-years", category: "Personal", status: "Doing", action: "Apply when eligible", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 56, number: 56, year: 2026, goal: "Parents spending time with us with support", period: "Five-years", category: "Personal", status: "Doing", action: "Guest house or nearby", cost: 0, notes: "", subtasks: [], pinned: false },
+            // ========== PROFESSIONAL - ONE YEAR ==========
+            { id: 100, number: 1, year: 2026, goal: "Submit tenure packet", period: "One-year", category: "Professional", status: "Doing", action: "August/Sep 1st", cost: 0, notes: "", subtasks: [], pinned: true },
+            { id: 101, number: 2, year: 2026, goal: "Teaching - PPA", period: "One-year", category: "Professional", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 102, number: 3, year: 2026, goal: "Teaching - Have fun!", period: "One-year", category: "Professional", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 103, number: 4, year: 2026, goal: "Book GMETRIX codes", period: "One-year", category: "Professional", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 104, number: 5, year: 2026, goal: "Book Testing Center", period: "One-year", category: "Professional", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 105, number: 6, year: 2026, goal: "Book Excel Lab Exams", period: "One-year", category: "Professional", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 106, number: 7, year: 2026, goal: "Teaching Evaluation", period: "One-year", category: "Professional", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 107, number: 8, year: 2026, goal: "Laiz accepted into PhD and living with us", period: "One-year", category: "Professional", status: "Doing", action: "6 months to 1 year", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 108, number: 9, year: 2026, goal: "Bring more AI to the classroom", period: "One-year", category: "Professional", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: true },
+            { id: 109, number: 10, year: 2026, goal: "Upload/copy materials online", period: "One-year", category: "Professional", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 110, number: 11, year: 2026, goal: "Plan new course - AI with Federico", period: "One-year", category: "Professional", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 111, number: 12, year: 2026, goal: "Plan new course - PhD Research Design with Junyoung", period: "One-year", category: "Professional", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 112, number: 13, year: 2026, goal: "Resubmit Acc Horizons", period: "One-year", category: "Professional", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 113, number: 14, year: 2026, goal: "Resubmit Gender", period: "One-year", category: "Professional", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 114, number: 15, year: 2026, goal: "Resubmit NDA", period: "One-year", category: "Professional", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 115, number: 16, year: 2026, goal: "Finish Paper with Mark and Ham", period: "One-year", category: "Professional", status: "Doing", action: "Network at conferences", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 116, number: 17, year: 2026, goal: "Cond. Acceptance GR paper to RAST", period: "One-year", category: "Professional", status: "Doing", action: "Address reviewers", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 117, number: 18, year: 2026, goal: "Complete 20 discussions", period: "One-year", category: "Professional", status: "Doing", action: "2 per month", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 118, number: 19, year: 2026, goal: "Plan next conferences", period: "One-year", category: "Professional", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 119, number: 20, year: 2026, goal: "Cond. Acceptance Judge paper with Gil to JAE", period: "One-year", category: "Professional", status: "Doing", action: "Fall 2026", cost: 0, notes: "", subtasks: [], pinned: true },
+            { id: 120, number: 21, year: 2026, goal: "Prepare for Northwestern Conference", period: "One-year", category: "Professional", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 121, number: 22, year: 2026, goal: "Organize next BRA Workshop (Feb - Dani)", period: "One-year", category: "Professional", status: "Doing", action: "Send reminder", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 122, number: 23, year: 2026, goal: "Cond. Acceptance Gender", period: "One-year", category: "Professional", status: "Doing", action: "Fall 2026", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 123, number: 24, year: 2026, goal: "Create Social Media Group for accounting dept", period: "One-year", category: "Professional", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 124, number: 25, year: 2026, goal: "Progress on R&Rs (FX, LLM, TD, AH, Numbers, SS)", period: "One-year", category: "Professional", status: "Doing", action: "Submit 5 papers", cost: 0, notes: "", subtasks: [], pinned: true },
+            { id: 125, number: 26, year: 2026, goal: "Organize April BRA Workshop (Rafael)", period: "One-year", category: "Professional", status: "Doing", action: "Send reminder", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 126, number: 27, year: 2026, goal: "Cond. Acceptance FX paper", period: "One-year", category: "Professional", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 127, number: 28, year: 2026, goal: "Create AI center for accounting department", period: "One-year", category: "Professional", status: "Doing", action: "Proposal to dean", cost: 0, notes: "", subtasks: [], pinned: true },
+            { id: 128, number: 29, year: 2026, goal: "Finish DSA paper", period: "One-year", category: "Professional", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 129, number: 30, year: 2026, goal: "Finish Echo Chamber paper", period: "One-year", category: "Professional", status: "Doing", action: "Submit to JFE", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 130, number: 31, year: 2026, goal: "Launch online certificate program", period: "One-year", category: "Professional", status: "Doing", action: "AI in Accounting", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 131, number: 32, year: 2026, goal: "Reach 250 Google Scholar citations", period: "One-year", category: "Professional", status: "Doing", action: "Promote papers", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 132, number: 33, year: 2026, goal: "Win university mentoring award", period: "One-year", category: "Professional", status: "Doing", action: "Submit portfolio", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 133, number: 34, year: 2026, goal: "Guest lecture at schools", period: "One-year", category: "Professional", status: "Doing", action: "Network contacts", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 134, number: 35, year: 2026, goal: "Present at 5 conferences", period: "One-year", category: "Professional", status: "Doing", action: "EAA, AAA, FARS", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 135, number: 36, year: 2026, goal: "Organize international conference at UTD", period: "One-year", category: "Professional", status: "Doing", action: "Brazil-US summit", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 136, number: 37, year: 2026, goal: "Finish paper with Youngmin and JongHa", period: "One-year", category: "Professional", status: "Doing", action: "Pay transparency - JIBS", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 137, number: 38, year: 2026, goal: "Finish AntiTrust paper", period: "One-year", category: "Professional", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 138, number: 39, year: 2026, goal: "Fine-tune LLM model for research", period: "One-year", category: "Professional", status: "Doing", action: "ModernBERT", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 139, number: 40, year: 2026, goal: "2 new R&Rs (SS, TD, DSA, Echo Chamber)", period: "One-year", category: "Professional", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 140, number: 41, year: 2026, goal: "Write 50 more Kindle books", period: "One-year", category: "Professional", status: "Doing", action: "Academic topics", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 141, number: 42, year: 2026, goal: "Create 2 new apps for research/teaching", period: "One-year", category: "Professional", status: "Doing", action: "Web-based tools", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 142, number: 43, year: 2026, goal: "Get consulting contract with Fortune 500", period: "One-year", category: "Professional", status: "Doing", action: "AI implementation", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 143, number: 44, year: 2026, goal: "Give 5+ paid keynote speeches", period: "One-year", category: "Professional", status: "Doing", action: "$5K+ each", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 144, number: 45, year: 2026, goal: "Reach 10K LinkedIn followers", period: "One-year", category: "Professional", status: "Doing", action: "Daily posts", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 145, number: 46, year: 2026, goal: "Launch research podcast", period: "One-year", category: "Professional", status: "Doing", action: "Weekly episodes", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 146, number: 47, year: 2026, goal: "Submit sole-authored paper", period: "One-year", category: "Professional", status: "Doing", action: "Theory paper", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 147, number: 48, year: 2026, goal: "Visiting position", period: "One-year", category: "Professional", status: "Doing", action: "Bradesco, Harvard/MIT?", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 148, number: 49, year: 2026, goal: "Media appearances (CNBC, Bloomberg)", period: "One-year", category: "Professional", status: "Doing", action: "Build media kit", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 149, number: 50, year: 2026, goal: "Launch executive education program", period: "One-year", category: "Professional", status: "Doing", action: "Weekend format", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 150, number: 51, year: 2026, goal: "Publish in practitioner journal", period: "One-year", category: "Professional", status: "Doing", action: "HBR or similar", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 151, number: 52, year: 2026, goal: "Apply for major research grant", period: "One-year", category: "Professional", status: "Doing", action: "Apply strategically", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 152, number: 53, year: 2026, goal: "Visit Bradesco Asset Management", period: "One-year", category: "Professional", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 153, number: 54, year: 2026, goal: "Laiz joining us", period: "One-year", category: "Professional", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 154, number: 55, year: 2026, goal: "Teach Agentic AI for business", period: "One-year", category: "Professional", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 155, number: 56, year: 2026, goal: "Do mock interviews with Brazilian PhD students", period: "One-year", category: "Professional", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 156, number: 57, year: 2026, goal: "Do mock interviews with our PhD students", period: "One-year", category: "Professional", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 157, number: 58, year: 2026, goal: "Plan visiting for after tenure", period: "One-year", category: "Professional", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+            { id: 158, number: 59, year: 2026, goal: "Plan/Teach more AI", period: "One-year", category: "Professional", status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false },
+        ];
+
+        const INITIAL_BLESSINGS = [
+            { id: 1, text: "Good health this year 💪", date: "2025-01-15", category: "Personal" },
+            { id: 2, text: "Loving family and friends 💕", date: "2024-12-10", category: "Personal" },
+        ];
+
+        const INITIAL_REWARDS = [
+            { id: 1, text: "Nice dinner out 🍽️", cost: 150, earned: false },
+            { id: 2, text: "New book 📚", cost: 25, earned: false },
+            { id: 3, text: "Weekend getaway 🏖️", cost: 500, earned: false },
+        ];
+
+        const REWARD_SUGGESTIONS = [
+            "Nice dinner out 🍽️",
+            "Spa day 💆",
+            "New outfit 👔",
+            "Concert tickets 🎵",
+            "Weekend getaway 🏖️",
+            "New gadget 📱",
+            "Fancy coffee treat ☕",
+            "Movie night 🎬",
+            "New book 📚",
+            "Video game 🎮",
+            "Massage 💆‍♂️",
+            "Day off (guilt-free!) 😴",
+            "Nice bottle of wine 🍷",
+            "Online course I want 🎓",
+            "New shoes 👟",
+            "Treat myself to dessert 🍰",
+            "Buy that thing I've been eyeing 🛒",
+            "Subscription I've wanted 📺",
+            "Art supplies 🎨",
+            "Plants for the home 🌱",
+        ];
+
+        // --- CSV Parser ---
+        const parseCSV = (text) => {
+            const lines = text.split(/\r?\n/).filter(line => line.trim());
+            let headerIndex = lines.findIndex(l => l.toLowerCase().includes('goal'));
+            if (headerIndex === -1) return [];
+
+            const splitCSV = (str) => {
+                const result = []; let current = ''; let inQuote = false;
+                for (let char of str) {
+                    if (char === '"') inQuote = !inQuote;
+                    else if (char === ',' && !inQuote) { result.push(current.trim()); current = ''; }
+                    else current += char;
+                }
+                result.push(current.trim());
+                return result;
+            };
+
+            const headers = splitCSV(lines[headerIndex].toLowerCase());
+            const findCol = (keywords) => headers.findIndex(h => keywords.some(k => h.includes(k)));
+            const cols = {
+                goal: findCol(['goal']), number: findCol(['number', '#']), category: findCol(['category', 'type']),
+                status: findCol(['status']), action: findCol(['action', 'next']), period: findCol(['period', 'year']), cost: findCol(['cost', '$'])
+            };
+
+            return lines.slice(headerIndex + 1).map((line, i) => {
+                const c = splitCSV(line);
+                const goalText = cols.goal > -1 ? c[cols.goal]?.replace(/"/g, '') : '';
+                if (!goalText || goalText.toLowerCase().includes('total')) return null;
+                
+                let status = 'Doing';
+                const statusRaw = (cols.status > -1 ? c[cols.status] : '').toLowerCase();
+                if (statusRaw.includes('done')) status = 'Done';
+                else if (statusRaw.includes('track') || statusRaw.includes('going')) status = 'On Track';
+                else if (statusRaw.includes('later') || statusRaw.includes('plan')) status = 'For Later';
+                else if (statusRaw.includes('drop')) status = 'Dropped';
+
+                let cat = cols.category > -1 ? c[cols.category]?.replace(/"/g, '') : 'Personal';
+                if (cat.toLowerCase().includes('prof')) cat = 'Professional';
+                else cat = 'Personal';
+
+                return {
+                    id: Date.now() + i, number: cols.number > -1 ? parseInt(c[cols.number]) || i + 1 : i + 1,
+                    goal: goalText, category: cat, status,
+                    action: cols.action > -1 ? c[cols.action]?.replace(/"/g, '') : '',
+                    period: cols.period > -1 ? c[cols.period]?.replace(/"/g, '') : 'One-year',
+                    cost: cols.cost > -1 ? parseFloat(c[cols.cost]?.replace(/[^0-9.-]/g, '')) || 0 : 0,
+                    notes: '', subtasks: []
+                };
+            }).filter(Boolean);
+        };
+
+        // --- Icon Component ---
+        const Icon = ({ name, size = 16, className = "" }) => {
+            const ref = useRef(null);
+            useEffect(() => {
+                if (!ref.current || !window.lucide) return;
+                ref.current.innerHTML = '';
+                const i = document.createElement('i');
+                i.setAttribute('data-lucide', name);
+                ref.current.appendChild(i);
+                window.lucide.createIcons({ root: ref.current, attrs: { width: size, height: size, class: className } });
+            }, [name, size, className]);
+            return <span ref={ref} className="inline-flex items-center justify-center" style={{ width: size, height: size }} />;
+        };
+
+        // --- Countdown Ring (visual timer) ---
+        const CountdownRing = ({ size = 16 }) => (
+            <svg width={size} height={size} className="absolute -top-1 -right-1">
+                <circle cx={size/2} cy={size/2} r="7" fill="none" stroke="#e2e8f0" strokeWidth="2" />
+                <circle cx={size/2} cy={size/2} r="7" fill="none" stroke="#10b981" strokeWidth="2" 
+                    strokeDasharray="44" strokeDashoffset="0" className="countdown-ring" 
+                    style={{ transform: 'rotate(-90deg)', transformOrigin: 'center' }} />
+            </svg>
+        );
+
+        // --- Resizable Divider ---
+        const ResizableDivider = ({ onResize, isDark, splitRatio }) => {
+            const dividerRef = useRef(null);
+            const [isDragging, setIsDragging] = useState(false);
+
+            const handleMouseDown = (e) => {
+                e.preventDefault();
+                setIsDragging(true);
+            };
+
+            const handleDoubleClick = () => {
+                onResize(50); // Reset to 50/50
+            };
+
+            useEffect(() => {
+                if (!isDragging) return;
+
+                const handleMouseMove = (e) => {
+                    const container = dividerRef.current?.parentElement;
+                    if (!container) return;
+                    
+                    const rect = container.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const percentage = Math.min(Math.max((x / rect.width) * 100, 20), 80);
+                    onResize(percentage);
+                };
+
+                const handleMouseUp = () => {
+                    setIsDragging(false);
+                };
+
+                document.addEventListener('mousemove', handleMouseMove);
+                document.addEventListener('mouseup', handleMouseUp);
+                
+                return () => {
+                    document.removeEventListener('mousemove', handleMouseMove);
+                    document.removeEventListener('mouseup', handleMouseUp);
+                };
+            }, [isDragging, onResize]);
+
+            return (
+                <div
+                    ref={dividerRef}
+                    onMouseDown={handleMouseDown}
+                    onDoubleClick={handleDoubleClick}
+                    title="Drag to resize • Double-click to reset 50/50"
+                    className={`w-3 cursor-col-resize flex-shrink-0 group relative hidden lg:flex items-center justify-center ${isDragging ? 'select-none' : ''}`}
+                >
+                    <div className={`w-1 h-full rounded-full transition-all ${
+                        isDragging 
+                            ? (isDark ? 'bg-blue-500' : 'bg-blue-400') 
+                            : (isDark ? 'bg-slate-700 group-hover:bg-slate-600' : 'bg-slate-200 group-hover:bg-slate-300')
+                    }`}></div>
+                    <div className={`absolute top-1/2 -translate-y-1/2 px-1.5 py-1 rounded flex flex-col items-center justify-center transition-opacity ${
+                        isDragging ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                    } ${isDark ? 'bg-slate-700' : 'bg-slate-200'}`}>
+                        <Icon name="grip-vertical" size={14} className={isDark ? 'text-slate-500' : 'text-slate-400'} />
+                        <span className={`text-[8px] font-bold mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                            {Math.round(splitRatio)}:{Math.round(100-splitRatio)}
+                        </span>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Toast ---
+        const Toast = ({ message, onUndo, visible, isDark }) => {
+            if (!visible) return null;
+            return (
+                <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full shadow-xl flex items-center gap-4 z-50 slide-up ${isDark ? 'bg-slate-700 text-white' : 'bg-slate-800 text-white'}`}>
+                    <span className="text-sm font-medium">{message}</span>
+                    {onUndo && <button onClick={onUndo} className="text-yellow-400 text-xs font-bold uppercase">Undo</button>}
+                </div>
+            );
+        };
+
+        // --- Editable Number Component ---
+        const EditableNumber = ({ value, onChange, themeColor, isDark }) => {
+            const [editing, setEditing] = useState(false);
+            const [tempVal, setTempVal] = useState(value);
+            const inputRef = useRef(null);
+
+            useEffect(() => { if (editing && inputRef.current) inputRef.current.select(); }, [editing]);
+
+            if (editing) {
+                return (
+                    <input
+                        ref={inputRef}
+                        type="number"
+                        value={tempVal}
+                        onChange={e => setTempVal(e.target.value)}
+                        onBlur={() => { onChange(parseInt(tempVal) || 1); setEditing(false); }}
+                        onKeyDown={e => { if (e.key === 'Enter') { onChange(parseInt(tempVal) || 1); setEditing(false); } if (e.key === 'Escape') setEditing(false); }}
+                        className={`w-10 text-center text-[10px] font-mono border-2 rounded px-1 py-0.5 focus:outline-none ${isDark ? `bg-slate-700 border-${themeColor}-500 text-white` : `bg-white border-${themeColor}-400`}`}
+                        autoFocus
+                    />
+                );
+            }
+
+            return (
+                <div className="flex items-center gap-0.5 group/num">
+                    <button onClick={() => onChange(Math.max(1, value - 1))} className={`opacity-0 group-hover/num:opacity-100 p-0.5 ${isDark ? 'text-slate-500 hover:text-slate-300' : 'text-slate-400 hover:text-slate-600'}`}>
+                        <Icon name="chevron-down" size={10} />
+                    </button>
+                    <span 
+                        onClick={() => { setTempVal(value); setEditing(true); }}
+                        className={`text-[10px] font-mono px-1.5 py-0.5 rounded cursor-pointer min-w-[24px] text-center ${isDark ? `text-${themeColor}-400 bg-${themeColor}-900/50 hover:bg-${themeColor}-900` : `text-${themeColor}-500 bg-${themeColor}-50 hover:bg-${themeColor}-100`}`}
+                        title="Click to edit, arrows to adjust"
+                    >
+                        #{value}
+                    </span>
+                    <button onClick={() => onChange(value + 1)} className={`opacity-0 group-hover/num:opacity-100 p-0.5 ${isDark ? 'text-slate-500 hover:text-slate-300' : 'text-slate-400 hover:text-slate-600'}`}>
+                        <Icon name="chevron-up" size={10} />
+                    </button>
+                </div>
+            );
+        };
+
+        // --- Tap-to-Cycle Status Badge ---
+        const StatusBadge = ({ status, onChange, isRecentlyDone, isDark }) => {
+            const cycle = () => {
+                const idx = STATUSES.indexOf(status);
+                onChange(STATUSES[(idx + 1) % STATUSES.length]);
+            };
+
+            const colors = isDark ? {
+                'Doing': 'bg-blue-900/50 text-blue-300 hover:bg-blue-900',
+                'On Track': 'bg-emerald-900/50 text-emerald-300 hover:bg-emerald-900',
+                'For Later': 'bg-slate-700 text-slate-300 hover:bg-slate-600',
+                'Done': 'bg-green-600 text-white hover:bg-green-700',
+                'Dropped': 'bg-red-900/50 text-red-300 hover:bg-red-900',
+            } : {
+                'Doing': 'bg-blue-100 text-blue-700 hover:bg-blue-200',
+                'On Track': 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200',
+                'For Later': 'bg-slate-100 text-slate-600 hover:bg-slate-200',
+                'Done': 'bg-green-500 text-white hover:bg-green-600',
+                'Dropped': 'bg-red-100 text-red-600 hover:bg-red-200',
+            };
+
+            return (
+                <div className="relative">
+                    <button 
+                        onClick={cycle} 
+                        className={`text-[10px] font-bold px-2.5 py-1 rounded-full cursor-pointer transition-all ${colors[status]}`}
+                        title="Click to cycle status"
+                    >
+                        {status}
+                    </button>
+                    {isRecentlyDone && <CountdownRing />}
+                </div>
+            );
+        };
+
+        // --- Tap-to-Cycle Period Badge with COLORS ---
+        const PeriodBadge = ({ period, onChange, isDark }) => {
+            const cycle = () => {
+                const idx = PERIODS.indexOf(period);
+                onChange(PERIODS[(idx + 1) % PERIODS.length]);
+            };
+
+            const colors = isDark ? {
+                'One-year': 'bg-sky-900/50 text-sky-300 hover:bg-sky-900 border-sky-700',
+                'Three-years': 'bg-amber-900/50 text-amber-300 hover:bg-amber-900 border-amber-700',
+                'Five-years': 'bg-violet-900/50 text-violet-300 hover:bg-violet-900 border-violet-700',
+            } : {
+                'One-year': 'bg-sky-100 text-sky-700 hover:bg-sky-200 border-sky-200',
+                'Three-years': 'bg-amber-100 text-amber-700 hover:bg-amber-200 border-amber-200',
+                'Five-years': 'bg-violet-100 text-violet-700 hover:bg-violet-200 border-violet-200',
+            };
+
+            const label = period.replace('-years', 'yr').replace('-year', 'yr');
+
+            return (
+                <button 
+                    onClick={cycle}
+                    className={`text-[10px] font-bold px-1.5 py-0.5 rounded border cursor-pointer transition-all ${colors[period] || colors['One-year']}`}
+                    title="Click to cycle: 1yr → 3yr → 5yr"
+                >
+                    {label}
+                </button>
+            );
+        };
+
+        // --- Goal Card ---
+        const GoalCard = ({ goal, onUpdate, onDelete, onLinkReward, onEdit, isRecentlyDone, themeColor, isDark, linkedReward }) => {
+            const togglePin = () => onUpdate({ ...goal, pinned: !goal.pinned });
+            
+            return (
+                <div className={`group relative px-3 py-2 rounded-lg border transition-all hover:shadow-sm ${
+                    goal.pinned ? (isDark ? 'bg-amber-900/30 border-amber-500/50' : 'bg-amber-50 border-amber-200') :
+                    goal.status === 'Done' && !isRecentlyDone ? (isDark ? 'bg-slate-800/50 opacity-60' : 'bg-slate-50 opacity-60') : 
+                    (isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200')
+                }`}>
+                    {goal.pinned && <div className="absolute -top-1.5 -left-1.5 text-xs">🔥</div>}
+                    
+                    {/* Row 1: # | Title | $Cost | Period | Status */}
+                    <div className="flex items-center gap-2">
+                        <EditableNumber 
+                            value={goal.number} 
+                            onChange={(n) => onUpdate({ ...goal, number: n })} 
+                            themeColor={themeColor}
+                            isDark={isDark}
+                        />
+                        <h3 className={`flex-1 text-sm font-medium truncate ${goal.status === 'Done' ? 'line-through' : ''} ${isDark ? (goal.status === 'Done' ? 'text-slate-500' : 'text-slate-200') : (goal.status === 'Done' ? 'text-slate-400' : 'text-slate-700')}`}>
+                            {goal.goal}
+                        </h3>
+                        {goal.cost > 0 && <span className={`text-[9px] font-bold ${isDark ? 'text-emerald-400 bg-emerald-900/50' : 'text-emerald-600 bg-emerald-50'} px-1 py-0.5 rounded`}>${goal.cost.toLocaleString()}</span>}
+                        <PeriodBadge period={goal.period} onChange={(p) => onUpdate({ ...goal, period: p })} isDark={isDark} />
+                        <StatusBadge 
+                            status={goal.status} 
+                            onChange={(s) => onUpdate({ ...goal, status: s })} 
+                            isRecentlyDone={isRecentlyDone}
+                            isDark={isDark}
+                        />
+                    </div>
+
+                    {/* Row 2: Next step + Linked Reward | Actions */}
+                    <div className="flex items-center justify-between mt-1 min-h-[20px]">
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                            <div className={`text-xs truncate ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                                {goal.action && `→ ${goal.action}`}
+                            </div>
+                            {linkedReward && (
+                                <span className={`text-[10px] px-1.5 py-0.5 rounded flex items-center gap-1 ${
+                                    linkedReward.earned 
+                                        ? (isDark ? 'bg-emerald-900/50 text-emerald-400' : 'bg-emerald-100 text-emerald-600')
+                                        : (isDark ? 'bg-slate-700 text-slate-400' : 'bg-slate-100 text-slate-500')
+                                }`}>
+                                    🎁 {linkedReward.text.substring(0, 20)}{linkedReward.text.length > 20 ? '...' : ''}
+                                    {linkedReward.earned && ' ✓'}
+                                </span>
+                            )}
+                        </div>
+                        <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onClick={togglePin} className={`p-0.5 ${goal.pinned ? 'text-amber-500' : (isDark ? 'text-slate-600 hover:text-amber-400' : 'text-slate-300 hover:text-amber-500')}`} title={goal.pinned ? "Unpin" : "Pin"}>
+                                <Icon name="flame" size={12} />
+                            </button>
+                            <button onClick={() => onLinkReward(goal)} className={`p-0.5 ${goal.linkedRewardId ? 'text-emerald-500' : (isDark ? 'text-slate-600 hover:text-emerald-400' : 'text-slate-300 hover:text-emerald-500')}`} title="Link reward">
+                                <Icon name="gift" size={12} />
+                            </button>
+                            <button onClick={() => onEdit(goal)} className={`p-0.5 ${isDark ? 'text-slate-600 hover:text-blue-400' : 'text-slate-300 hover:text-blue-500'}`} title="Edit">
+                                <Icon name="pencil" size={12} />
+                            </button>
+                            <button onClick={() => onDelete(goal.id)} className={`p-0.5 ${isDark ? 'text-slate-600 hover:text-red-400' : 'text-slate-300 hover:text-red-500'}`} title="Delete">
+                                <Icon name="trash-2" size={12} />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Goal List ---
+        const GoalList = ({ title, goals, category, onAdd, onUpdate, onDelete, onLinkReward, onEdit, onSuggest, recentlyDone, themeColor, searchQuery, isDark, rewards }) => {
+            const inputRef = useRef(null);
+            const [sortBy, setSortBy] = useState('number'); // 'number' or 'smart'
+
+            const stats = useMemo(() => ({
+                total: goals.length,
+                done: goals.filter(g => g.status === 'Done').length,
+                active: goals.filter(g => ['Doing', 'On Track'].includes(g.status)).length,
+                progress: goals.length ? Math.round((goals.filter(g => g.status === 'Done').length / goals.length) * 100) : 0,
+                oneYear: goals.filter(g => g.period === 'One-year').length,
+                threeYear: goals.filter(g => g.period === 'Three-years').length,
+                fiveYear: goals.filter(g => g.period === 'Five-years').length,
+                pinned: goals.filter(g => g.pinned).length,
+            }), [goals]);
+
+            const sorted = useMemo(() => {
+                let filtered = goals;
+                if (searchQuery) {
+                    const q = searchQuery.toLowerCase();
+                    filtered = goals.filter(g => g.goal.toLowerCase().includes(q) || g.action?.toLowerCase().includes(q));
+                }
+                return [...filtered].sort((a, b) => {
+                    // Pinned goals ALWAYS first
+                    if (a.pinned && !b.pinned) return -1;
+                    if (!a.pinned && b.pinned) return 1;
+                    
+                    // Recently done goals stay in place for 10 seconds
+                    const aRecent = recentlyDone.has(a.id);
+                    const bRecent = recentlyDone.has(b.id);
+                    
+                    if (sortBy === 'number') {
+                        // Done (not recent) go to bottom
+                        const aDone = a.status === 'Done' && !aRecent;
+                        const bDone = b.status === 'Done' && !bRecent;
+                        if (aDone !== bDone) return aDone ? 1 : -1;
+                        return (a.number || 0) - (b.number || 0);
+                    } else {
+                        // Smart sort
+                        const aDone = a.status === 'Done' && !aRecent;
+                        const bDone = b.status === 'Done' && !bRecent;
+                        if (aDone !== bDone) return aDone ? 1 : -1;
+                        const statusRank = s => ['Doing', 'On Track'].includes(s) ? 1 : ['For Later'].includes(s) ? 2 : 3;
+                        if (statusRank(a.status) !== statusRank(b.status)) return statusRank(a.status) - statusRank(b.status);
+                        return (PERIOD_ORDER[a.period] || 99) - (PERIOD_ORDER[b.period] || 99);
+                    }
+                });
+            }, [goals, sortBy, searchQuery, recentlyDone]);
+
+            const handleAdd = () => {
+                if (inputRef.current?.value.trim()) {
+                    onAdd(inputRef.current.value, category);
+                    inputRef.current.value = '';
+                }
+            };
+
+            return (
+                <div className={`rounded-2xl shadow-sm border flex flex-col h-full overflow-hidden ${isDark ? 'bg-slate-800 border-slate-700' : `bg-white border-${themeColor}-100`}`}>
+                    <div className={`p-4 border-b flex-none ${isDark ? 'bg-slate-800/50 border-slate-700' : `bg-${themeColor}-50/30`}`}>
+                        <div className="flex justify-between items-center mb-2">
+                            <div className="flex items-center gap-2">
+                                <h2 className={`font-bold text-lg ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{title}</h2>
+                                <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${isDark ? 'bg-slate-700 text-slate-300 border-slate-600' : `bg-white text-${themeColor}-400`}`}>{stats.total}</span>
+                                {stats.pinned > 0 && <span className="text-xs">🔥 {stats.pinned}</span>}
+                            </div>
+                            <button onClick={() => setSortBy(s => s === 'number' ? 'smart' : 'number')} className={`text-xs font-bold px-2 py-1 rounded flex items-center gap-1 ${isDark ? 'hover:bg-slate-700 text-slate-400' : `hover:bg-${themeColor}-100 text-${themeColor}-500`}`}>
+                                <Icon name="arrow-up-down" size={12} /> {sortBy === 'number' ? 'By #' : 'Smart'}
+                            </button>
+                        </div>
+                        <div className={`w-full h-1.5 rounded-full overflow-hidden mb-2 ${isDark ? 'bg-slate-700' : 'bg-slate-100'}`}>
+                            <div className={`h-full transition-all ${isDark ? `bg-${themeColor}-500` : `bg-${themeColor}-500`}`} style={{width: `${stats.progress}%`}}></div>
+                        </div>
+                        <div className={`flex gap-3 text-[10px] uppercase font-bold flex-wrap ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                            <span className={isDark ? `text-${themeColor}-400` : `text-${themeColor}-600`}>Active: {stats.active}</span>
+                            <span className="text-emerald-500">Done: {stats.done}</span>
+                            <span className="text-sky-500">1yr: {stats.oneYear}</span>
+                            <span className="text-amber-500">3yr: {stats.threeYear}</span>
+                            <span className="text-violet-500">5yr: {stats.fiveYear}</span>
+                        </div>
+                    </div>
+
+                    <div className={`p-3 border-b flex-none ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white'}`}>
+                        <div className="flex gap-2">
+                            <input ref={inputRef} type="text" onKeyDown={e => e.key === 'Enter' && handleAdd()} placeholder="Add goal..." className={`flex-1 px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 ${isDark ? `bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:ring-${themeColor}-500` : `bg-${themeColor}-50/50 border-${themeColor}-100 focus:ring-${themeColor}-400`}`} />
+                            <button onClick={handleAdd} className={`text-white px-4 rounded-xl font-bold text-sm ${isDark ? `bg-${themeColor}-600 hover:bg-${themeColor}-700` : `bg-${themeColor}-500 hover:bg-${themeColor}-600`}`}>Add</button>
+                            <button onClick={() => onSuggest(category)} className="bg-gradient-to-r from-violet-500 to-purple-500 text-white px-3 rounded-xl" title="Suggest">
+                                <Icon name="sparkles" size={16} />
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="overflow-y-auto flex-1 p-2 space-y-1">
+                        {sorted.length === 0 ? (
+                            <div className={`text-center py-16 text-sm ${isDark ? 'text-slate-600' : 'text-slate-300'}`}>No goals yet</div>
+                        ) : sorted.map(goal => (
+                            <GoalCard 
+                                key={goal.id} 
+                                goal={goal} 
+                                onUpdate={onUpdate}
+                                onDelete={onDelete}
+                                onLinkReward={onLinkReward}
+                                onEdit={onEdit}
+                                isRecentlyDone={recentlyDone.has(goal.id)}
+                                themeColor={themeColor}
+                                isDark={isDark}
+                                linkedReward={rewards.find(r => r.id === goal.linkedRewardId)}
+                            />
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Blessings List ---
+        const BlessingsList = ({ blessings, onAdd, onDelete, onSuggest, isDark }) => {
+            const inputRef = useRef(null);
+            const handleAdd = () => {
+                if (inputRef.current?.value.trim()) {
+                    onAdd(inputRef.current.value);
+                    inputRef.current.value = '';
+                }
+            };
+
+            return (
+                <div className={`rounded-2xl shadow-sm border flex flex-col h-full overflow-hidden ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-amber-100'}`}>
+                    <div className={`p-4 border-b flex-none ${isDark ? 'bg-gradient-to-r from-amber-900/30 to-orange-900/30 border-slate-700' : 'bg-gradient-to-r from-amber-50 to-orange-50'}`}>
+                        <div className="flex items-center gap-2 mb-1">
+                            <h2 className={`font-bold text-lg ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>🙏 Blessings</h2>
+                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${isDark ? 'bg-slate-700 text-amber-400 border-slate-600' : 'bg-white text-amber-500 border-amber-200'}`}>{blessings.length}</span>
+                        </div>
+                        <p className={`text-xs ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>Count your blessings, not your problems</p>
+                    </div>
+
+                    <div className={`p-3 border-b flex-none ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white'}`}>
+                        <div className="flex gap-2">
+                            <input ref={inputRef} type="text" onKeyDown={e => e.key === 'Enter' && handleAdd()} placeholder="What are you grateful for?" className={`flex-1 px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 ${isDark ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:ring-amber-500' : 'bg-amber-50/50 border-amber-100 focus:ring-amber-400'}`} />
+                            <button onClick={handleAdd} className={`text-white px-4 rounded-xl font-bold text-sm ${isDark ? 'bg-amber-600 hover:bg-amber-700' : 'bg-amber-500 hover:bg-amber-600'}`}>Add</button>
+                            <button onClick={onSuggest} className="bg-gradient-to-r from-orange-400 to-amber-500 text-white px-3 rounded-xl" title="Suggest">
+                                <Icon name="sparkles" size={16} />
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="overflow-y-auto flex-1 p-3 space-y-2">
+                        {blessings.length === 0 ? (
+                            <div className={`text-center py-16 text-sm ${isDark ? 'text-slate-600' : 'text-amber-200'}`}>Add your first blessing! ✨</div>
+                        ) : blessings.map(b => (
+                            <div key={b.id} className={`group p-3 rounded-xl border hover:shadow-md ${isDark ? 'border-slate-700 bg-gradient-to-r from-amber-900/20 to-orange-900/20' : 'border-amber-100 bg-gradient-to-r from-amber-50/50 to-orange-50/50'}`}>
+                                <div className="flex justify-between items-start gap-3">
+                                    <div className="flex-1">
+                                        <span className={`text-[10px] ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>{b.date}</span>
+                                        <p className={`text-sm ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{b.text}</p>
+                                    </div>
+                                    <button onClick={() => onDelete(b.id)} className={`p-1.5 opacity-0 group-hover:opacity-100 ${isDark ? 'text-slate-500 hover:text-red-400' : 'text-slate-300 hover:text-red-500'}`}>
+                                        <Icon name="trash-2" size={14} />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Rewards List ---
+        const RewardsList = ({ rewards, onAdd, onDelete, onToggleEarned, onSuggest, isDark }) => {
+            const inputRef = useRef(null);
+            const costRef = useRef(null);
+            
+            const handleAdd = () => {
+                if (inputRef.current?.value.trim()) {
+                    onAdd(inputRef.current.value, parseInt(costRef.current?.value) || 0);
+                    inputRef.current.value = '';
+                    if (costRef.current) costRef.current.value = '';
+                }
+            };
+
+            const earnedCount = rewards.filter(r => r.earned).length;
+            const totalValue = rewards.reduce((sum, r) => sum + (r.cost || 0), 0);
+            const earnedValue = rewards.filter(r => r.earned).reduce((sum, r) => sum + (r.cost || 0), 0);
+
+            return (
+                <div className={`rounded-2xl shadow-sm border flex flex-col h-full overflow-hidden ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-emerald-100'}`}>
+                    <div className={`p-4 border-b flex-none ${isDark ? 'bg-gradient-to-r from-emerald-900/30 to-teal-900/30 border-slate-700' : 'bg-gradient-to-r from-emerald-50 to-teal-50'}`}>
+                        <div className="flex items-center gap-2 mb-1">
+                            <h2 className={`font-bold text-lg ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>🎁 Rewards</h2>
+                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${isDark ? 'bg-slate-700 text-emerald-400 border-slate-600' : 'bg-white text-emerald-500 border-emerald-200'}`}>{rewards.length}</span>
+                            {earnedCount > 0 && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-emerald-900/50 text-emerald-400' : 'bg-emerald-100 text-emerald-600'}`}>✓ {earnedCount} earned</span>}
+                        </div>
+                        <p className={`text-xs ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>Treat yourself when you achieve your goals!</p>
+                        <div className={`text-[10px] mt-1 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                            Total: ${totalValue.toLocaleString()} • Earned: ${earnedValue.toLocaleString()}
+                        </div>
+                    </div>
+
+                    <div className={`p-3 border-b flex-none ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white'}`}>
+                        <div className="flex gap-2">
+                            <input ref={inputRef} type="text" onKeyDown={e => e.key === 'Enter' && handleAdd()} placeholder="Add a reward..." className={`flex-1 px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 ${isDark ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:ring-emerald-500' : 'bg-emerald-50/50 border-emerald-100 focus:ring-emerald-400'}`} />
+                            <input ref={costRef} type="number" placeholder="$" className={`w-16 px-2 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 ${isDark ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:ring-emerald-500' : 'bg-emerald-50/50 border-emerald-100 focus:ring-emerald-400'}`} />
+                            <button onClick={handleAdd} className={`text-white px-4 rounded-xl font-bold text-sm ${isDark ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-emerald-500 hover:bg-emerald-600'}`}>Add</button>
+                            <button onClick={onSuggest} className="bg-gradient-to-r from-teal-400 to-emerald-500 text-white px-3 rounded-xl" title="Suggest">
+                                <Icon name="sparkles" size={16} />
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="overflow-y-auto flex-1 p-3 space-y-2">
+                        {rewards.length === 0 ? (
+                            <div className={`text-center py-16 text-sm ${isDark ? 'text-slate-600' : 'text-emerald-200'}`}>Add rewards to motivate yourself! 🎁</div>
+                        ) : rewards.map(r => (
+                            <div key={r.id} className={`group px-3 py-2 rounded-xl border hover:shadow-md transition-all ${
+                                r.earned 
+                                    ? (isDark ? 'border-emerald-700 bg-emerald-900/30' : 'border-emerald-300 bg-emerald-50') 
+                                    : (isDark ? 'border-slate-700 bg-slate-800' : 'border-slate-200 bg-white')
+                            }`}>
+                                <div className="flex items-center gap-3">
+                                    <button 
+                                        onClick={() => onToggleEarned(r.id)} 
+                                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
+                                            r.earned 
+                                                ? 'bg-emerald-500 border-emerald-500 text-white' 
+                                                : (isDark ? 'border-slate-600 hover:border-emerald-500' : 'border-slate-300 hover:border-emerald-400')
+                                        }`}
+                                        title={r.earned ? "Mark as not earned" : "Mark as earned!"}
+                                    >
+                                        {r.earned && <Icon name="check" size={12} />}
+                                    </button>
+                                    <p className={`flex-1 text-sm ${r.earned ? 'line-through' : ''} ${isDark ? (r.earned ? 'text-slate-500' : 'text-slate-200') : (r.earned ? 'text-slate-400' : 'text-slate-700')}`}>
+                                        {r.text}
+                                    </p>
+                                    {r.cost > 0 && (
+                                        <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${isDark ? 'bg-emerald-900/50 text-emerald-400' : 'bg-emerald-100 text-emerald-600'}`}>
+                                            ${r.cost}
+                                        </span>
+                                    )}
+                                    <button onClick={() => onDelete(r.id)} className={`p-1 opacity-0 group-hover:opacity-100 ${isDark ? 'text-slate-500 hover:text-red-400' : 'text-slate-300 hover:text-red-500'}`}>
+                                        <Icon name="trash-2" size={14} />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Link Reward Modal ---
+        const LinkRewardModal = ({ goal, rewards, onLink, onClose, isDark }) => {
+            return (
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={onClose}>
+                    <div className={`rounded-2xl shadow-2xl w-full max-w-sm max-h-[70vh] flex flex-col overflow-hidden slide-up ${isDark ? 'bg-slate-800' : 'bg-white'}`} onClick={e => e.stopPropagation()}>
+                        <div className={`p-4 border-b ${isDark ? 'border-slate-700 bg-gradient-to-r from-emerald-900/30 to-teal-900/30' : 'bg-gradient-to-r from-emerald-50 to-teal-50'}`}>
+                            <h2 className={`font-bold text-lg ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>🎁 Link Reward</h2>
+                            <p className={`text-xs mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                                Choose a reward for: <span className="font-medium">{goal.goal}</span>
+                            </p>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-3 space-y-2">
+                            {/* Unlink option */}
+                            {goal.linkedRewardId && (
+                                <button 
+                                    onClick={() => { onLink(goal.id, null); onClose(); }}
+                                    className={`w-full text-left px-3 py-2 rounded-lg border text-sm ${isDark ? 'border-red-800 bg-red-900/20 text-red-400 hover:bg-red-900/40' : 'border-red-200 bg-red-50 text-red-600 hover:bg-red-100'}`}
+                                >
+                                    ✕ Remove linked reward
+                                </button>
+                            )}
+                            {rewards.length === 0 ? (
+                                <div className={`text-center py-8 text-sm ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                                    No rewards yet! Add some in the Rewards tab.
+                                </div>
+                            ) : rewards.map(r => (
+                                <button 
+                                    key={r.id}
+                                    onClick={() => { onLink(goal.id, r.id); onClose(); }}
+                                    className={`w-full text-left px-3 py-2 rounded-lg border transition-all ${
+                                        goal.linkedRewardId === r.id
+                                            ? (isDark ? 'border-emerald-500 bg-emerald-900/30 ring-2 ring-emerald-500/50' : 'border-emerald-400 bg-emerald-50 ring-2 ring-emerald-400/50')
+                                            : (isDark ? 'border-slate-700 hover:border-emerald-600 hover:bg-slate-700' : 'border-slate-200 hover:border-emerald-300 hover:bg-emerald-50')
+                                    }`}
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <span className={`text-sm ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
+                                            {r.earned ? '✓ ' : ''}{r.text}
+                                        </span>
+                                        {r.cost > 0 && (
+                                            <span className={`text-xs px-1.5 py-0.5 rounded ${isDark ? 'bg-emerald-900/50 text-emerald-400' : 'bg-emerald-100 text-emerald-600'}`}>
+                                                ${r.cost}
+                                            </span>
+                                        )}
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                        <div className={`p-3 border-t ${isDark ? 'border-slate-700' : 'border-slate-200'}`}>
+                            <button onClick={onClose} className={`w-full py-2 rounded-lg text-sm font-medium ${isDark ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Review Modal ---
+        const ReviewModal = ({ year, goals, blessings, rewards, onClose, isBlue }) => {
+            const themeColor = isBlue ? 'blue' : 'rose';
+            const completed = goals.filter(g => g.status === 'Done' && parseInt(g.year) === year);
+            const yearBlessings = blessings.filter(b => b.date?.startsWith(String(year)));
+            const earnedRewards = rewards.filter(r => r.earned);
+            const totalValue = completed.reduce((sum, g) => sum + (g.cost || 0), 0);
+            const rewardsValue = earnedRewards.reduce((sum, r) => sum + (r.cost || 0), 0);
+
+            const copy = () => {
+                const text = `🎉 ${year} Year in Review\n✅ ${completed.length} Goals | 💰 $${totalValue.toLocaleString()} | 🙏 ${yearBlessings.length} Blessings | 🎁 ${earnedRewards.length} Rewards\n\nGOALS:\n${completed.map(g => `• ${g.goal}`).join('\n')}\n\nBLESSINGS:\n${yearBlessings.map(b => `• ${b.text}`).join('\n')}\n\nREWARDS EARNED:\n${earnedRewards.map(r => `• ${r.text}`).join('\n')}`;
+                navigator.clipboard.writeText(text);
+                alert('Copied!');
+            };
+
+            return (
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center p-4 z-50" onClick={onClose}>
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden slide-up" onClick={e => e.stopPropagation()}>
+                        <div className={`p-6 border-b bg-gradient-to-r from-${themeColor}-50 to-amber-50 text-center flex-none`}>
+                            <h2 className="text-2xl font-serif font-bold text-slate-800">Year in Review: {year}</h2>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-6">
+                            <div className="grid grid-cols-4 gap-3 mb-6">
+                                <div className={`p-3 bg-${themeColor}-50 rounded-xl text-center`}>
+                                    <div className={`text-xl font-bold text-${themeColor}-600`}>{completed.length}</div>
+                                    <div className="text-[10px] text-slate-500 uppercase font-bold">Goals</div>
+                                </div>
+                                <div className="p-3 bg-emerald-50 rounded-xl text-center">
+                                    <div className="text-xl font-bold text-emerald-600">${totalValue.toLocaleString()}</div>
+                                    <div className="text-[10px] text-slate-500 uppercase font-bold">Value</div>
+                                </div>
+                                <div className="p-3 bg-amber-50 rounded-xl text-center">
+                                    <div className="text-xl font-bold text-amber-600">{yearBlessings.length}</div>
+                                    <div className="text-[10px] text-slate-500 uppercase font-bold">Blessings</div>
+                                </div>
+                                <div className="p-3 bg-teal-50 rounded-xl text-center">
+                                    <div className="text-xl font-bold text-teal-600">{earnedRewards.length}</div>
+                                    <div className="text-[10px] text-slate-500 uppercase font-bold">Rewards</div>
+                                </div>
+                            </div>
+                            <div className="grid md:grid-cols-3 gap-4">
+                                <div>
+                                    <h3 className={`font-bold text-${themeColor}-600 mb-2 text-sm`}>🏆 Goals Achieved</h3>
+                                    <div className="space-y-1">{completed.map(g => <div key={g.id} className="text-xs p-2 bg-emerald-50 rounded-lg">✓ {g.goal}</div>)}</div>
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-amber-600 mb-2 text-sm">🙏 Blessings</h3>
+                                    <div className="space-y-1">{yearBlessings.map(b => <div key={b.id} className="text-xs p-2 bg-amber-50 rounded-lg">{b.text}</div>)}</div>
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-teal-600 mb-2 text-sm">🎁 Rewards Earned</h3>
+                                    <div className="space-y-1">{earnedRewards.map(r => <div key={r.id} className="text-xs p-2 bg-teal-50 rounded-lg">{r.text} {r.cost > 0 && `($${r.cost})`}</div>)}</div>
+                                    {rewardsValue > 0 && <div className="text-xs text-teal-600 mt-2 font-bold">Total: ${rewardsValue}</div>}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="p-4 border-t flex gap-3 justify-center flex-none">
+                            <button onClick={copy} className="px-6 py-2 border text-slate-600 rounded-full font-bold">📋 Copy</button>
+                            <button onClick={onClose} className={`px-6 py-2 bg-${themeColor}-500 text-white rounded-full font-bold`}>Close</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Import Modal ---
+        const ImportModal = ({ onImport, onClose, isBlue, currentYear }) => {
+            const themeColor = isBlue ? 'blue' : 'rose';
+            const [rawData, setRawData] = useState('');
+            const [preview, setPreview] = useState([]);
+            const [importYear, setImportYear] = useState(currentYear);
+            const fileRef = useRef(null);
+
+            const handleParse = (text) => { setRawData(text); setPreview(parseCSV(text)); };
+            const handleFile = (e) => {
+                const file = e.target.files[0]; if (!file) return;
+                const yearMatch = file.name.match(/20\d{2}/);
+                if (yearMatch) setImportYear(parseInt(yearMatch[0]));
+                const reader = new FileReader();
+                reader.onload = (evt) => handleParse(evt.target.result);
+                reader.readAsText(file);
+            };
+
+            return (
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={onClose}>
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl max-h-[80vh] flex flex-col overflow-hidden slide-up" onClick={e => e.stopPropagation()}>
+                        <div className="p-4 border-b flex justify-between items-center flex-none">
+                            <h2 className="text-lg font-bold">Import Goals</h2>
+                            <button onClick={onClose}><Icon name="x" size={24} className="text-slate-400" /></button>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                            <div className="flex gap-2">
+                                <button onClick={() => fileRef.current?.click()} className={`px-4 py-2 bg-${themeColor}-500 text-white rounded-xl font-medium flex items-center gap-2`}>
+                                    <Icon name="upload" size={16} /> Upload CSV
+                                </button>
+                                <input ref={fileRef} type="file" accept=".csv,.txt" className="hidden" onChange={handleFile} />
+                                <select value={importYear} onChange={e => setImportYear(parseInt(e.target.value))} className="px-3 py-2 border rounded-xl text-sm">
+                                    {[2023, 2024, 2025, 2026, 2027].map(y => <option key={y}>{y}</option>)}
+                                </select>
+                            </div>
+                            <textarea value={rawData} onChange={e => handleParse(e.target.value)} className="w-full border rounded-xl p-3 text-sm font-mono h-24" placeholder="Paste CSV..." />
+                            {preview.length > 0 && (
+                                <div className="max-h-36 overflow-y-auto border rounded-xl text-xs">
+                                    <table className="w-full"><thead className="bg-slate-50 sticky top-0"><tr><th className="p-2 text-left">Goal</th><th className="p-2">Status</th></tr></thead>
+                                    <tbody>{preview.slice(0, 8).map((g, i) => <tr key={i} className="border-t"><td className="p-2 truncate max-w-[200px]">{g.goal}</td><td className="p-2 text-center font-bold">{g.status}</td></tr>)}</tbody></table>
+                                    {preview.length > 8 && <div className="p-2 text-center text-slate-400">+{preview.length - 8} more</div>}
+                                </div>
+                            )}
+                        </div>
+                        <div className="p-4 border-t flex gap-3 flex-none">
+                            <button onClick={onClose} className="flex-1 py-2 border rounded-xl font-bold">Cancel</button>
+                            <button onClick={() => { onImport(preview.map(g => ({ ...g, year: importYear }))); onClose(); }} disabled={!preview.length} className={`flex-1 py-2 bg-${themeColor}-500 text-white rounded-xl font-bold disabled:opacity-50`}>Import {preview.length}</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Suggestions Modal ---
+        const SuggestionsModal = ({ category, existingGoals, onAdd, onClose, isBlue }) => {
+            const [selected, setSelected] = useState(new Set());
+            const [refreshKey, setRefreshKey] = useState(0);
+            const themeColor = isBlue ? 'blue' : 'rose';
+            
+            // Get 5 random suggestions that aren't already in goals
+            const suggestions = useMemo(() => {
+                const available = SUGGESTIONS[category].filter(s => 
+                    !existingGoals.some(g => g.goal.toLowerCase() === s.goal.toLowerCase())
+                );
+                // Shuffle and take 5
+                const shuffled = [...available].sort(() => Math.random() - 0.5);
+                return shuffled.slice(0, 5);
+            }, [category, existingGoals, refreshKey]);
+
+            const toggleSelect = (idx) => {
+                setSelected(prev => {
+                    const next = new Set(prev);
+                    next.has(idx) ? next.delete(idx) : next.add(idx);
+                    return next;
+                });
+            };
+
+            const handleAdd = () => {
+                const toAdd = suggestions.filter((_, i) => selected.has(i));
+                onAdd(toAdd);
+            };
+
+            const regenerate = () => {
+                setSelected(new Set());
+                setRefreshKey(k => k + 1);
+            };
+
+            return (
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={onClose}>
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[80vh] flex flex-col overflow-hidden slide-up" onClick={e => e.stopPropagation()}>
+                        <div className="p-5 border-b bg-gradient-to-r from-violet-50 to-purple-50 flex-none">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-violet-100 rounded-xl text-violet-600"><Icon name="sparkles" size={20} /></div>
+                                    <div>
+                                        <h2 className="text-lg font-bold text-slate-800">Goal Suggestions</h2>
+                                        <p className="text-xs text-slate-500">{category} • Select goals to add</p>
+                                    </div>
+                                </div>
+                                <button onClick={regenerate} className="p-2 text-violet-500 hover:bg-violet-100 rounded-lg transition-colors" title="Get new suggestions">
+                                    <Icon name="refresh-cw" size={18} />
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto p-4 space-y-2">
+                            {suggestions.length === 0 ? (
+                                <div className="text-center py-10 text-slate-400">
+                                    <p>All suggestions have been used! 🎉</p>
+                                </div>
+                            ) : (
+                                suggestions.map((s, idx) => (
+                                    <div
+                                        key={idx}
+                                        onClick={() => toggleSelect(idx)}
+                                        className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                                            selected.has(idx) 
+                                                ? 'border-violet-500 bg-violet-50' 
+                                                : 'border-slate-200 hover:border-violet-300'
+                                        }`}
+                                    >
+                                        <div className="flex items-start gap-3">
+                                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                                                selected.has(idx) ? 'bg-violet-500 border-violet-500 text-white' : 'border-slate-300'
+                                            }`}>
+                                                {selected.has(idx) && <Icon name="check" size={12} />}
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <span className="text-[10px] font-bold text-violet-500 bg-violet-100 px-1.5 py-0.5 rounded">
+                                                        {s.period.replace('-years', 'yr').replace('-year', 'yr')}
+                                                    </span>
+                                                </div>
+                                                <h3 className="font-medium text-slate-800">{s.goal}</h3>
+                                                {s.action && <p className="text-sm text-slate-500 mt-1">→ {s.action}</p>}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+
+                        <div className="p-4 border-t bg-slate-50 flex gap-3 flex-none">
+                            <button 
+                                onClick={onClose}
+                                className="px-4 py-2.5 border border-slate-300 text-slate-600 rounded-xl font-medium hover:bg-white"
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                onClick={handleAdd}
+                                disabled={selected.size === 0}
+                                className="flex-1 py-2.5 bg-violet-500 text-white rounded-xl font-bold hover:bg-violet-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                                Add {selected.size > 0 ? `${selected.size} Goal${selected.size > 1 ? 's' : ''}` : 'Selected'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Stats Dashboard Modal ---
+        const StatsModal = ({ goals, blessings, rewards, currentYear, onClose, isBlue }) => {
+            const themeColor = isBlue ? 'blue' : 'rose';
+            const yearGoals = goals.filter(g => g.year === currentYear);
+            const allYears = [...new Set(goals.map(g => g.year))].sort();
+            
+            // Rewards stats
+            const earnedRewards = rewards.filter(r => r.earned).length;
+            const totalRewards = rewards.length;
+            const rewardsValue = rewards.filter(r => r.earned).reduce((sum, r) => sum + (r.cost || 0), 0);
+            
+            // Status breakdown
+            const byStatus = {
+                'Doing': yearGoals.filter(g => g.status === 'Doing').length,
+                'On Track': yearGoals.filter(g => g.status === 'On Track').length,
+                'For Later': yearGoals.filter(g => g.status === 'For Later').length,
+                'Done': yearGoals.filter(g => g.status === 'Done').length,
+                'Dropped': yearGoals.filter(g => g.status === 'Dropped').length,
+            };
+            
+            // Period breakdown
+            const byPeriod = {
+                'One-year': yearGoals.filter(g => g.period === 'One-year').length,
+                'Three-years': yearGoals.filter(g => g.period === 'Three-years').length,
+                'Five-years': yearGoals.filter(g => g.period === 'Five-years').length,
+            };
+            
+            // Category breakdown
+            const byCategory = {
+                'Personal': yearGoals.filter(g => g.category === 'Personal').length,
+                'Professional': yearGoals.filter(g => g.category === 'Professional').length,
+            };
+            
+            // Completion rates
+            const personalGoals = yearGoals.filter(g => g.category === 'Personal');
+            const profGoals = yearGoals.filter(g => g.category === 'Professional');
+            const personalDone = personalGoals.filter(g => g.status === 'Done').length;
+            const profDone = profGoals.filter(g => g.status === 'Done').length;
+            const personalRate = personalGoals.length ? Math.round((personalDone / personalGoals.length) * 100) : 0;
+            const profRate = profGoals.length ? Math.round((profDone / profGoals.length) * 100) : 0;
+            const overallRate = yearGoals.length ? Math.round((byStatus['Done'] / yearGoals.length) * 100) : 0;
+            
+            // Total value
+            const totalValue = yearGoals.reduce((sum, g) => sum + (g.cost || 0), 0);
+            const doneValue = yearGoals.filter(g => g.status === 'Done').reduce((sum, g) => sum + (g.cost || 0), 0);
+            
+            // Year over year
+            const yearStats = allYears.map(y => ({
+                year: y,
+                total: goals.filter(g => g.year === y).length,
+                done: goals.filter(g => g.year === y && g.status === 'Done').length,
+            }));
+
+            const ProgressBar = ({ value, max, color, label }) => (
+                <div className="mb-3">
+                    <div className="flex justify-between text-xs mb-1">
+                        <span className="font-medium text-slate-600">{label}</span>
+                        <span className="font-bold">{value}/{max}</span>
+                    </div>
+                    <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
+                        <div className={`h-full ${color} transition-all duration-500`} style={{ width: `${max ? (value/max)*100 : 0}%` }}></div>
+                    </div>
+                </div>
+            );
+
+            const copyReport = () => {
+                const report = `📊 RUMO REPORT - ${currentYear}
+════════════════════════════════
+
+📈 OVERVIEW
+• Total Goals: ${yearGoals.length}
+• Completion Rate: ${overallRate}%
+• Total Value: $${totalValue.toLocaleString()}
+• Value Achieved: $${doneValue.toLocaleString()}
+
+📋 BY STATUS
+• Doing: ${byStatus['Doing']}
+• On Track: ${byStatus['On Track']}
+• For Later: ${byStatus['For Later']}
+• Done: ${byStatus['Done']} ✓
+• Dropped: ${byStatus['Dropped']}
+
+⏱️ BY TIMEFRAME
+• One-year: ${byPeriod['One-year']}
+• Three-years: ${byPeriod['Three-years']}
+• Five-years: ${byPeriod['Five-years']}
+
+🏠 PERSONAL
+• Goals: ${byCategory['Personal']}
+• Done: ${personalDone}
+• Rate: ${personalRate}%
+
+💼 PROFESSIONAL  
+• Goals: ${byCategory['Professional']}
+• Done: ${profDone}
+• Rate: ${profRate}%
+
+🙏 BLESSINGS: ${blessings.filter(b => b.date?.startsWith(String(currentYear))).length}
+
+🎁 REWARDS
+• Earned: ${earnedRewards}/${totalRewards}
+• Value: $${rewardsValue.toLocaleString()}
+
+Generated: ${new Date().toLocaleDateString()}`;
+                navigator.clipboard.writeText(report);
+                alert('Report copied to clipboard!');
+            };
+
+            return (
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center p-4 z-50" onClick={onClose}>
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden slide-up" onClick={e => e.stopPropagation()}>
+                        <div className={`p-5 border-b bg-gradient-to-r from-${themeColor}-50 to-slate-50 flex-none flex justify-between items-center`}>
+                            <div>
+                                <h2 className="text-xl font-bold text-slate-800">📊 Stats Dashboard</h2>
+                                <p className="text-sm text-slate-500">{currentYear} Overview</p>
+                            </div>
+                            <button onClick={onClose}><Icon name="x" size={24} className="text-slate-400" /></button>
+                        </div>
+                        
+                        <div className="flex-1 overflow-y-auto p-6">
+                            {/* Top Stats */}
+                            <div className="grid grid-cols-5 gap-3 mb-6">
+                                <div className={`p-3 bg-${themeColor}-50 rounded-xl text-center`}>
+                                    <div className={`text-2xl font-bold text-${themeColor}-600`}>{yearGoals.length}</div>
+                                    <div className="text-[10px] text-slate-500 font-medium">Goals</div>
+                                </div>
+                                <div className="p-3 bg-emerald-50 rounded-xl text-center">
+                                    <div className="text-2xl font-bold text-emerald-600">{overallRate}%</div>
+                                    <div className="text-[10px] text-slate-500 font-medium">Complete</div>
+                                </div>
+                                <div className="p-3 bg-amber-50 rounded-xl text-center">
+                                    <div className="text-2xl font-bold text-amber-600">${doneValue.toLocaleString()}</div>
+                                    <div className="text-[10px] text-slate-500 font-medium">Value</div>
+                                </div>
+                                <div className="p-3 bg-teal-50 rounded-xl text-center">
+                                    <div className="text-2xl font-bold text-teal-600">{earnedRewards}/{totalRewards}</div>
+                                    <div className="text-[10px] text-slate-500 font-medium">Rewards</div>
+                                </div>
+                                <div className="p-3 bg-violet-50 rounded-xl text-center">
+                                    <div className="text-2xl font-bold text-violet-600">${rewardsValue.toLocaleString()}</div>
+                                    <div className="text-[10px] text-slate-500 font-medium">Treats</div>
+                                </div>
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-6">
+                                {/* Status Breakdown */}
+                                <div className="bg-slate-50 rounded-xl p-4">
+                                    <h3 className="font-bold text-slate-700 mb-4 flex items-center gap-2">
+                                        <Icon name="pie-chart" size={16} /> By Status
+                                    </h3>
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                                            <span className="flex-1 text-sm">Doing</span>
+                                            <span className="font-bold">{byStatus['Doing']}</span>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-3 h-3 rounded-full bg-teal-500"></div>
+                                            <span className="flex-1 text-sm">On Track</span>
+                                            <span className="font-bold">{byStatus['On Track']}</span>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-3 h-3 rounded-full bg-slate-400"></div>
+                                            <span className="flex-1 text-sm">For Later</span>
+                                            <span className="font-bold">{byStatus['For Later']}</span>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
+                                            <span className="flex-1 text-sm">Done</span>
+                                            <span className="font-bold text-emerald-600">{byStatus['Done']}</span>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-3 h-3 rounded-full bg-red-400"></div>
+                                            <span className="flex-1 text-sm">Dropped</span>
+                                            <span className="font-bold">{byStatus['Dropped']}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Period Breakdown */}
+                                <div className="bg-slate-50 rounded-xl p-4">
+                                    <h3 className="font-bold text-slate-700 mb-4 flex items-center gap-2">
+                                        <Icon name="clock" size={16} /> By Timeframe
+                                    </h3>
+                                    <ProgressBar value={byPeriod['One-year']} max={yearGoals.length} color="bg-sky-500" label="One-year" />
+                                    <ProgressBar value={byPeriod['Three-years']} max={yearGoals.length} color="bg-amber-500" label="Three-years" />
+                                    <ProgressBar value={byPeriod['Five-years']} max={yearGoals.length} color="bg-violet-500" label="Five-years" />
+                                </div>
+
+                                {/* Category Progress */}
+                                <div className="bg-slate-50 rounded-xl p-4">
+                                    <h3 className="font-bold text-slate-700 mb-4 flex items-center gap-2">
+                                        <Icon name="target" size={16} /> Completion by Category
+                                    </h3>
+                                    <div className="mb-4">
+                                        <div className="flex justify-between text-sm mb-1">
+                                            <span className="font-medium">🏠 Personal</span>
+                                            <span className="font-bold text-emerald-600">{personalRate}%</span>
+                                        </div>
+                                        <div className="h-4 bg-slate-200 rounded-full overflow-hidden">
+                                            <div className="h-full bg-gradient-to-r from-rose-400 to-rose-500 transition-all" style={{ width: `${personalRate}%` }}></div>
+                                        </div>
+                                        <div className="text-xs text-slate-500 mt-1">{personalDone} of {personalGoals.length} completed</div>
+                                    </div>
+                                    <div>
+                                        <div className="flex justify-between text-sm mb-1">
+                                            <span className="font-medium">💼 Professional</span>
+                                            <span className="font-bold text-emerald-600">{profRate}%</span>
+                                        </div>
+                                        <div className="h-4 bg-slate-200 rounded-full overflow-hidden">
+                                            <div className="h-full bg-gradient-to-r from-blue-400 to-blue-500 transition-all" style={{ width: `${profRate}%` }}></div>
+                                        </div>
+                                        <div className="text-xs text-slate-500 mt-1">{profDone} of {profGoals.length} completed</div>
+                                    </div>
+                                </div>
+
+                                {/* Year Over Year */}
+                                <div className="bg-slate-50 rounded-xl p-4">
+                                    <h3 className="font-bold text-slate-700 mb-4 flex items-center gap-2">
+                                        <Icon name="trending-up" size={16} /> Year Over Year
+                                    </h3>
+                                    <div className="space-y-2">
+                                        {yearStats.map(ys => (
+                                            <div key={ys.year} className={`flex items-center gap-3 p-2 rounded-lg ${ys.year === currentYear ? 'bg-white shadow-sm' : ''}`}>
+                                                <span className={`font-bold ${ys.year === currentYear ? `text-${themeColor}-600` : 'text-slate-500'}`}>{ys.year}</span>
+                                                <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
+                                                    <div className="h-full bg-emerald-500" style={{ width: `${ys.total ? (ys.done/ys.total)*100 : 0}%` }}></div>
+                                                </div>
+                                                <span className="text-xs text-slate-600">{ys.done}/{ys.total}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="p-4 border-t bg-slate-50 flex gap-3 justify-center flex-none">
+                            <button onClick={copyReport} className="px-5 py-2 border border-slate-300 text-slate-600 rounded-full font-bold hover:bg-white flex items-center gap-2">
+                                <Icon name="clipboard" size={16} /> Copy Report
+                            </button>
+                            <button onClick={onClose} className={`px-6 py-2 bg-${themeColor}-500 text-white rounded-full font-bold`}>Close</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Edit Modal ---
+        const EditModal = ({ goal, onSave, onClose, themeColor }) => {
+            const [form, setForm] = useState({ ...goal, cost: goal.cost || '' });
+
+            return (
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[80vh] flex flex-col overflow-hidden slide-up">
+                        <div className="p-4 border-b flex justify-between items-center flex-none">
+                            <h2 className="text-lg font-bold">Edit Goal</h2>
+                            <button onClick={onClose}><Icon name="x" size={24} className="text-slate-400" /></button>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                            <div className="grid grid-cols-4 gap-3">
+                                <div><label className="block text-xs font-bold text-slate-400 mb-1">#</label><input type="number" value={form.number} onChange={e => setForm({...form, number: parseInt(e.target.value) || 1})} className="w-full rounded-lg border p-2 text-sm" /></div>
+                                <div><label className="block text-xs font-bold text-slate-400 mb-1">Year</label><input type="number" value={form.year} onChange={e => setForm({...form, year: parseInt(e.target.value)})} className="w-full rounded-lg border p-2 text-sm" /></div>
+                                <div className="col-span-2"><label className="block text-xs font-bold text-slate-400 mb-1">Cost $</label><input type="number" value={form.cost} onChange={e => setForm({...form, cost: e.target.value})} className="w-full rounded-lg border p-2 text-sm" placeholder="0" /></div>
+                            </div>
+                            <div><label className="block text-xs font-bold text-slate-400 mb-1">Goal</label><input type="text" value={form.goal} onChange={e => setForm({...form, goal: e.target.value})} className="w-full rounded-lg border p-2 text-sm" /></div>
+                            <div><label className="block text-xs font-bold text-slate-400 mb-1">Next Step</label><input type="text" value={form.action} onChange={e => setForm({...form, action: e.target.value})} className="w-full rounded-lg border p-2 text-sm" /></div>
+                            <div><label className="block text-xs font-bold text-slate-400 mb-1">Notes</label><textarea value={form.notes} onChange={e => setForm({...form, notes: e.target.value})} className="w-full rounded-lg border p-2 text-sm" rows="2" /></div>
+                        </div>
+                        <div className="p-4 border-t flex gap-3 flex-none">
+                            <button onClick={onClose} className="flex-1 py-2 border rounded-xl font-bold">Cancel</button>
+                            <button onClick={() => { onSave({...form, cost: parseFloat(form.cost) || 0}); onClose(); }} className={`flex-1 py-2 bg-${themeColor}-500 text-white rounded-xl font-bold`}>Save</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // ========== MAIN APP ==========
+        const App = () => {
+            const [isBlue, setIsBlue] = useState(() => localStorage.getItem('goalIsBlue') !== 'false');
+            const [isDark, setIsDark] = useState(() => localStorage.getItem('goalDark') === 'true');
+            const themeColor = isBlue ? 'blue' : 'rose';
+            
+            const [goals, setGoals] = useState(() => JSON.parse(localStorage.getItem('goals_v13') || 'null') || INITIAL_GOALS);
+            const [blessings, setBlessings] = useState(() => JSON.parse(localStorage.getItem('blessings_v13') || 'null') || INITIAL_BLESSINGS);
+            const [rewards, setRewards] = useState(() => JSON.parse(localStorage.getItem('rewards_v13') || 'null') || INITIAL_REWARDS);
+            const [ownerName, setOwnerName] = useState(() => localStorage.getItem('goalOwner') || "Jedson");
+            const [currentYear, setCurrentYear] = useState(() => parseInt(localStorage.getItem('goalYear')) || 2026);
+            
+            const [recentlyDone, setRecentlyDone] = useState(new Set()); // Track goals marked done in last 10s
+            const [editingHeader, setEditingHeader] = useState(false);
+            const [searchQuery, setSearchQuery] = useState('');
+            const [statusFilter, setStatusFilter] = useState('all'); // 'all', 'active', 'done'
+            const [periodFilter, setPeriodFilter] = useState('all'); // 'all', 'One-year', 'Three-years', 'Five-years'
+            const [splitRatio, setSplitRatio] = useState(() => parseFloat(localStorage.getItem('goalSplit')) || 50);
+            const [activeTab, setActiveTab] = useState('goals');
+            
+            const [editingGoal, setEditingGoal] = useState(null);
+            const [linkingGoal, setLinkingGoal] = useState(null);
+            const [isReviewOpen, setIsReviewOpen] = useState(false);
+            const [isImportOpen, setIsImportOpen] = useState(false);
+            const [isStatsOpen, setIsStatsOpen] = useState(false);
+            const [suggestCategory, setSuggestCategory] = useState(null);
+            const [toast, setToast] = useState({ visible: false, message: '', undoData: null });
+
+            // Persist
+            useEffect(() => { localStorage.setItem('goals_v13', JSON.stringify(goals)); }, [goals]);
+            useEffect(() => { localStorage.setItem('blessings_v13', JSON.stringify(blessings)); }, [blessings]);
+            useEffect(() => { localStorage.setItem('rewards_v13', JSON.stringify(rewards)); }, [rewards]);
+            useEffect(() => { localStorage.setItem('goalIsBlue', isBlue); }, [isBlue]);
+            useEffect(() => { localStorage.setItem('goalDark', isDark); }, [isDark]);
+            useEffect(() => { localStorage.setItem('goalSplit', splitRatio); }, [splitRatio]);
+            useEffect(() => { localStorage.setItem('goalOwner', ownerName); localStorage.setItem('goalYear', currentYear); }, [ownerName, currentYear]);
+
+            // Handle goal updates with Done delay logic
+            const handleUpdateGoal = useCallback((updatedGoal) => {
+                const oldGoal = goals.find(g => g.id === updatedGoal.id);
+                
+                // If status changed to Done, add to recentlyDone set
+                if (oldGoal && oldGoal.status !== 'Done' && updatedGoal.status === 'Done') {
+                    setRecentlyDone(prev => new Set([...prev, updatedGoal.id]));
+                    confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 }, colors: isBlue ? ['#3b82f6', '#10b981'] : ['#f43f5e', '#10b981'] });
+                    
+                    // Remove from recentlyDone after 10 seconds
+                    setTimeout(() => {
+                        setRecentlyDone(prev => {
+                            const next = new Set(prev);
+                            next.delete(updatedGoal.id);
+                            return next;
+                        });
+                    }, DONE_DELAY_MS);
+                }
+                
+                // If status changed FROM Done, remove from recentlyDone
+                if (oldGoal && oldGoal.status === 'Done' && updatedGoal.status !== 'Done') {
+                    setRecentlyDone(prev => {
+                        const next = new Set(prev);
+                        next.delete(updatedGoal.id);
+                        return next;
+                    });
+                }
+                
+                setGoals(prev => prev.map(g => g.id === updatedGoal.id ? updatedGoal : g));
+            }, [goals, isBlue]);
+
+            const addGoal = (text, category) => {
+                const catGoals = goals.filter(g => g.category === category && g.year === currentYear);
+                const maxNum = catGoals.reduce((max, g) => Math.max(max, g.number || 0), 0);
+                setGoals(prev => [...prev, { id: Date.now(), number: maxNum + 1, year: currentYear, goal: text, period: "One-year", category, status: "Doing", action: "", cost: 0, notes: "", subtasks: [], pinned: false }]);
+            };
+
+            const deleteGoal = (id) => {
+                const goal = goals.find(g => g.id === id);
+                setGoals(prev => prev.filter(g => g.id !== id));
+                setToast({ visible: true, message: 'Goal deleted', undoData: goal });
+                setTimeout(() => setToast(t => ({ ...t, visible: false })), 4000);
+            };
+
+            const undoDelete = () => {
+                if (toast.undoData) {
+                    setGoals(prev => [...prev, toast.undoData]);
+                    setToast({ visible: false, message: '', undoData: null });
+                }
+            };
+
+            const cloneGoal = (goal) => {
+                setGoals(prev => [...prev, { ...goal, id: Date.now(), year: (goal.year || currentYear) + 1, status: 'Doing' }]);
+            };
+
+            const linkGoalToReward = (goalId, rewardId) => {
+                setGoals(prev => prev.map(g => g.id === goalId ? { ...g, linkedRewardId: rewardId } : g));
+            };
+
+            const handleSuggest = (category) => {
+                setSuggestCategory(category);
+            };
+
+            const addSuggestedGoals = (suggestions) => {
+                const category = suggestCategory;
+                let maxNum = goals.filter(g => g.category === category && g.year === currentYear).reduce((m, g) => Math.max(m, g.number || 0), 0);
+                
+                const newGoals = suggestions.map((s, i) => ({
+                    id: Date.now() + i,
+                    number: maxNum + i + 1,
+                    year: currentYear,
+                    goal: s.goal,
+                    period: s.period,
+                    category,
+                    status: "Doing",
+                    action: s.action || "",
+                    cost: 0,
+                    notes: "",
+                    subtasks: [],
+                    pinned: false
+                }));
+                
+                setGoals(prev => [...prev, ...newGoals]);
+                confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 }, colors: isBlue ? ['#3b82f6', '#60a5fa'] : ['#f43f5e', '#fb7185'] });
+                setSuggestCategory(null);
+            };
+
+            const addBlessing = (text) => {
+                setBlessings(prev => [...prev, { id: Date.now(), text, date: new Date().toISOString().split('T')[0], category: 'Personal' }]);
+                confetti({ particleCount: 40, spread: 50, colors: ['#f59e0b', '#fbbf24'] });
+            };
+
+            const suggestBlessing = () => {
+                const available = BLESSING_SUGGESTIONS.filter(s => !blessings.some(b => b.text === s));
+                if (!available.length) return;
+                addBlessing(available[Math.floor(Math.random() * available.length)]);
+            };
+
+            const addReward = (text, cost = 0) => {
+                setRewards(prev => [...prev, { id: Date.now(), text, cost, earned: false }]);
+                confetti({ particleCount: 30, spread: 40, colors: ['#10b981', '#34d399'] });
+            };
+
+            const suggestReward = () => {
+                const available = REWARD_SUGGESTIONS.filter(s => !rewards.some(r => r.text === s));
+                if (!available.length) return;
+                const s = available[Math.floor(Math.random() * available.length)];
+                addReward(s, 0);
+            };
+
+            const toggleRewardEarned = (id) => {
+                setRewards(prev => prev.map(r => {
+                    if (r.id === id) {
+                        if (!r.earned) {
+                            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#10b981', '#34d399', '#fbbf24'] });
+                        }
+                        return { ...r, earned: !r.earned };
+                    }
+                    return r;
+                }));
+            };
+
+            const handleImport = (imported) => setGoals(prev => [...prev, ...imported]);
+
+            const clearAllGoals = () => {
+                const yearGoalsCount = goals.filter(g => g.year === currentYear).length;
+                const yearBlessingsCount = blessings.filter(b => b.date?.startsWith(String(currentYear))).length;
+                const rewardsCount = rewards.length;
+                
+                if (confirm(`⚠️ Delete ALL data for ${currentYear}?\n\n• ${yearGoalsCount} goals\n• ${yearBlessingsCount} blessings\n• ${rewardsCount} rewards\n\nThis cannot be undone!`)) {
+                    const otherYearGoals = goals.filter(g => g.year !== currentYear);
+                    const otherYearBlessings = blessings.filter(b => !b.date?.startsWith(String(currentYear)));
+                    setGoals(otherYearGoals);
+                    setBlessings(otherYearBlessings);
+                    setRewards([]);
+                    setToast({ visible: true, message: `Cleared all ${currentYear} data`, undoData: null });
+                    setTimeout(() => setToast(t => ({ ...t, visible: false })), 3000);
+                }
+            };
+
+            const exportJSON = () => {
+                const blob = new Blob([JSON.stringify({ goals, blessings, rewards }, null, 2)], { type: 'application/json' });
+                const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `goals_${currentYear}.json`; a.click();
+            };
+
+            // Filter goals
+            const baseGoals = useMemo(() => {
+                let g = goals.filter(g => g.year === currentYear);
+                if (statusFilter === 'active') g = g.filter(g => g.status !== 'Done' || recentlyDone.has(g.id));
+                if (statusFilter === 'done') g = g.filter(g => g.status === 'Done');
+                if (periodFilter !== 'all') g = g.filter(g => g.period === periodFilter);
+                return g;
+            }, [goals, currentYear, statusFilter, periodFilter, recentlyDone]);
+
+            const personalGoals = useMemo(() => baseGoals.filter(g => g.category === 'Personal'), [baseGoals]);
+            const professionalGoals = useMemo(() => baseGoals.filter(g => g.category === 'Professional'), [baseGoals]);
+
+            return (
+                <div className={`h-screen flex flex-col ${isDark ? 'bg-slate-900' : (isBlue ? 'bg-blue-50/50' : 'bg-rose-50/50')}`}>
+                    {/* Header */}
+                    <div className={`border-b shadow-sm px-4 py-3 flex-none flex justify-between items-center relative z-20 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white'}`}>
+                        <div className="flex gap-1.5 items-center">
+                            <button onClick={() => setIsDark(!isDark)} className={`p-2 rounded-full ${isDark ? 'bg-slate-700 text-yellow-400' : 'hover:bg-slate-100 text-slate-500'}`} title="Toggle Dark Mode">
+                                <Icon name={isDark ? 'sun' : 'moon'} size={18} />
+                            </button>
+                            <button onClick={() => setIsBlue(!isBlue)} className={`p-2 rounded-full ${isBlue ? 'bg-blue-100 text-blue-500' : 'bg-rose-100 text-rose-500'}`} title="Toggle Theme">
+                                <Icon name="palette" size={18} />
+                            </button>
+                            <button onClick={() => setIsImportOpen(true)} className={`p-2 rounded-full ${isDark ? 'hover:bg-slate-700 text-slate-400' : 'hover:bg-slate-100 text-slate-500'}`} title="Import">
+                                <Icon name="upload-cloud" size={18} />
+                            </button>
+                            <button onClick={exportJSON} className={`p-2 rounded-full ${isDark ? 'hover:bg-slate-700 text-slate-400' : 'hover:bg-slate-100 text-slate-500'}`} title="Export">
+                                <Icon name="download-cloud" size={18} />
+                            </button>
+                            <button onClick={() => setIsStatsOpen(true)} className={`p-2 rounded-full ${isDark ? 'hover:bg-slate-700 text-slate-400' : 'hover:bg-slate-100 text-slate-500'}`} title="Stats Dashboard">
+                                <Icon name="bar-chart-2" size={18} />
+                            </button>
+                            <button onClick={clearAllGoals} className={`p-2 rounded-full ${isDark ? 'hover:bg-red-900/50 text-slate-400 hover:text-red-400' : 'hover:bg-red-100 text-slate-500 hover:text-red-500'}`} title="Clear All Goals">
+                                <Icon name="trash" size={18} />
+                            </button>
+                        </div>
+
+                        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+                            <div className="group cursor-pointer mb-1.5" onClick={() => setEditingHeader(true)}>
+                                {editingHeader ? (
+                                    <div className={`flex gap-2 items-center p-2 rounded-xl shadow-lg border ${isDark ? 'bg-slate-700 border-slate-600' : 'bg-white'}`}>
+                                        <input type="text" value={ownerName} onChange={e => setOwnerName(e.target.value)} className={`border rounded px-2 py-1 w-20 text-center font-bold text-sm ${isDark ? 'bg-slate-600 border-slate-500 text-white' : ''}`} />
+                                        <input type="number" value={currentYear} onChange={e => setCurrentYear(parseInt(e.target.value))} className={`border rounded px-2 py-1 w-16 text-center font-bold text-sm ${isDark ? 'bg-slate-600 border-slate-500 text-white' : ''}`} />
+                                        <button onClick={e => { e.stopPropagation(); setEditingHeader(false); }} className={`p-1 bg-${themeColor}-500 text-white rounded`}><Icon name="check" size={14} /></button>
+                                    </div>
+                                ) : (
+                                    <h1 className={`text-lg font-serif font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                                        {ownerName}'s Goals {currentYear}
+                                    </h1>
+                                )}
+                            </div>
+                            <div className={`flex gap-1 p-0.5 rounded-full ${isDark ? 'bg-slate-700' : 'bg-slate-100'}`}>
+                                <button onClick={() => setActiveTab('goals')} className={`px-3 py-1 rounded-full text-xs font-bold ${activeTab === 'goals' ? (isDark ? `bg-slate-600 shadow text-${themeColor}-400` : `bg-white shadow text-${themeColor}-600`) : (isDark ? 'text-slate-400' : 'text-slate-500')}`}>🎯 Goals</button>
+                                <button onClick={() => setActiveTab('blessings')} className={`px-3 py-1 rounded-full text-xs font-bold ${activeTab === 'blessings' ? (isDark ? 'bg-slate-600 shadow text-amber-400' : 'bg-white shadow text-amber-600') : (isDark ? 'text-slate-400' : 'text-slate-500')}`}>🙏 Blessings</button>
+                                <button onClick={() => setActiveTab('rewards')} className={`px-3 py-1 rounded-full text-xs font-bold ${activeTab === 'rewards' ? (isDark ? 'bg-slate-600 shadow text-emerald-400' : 'bg-white shadow text-emerald-600') : (isDark ? 'text-slate-400' : 'text-slate-500')}`}>🎁 Rewards</button>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-1.5 items-center">
+                            <div className="relative hidden md:block">
+                                <Icon name="search" size={14} className={`absolute left-2.5 top-1/2 -translate-y-1/2 ${isDark ? 'text-slate-500' : 'text-slate-400'}`} />
+                                <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search..." className={`pl-8 pr-3 py-1.5 border rounded-full text-sm w-32 focus:outline-none focus:ring-2 ${isDark ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:ring-blue-500' : 'focus:ring-blue-500'}`} />
+                            </div>
+                            
+                            {/* STATUS FILTER */}
+                            <div className={`flex p-0.5 rounded-full ${isDark ? 'bg-slate-700' : 'bg-slate-100'}`}>
+                                <button onClick={() => setStatusFilter('all')} className={`px-2 py-1 rounded-full text-[10px] font-bold transition-all ${statusFilter === 'all' ? (isDark ? 'bg-slate-600 shadow text-slate-200' : 'bg-white shadow text-slate-700') : (isDark ? 'text-slate-400' : 'text-slate-500')}`}>All</button>
+                                <button onClick={() => setStatusFilter('active')} className={`px-2 py-1 rounded-full text-[10px] font-bold transition-all ${statusFilter === 'active' ? (isDark ? 'bg-slate-600 shadow text-blue-400' : 'bg-white shadow text-blue-600') : (isDark ? 'text-slate-400' : 'text-slate-500')}`}>Active</button>
+                                <button onClick={() => setStatusFilter('done')} className={`px-2 py-1 rounded-full text-[10px] font-bold transition-all ${statusFilter === 'done' ? (isDark ? 'bg-slate-600 shadow text-emerald-400' : 'bg-white shadow text-emerald-600') : (isDark ? 'text-slate-400' : 'text-slate-500')}`}>Done</button>
+                            </div>
+
+                            {/* PERIOD FILTER */}
+                            <div className={`flex p-0.5 rounded-full ${isDark ? 'bg-slate-700' : 'bg-slate-100'}`}>
+                                <button onClick={() => setPeriodFilter('all')} className={`px-2 py-1 rounded-full text-[10px] font-bold transition-all ${periodFilter === 'all' ? (isDark ? 'bg-slate-600 shadow text-slate-200' : 'bg-white shadow text-slate-700') : (isDark ? 'text-slate-400' : 'text-slate-500')}`}>All</button>
+                                <button onClick={() => setPeriodFilter('One-year')} className={`px-2 py-1 rounded-full text-[10px] font-bold transition-all ${periodFilter === 'One-year' ? (isDark ? 'bg-sky-900/50 shadow text-sky-400' : 'bg-sky-100 shadow text-sky-700') : (isDark ? 'text-slate-400' : 'text-slate-500')}`}>1yr</button>
+                                <button onClick={() => setPeriodFilter('Three-years')} className={`px-2 py-1 rounded-full text-[10px] font-bold transition-all ${periodFilter === 'Three-years' ? (isDark ? 'bg-amber-900/50 shadow text-amber-400' : 'bg-amber-100 shadow text-amber-700') : (isDark ? 'text-slate-400' : 'text-slate-500')}`}>3yr</button>
+                                <button onClick={() => setPeriodFilter('Five-years')} className={`px-2 py-1 rounded-full text-[10px] font-bold transition-all ${periodFilter === 'Five-years' ? (isDark ? 'bg-violet-900/50 shadow text-violet-400' : 'bg-violet-100 shadow text-violet-700') : (isDark ? 'text-slate-400' : 'text-slate-500')}`}>5yr</button>
+                            </div>
+
+                            <button onClick={() => setIsReviewOpen(true)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold text-white text-sm ${isBlue ? 'bg-blue-500' : 'bg-rose-500'}`}>
+                                <Icon name="trophy" size={14} /> Review
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 p-4 overflow-hidden min-h-0">
+                        {activeTab === 'goals' ? (
+                            <div className="max-w-[1600px] mx-auto h-full flex gap-0">
+                                <div style={{ width: `${splitRatio}%` }} className="h-full hidden lg:block pr-1">
+                                    <GoalList title="Personal" category="Personal" goals={personalGoals} onAdd={addGoal} onUpdate={handleUpdateGoal} onDelete={deleteGoal} onLinkReward={setLinkingGoal} onEdit={setEditingGoal} onSuggest={handleSuggest} recentlyDone={recentlyDone} themeColor={themeColor} searchQuery={searchQuery} isDark={isDark} rewards={rewards} />
+                                </div>
+                                <ResizableDivider onResize={setSplitRatio} isDark={isDark} splitRatio={splitRatio} />
+                                <div style={{ width: `${100 - splitRatio}%` }} className="h-full hidden lg:block pl-1">
+                                    <GoalList title="Professional" category="Professional" goals={professionalGoals} onAdd={addGoal} onUpdate={handleUpdateGoal} onDelete={deleteGoal} onLinkReward={setLinkingGoal} onEdit={setEditingGoal} onSuggest={handleSuggest} recentlyDone={recentlyDone} themeColor={themeColor} searchQuery={searchQuery} isDark={isDark} rewards={rewards} />
+                                </div>
+                                {/* Mobile: stacked layout */}
+                                <div className="lg:hidden h-full w-full grid grid-cols-1 gap-4 overflow-y-auto">
+                                    <GoalList title="Personal" category="Personal" goals={personalGoals} onAdd={addGoal} onUpdate={handleUpdateGoal} onDelete={deleteGoal} onLinkReward={setLinkingGoal} onEdit={setEditingGoal} onSuggest={handleSuggest} recentlyDone={recentlyDone} themeColor={themeColor} searchQuery={searchQuery} isDark={isDark} rewards={rewards} />
+                                    <GoalList title="Professional" category="Professional" goals={professionalGoals} onAdd={addGoal} onUpdate={handleUpdateGoal} onDelete={deleteGoal} onLinkReward={setLinkingGoal} onEdit={setEditingGoal} onSuggest={handleSuggest} recentlyDone={recentlyDone} themeColor={themeColor} searchQuery={searchQuery} isDark={isDark} rewards={rewards} />
+                                </div>
+                            </div>
+                        ) : activeTab === 'blessings' ? (
+                            <div className="max-w-xl mx-auto h-full">
+                                <BlessingsList blessings={blessings} onAdd={addBlessing} onDelete={id => setBlessings(p => p.filter(b => b.id !== id))} onSuggest={suggestBlessing} isDark={isDark} />
+                            </div>
+                        ) : (
+                            <div className="max-w-xl mx-auto h-full">
+                                <RewardsList rewards={rewards} onAdd={addReward} onDelete={id => setRewards(p => p.filter(r => r.id !== id))} onToggleEarned={toggleRewardEarned} onSuggest={suggestReward} isDark={isDark} />
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Footer with Logo */}
+                    <div className={`flex-none px-4 py-2 border-t flex items-center justify-center gap-2 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white/80 border-slate-200'}`}>
+                        <img src="data:image/x-icon;base64,AAABAAEAEBAAAAAAIAC3AwAAFgAAAIlQTkcNChoKAAAADUlIRFIAAAAQAAAAEAgGAAAAH/P/YQAAA35JREFUeJxlk1toHFUcxv//c87MZmZnd3a7WTcmTUxT4y1UqpZqEQwJXkBEkbh5UBAptoXig1bBC+hmRYigWGJRyUNBtKGwAWkrVFIpScBbHkSQtpYk2Fua+2aT3c3szpw55+9DfPDyvf8+voffhwAAb0yVdv+i7SE/ZDuiSqMDQHGDyWYbFluU//5re5yx3DiJfA+G8J8gXbhg3jl/x09/Jo0HoAxg1gBSGmA7A2ixAFoM5bcZwcuv77NP5HIk8vl/l+BQuZz++FuaVT8vOGYMoH5fGwbahISv6FZG1Gpz3uYKSFH1yJuPxY5mC8QLWdCISFsLiHDPwV/Plq+JJ5Suap4xOfXcDRKjENms6SQStjdw3ZFq4C5VP3irL/ZuLkdsYAAIEQkBAB45NPXsCrZ8I/Wm0p7kES61++Btnh8mHdqoKEsr3mqK8Pa0I+JQ/uLtA+5hoi0WAQiHz8xbn03WZuoYbUYWhqhN3hYrfqrjzbsC6fbq4kZoShBNHML2pCtsKBb6n1t7cWSkU7LuHPBDT7d425rsr0Q6DRS1FDW6uAiJ3u/7Lj3leqWxhHBFpEbaW9di/koxqC+n+k8OWx/l86jZLV2jBAB4bzs7aVk+UdQySUgNqcyuZ851dp0Z2Pakq0tfxsFCw1NaV5SxerWkitf0858P/p5k91zMEgBQ1NCho4FiiqGjBdiKAfraRAC9NHZurXZ1Fh3NiXkayAtRlRRbWilyNgHAAACuT5t9dtVmsXUVuNUIi9xcmj51+JWpFx798YSBnUcWZi9pv7jMIz6TThBjJCun8p/0rCIAYaFw0Rj9IfOHD/EOpWtSSi5S1vUP2+Zx59xNu3+9uhiWZVEkYnF5l3O/UfZmvuPbp/vTo1lPACBNjM302trpYLKs6rWawVVJ7XDj+9eLVoaCVWUJQ/jKCuPQaIT6xsjlx3e/NJmHEIBQAAOorqkDvLxBWq6RYQXQ1JTmpWJDhrSnLctk6KNq5JZosDeGjk489CqME+ZggOUBNebGryR+O23N8svVJBohOJkUqk0Asx6SWdfAAkIihhLn3jl+fu9gFgp8FLIaYEtl1rWy6amUeaP28E4WdLayimFjGDFRR0yGlsOYZSrhrBw8fn7vYHf3uPgn/LeJAPuPze1brSSGVVk2GZshmgFBRCLFfFjgbPm9Y193nc51k8hP/v/OfwEIdK+YFR2L/wAAAABJRU5ErkJggg==" alt="Rumo" className="w-4 h-4" />
+                        <span className={`text-sm font-bold bg-gradient-to-r from-blue-500 to-violet-500 bg-clip-text text-transparent`}>Rumo</span>
+                        <span className={`text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>· Set your direction</span>
+                    </div>
+
+                    <Toast message={toast.message} visible={toast.visible} onUndo={toast.undoData ? undoDelete : null} isDark={isDark} />
+                    {isReviewOpen && <ReviewModal year={currentYear} goals={goals} blessings={blessings} rewards={rewards} onClose={() => setIsReviewOpen(false)} isBlue={isBlue} />}
+                    {isImportOpen && <ImportModal onImport={handleImport} onClose={() => setIsImportOpen(false)} isBlue={isBlue} currentYear={currentYear} />}
+                    {isStatsOpen && <StatsModal goals={goals} blessings={blessings} rewards={rewards} currentYear={currentYear} onClose={() => setIsStatsOpen(false)} isBlue={isBlue} />}
+                    {editingGoal && <EditModal goal={editingGoal} onSave={handleUpdateGoal} onClose={() => setEditingGoal(null)} themeColor={themeColor} />}
+                    {linkingGoal && <LinkRewardModal goal={linkingGoal} rewards={rewards} onLink={linkGoalToReward} onClose={() => setLinkingGoal(null)} isDark={isDark} />}
+                    {suggestCategory && <SuggestionsModal category={suggestCategory} existingGoals={goals} onAdd={addSuggestedGoals} onClose={() => setSuggestCategory(null)} isBlue={isBlue} />}
+                </div>
+            );
+        };
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
