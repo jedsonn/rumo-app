@@ -7,18 +7,57 @@ import { GoalsColumn } from '@/components/goals/GoalsColumn'
 import { TemplatesModal } from '@/components/goals/TemplatesModal'
 import { Toast } from '@/components/ui/Toast'
 import { GoalTemplate } from '@/lib/templates'
-import { Target, Heart, Gift } from 'lucide-react'
-import Link from 'next/link'
+import { Plus, Trash2, Sparkles, RefreshCw, Check, GripVertical } from 'lucide-react'
+
+// Blessing suggestions
+const BLESSING_SUGGESTIONS = [
+  "Good health and energy",
+  "Supportive family and friends",
+  "A job I find meaningful",
+  "A safe place to call home",
+  "Access to clean water and food",
+  "Freedom to pursue my goals",
+  "Moments of peace and quiet",
+  "Opportunities to learn and grow",
+  "Kind strangers who helped me today",
+  "Technology that connects me to loved ones",
+  "Nature's beauty around me",
+  "Music that lifts my spirit",
+  "A good night's sleep",
+  "Unexpected kindness received",
+  "Progress on something important to me"
+]
+
+// Reward suggestions
+const REWARD_SUGGESTIONS = [
+  { text: "Nice specialty coffee ☕", cost: 8 },
+  { text: "Movie night with popcorn 🎬", cost: 25 },
+  { text: "Sleep in on Saturday", cost: 0 },
+  { text: "New book from wishlist 📚", cost: 20 },
+  { text: "Fancy dinner out 🍽️", cost: 100 },
+  { text: "Spa day or massage 💆", cost: 150 },
+  { text: "Concert or show tickets 🎵", cost: 120 },
+  { text: "New clothes shopping spree 👔", cost: 200 },
+  { text: "Weekend getaway 🏖️", cost: 500 },
+  { text: "New gadget or tech 📱", cost: 300 },
+]
 
 export default function DashboardPage() {
   const {
     goals,
+    blessings,
+    rewards,
     year,
     isBlue,
     columnSplit,
     setColumnSplit,
     loading,
     addGoal,
+    addBlessing,
+    deleteBlessing,
+    addReward,
+    updateReward,
+    deleteReward,
     showToast,
   } = useDashboard()
 
@@ -35,6 +74,11 @@ export default function DashboardPage() {
   const [showImportExport, setShowImportExport] = useState(false)
   const [showClearAll, setShowClearAll] = useState(false)
   const [showTemplates, setShowTemplates] = useState(false)
+
+  // Blessing/Reward form states
+  const [blessingValue, setBlessingValue] = useState('')
+  const [rewardText, setRewardText] = useState('')
+  const [rewardCost, setRewardCost] = useState('')
 
   // Filter and sort goals
   const filteredGoals = useMemo(() => {
@@ -142,6 +186,51 @@ export default function DashboardPage() {
     showToast(`Added ${templates.length} goals from template!`)
   }
 
+  // Blessing handlers
+  const handleAddBlessing = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!blessingValue.trim()) return
+    await addBlessing({ text: blessingValue.trim(), category: 'Personal' })
+    setBlessingValue('')
+  }
+
+  const suggestBlessing = () => {
+    const available = BLESSING_SUGGESTIONS.filter(s => !blessings.some(b => b.text === s))
+    if (available.length > 0) {
+      setBlessingValue(available[Math.floor(Math.random() * available.length)])
+    }
+  }
+
+  // Reward handlers
+  const handleAddReward = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!rewardText.trim()) return
+    await addReward({ text: rewardText.trim(), cost: parseFloat(rewardCost) || 0 })
+    setRewardText('')
+    setRewardCost('')
+  }
+
+  const suggestReward = () => {
+    const available = REWARD_SUGGESTIONS.filter(s => !rewards.some(r => r.text === s.text))
+    if (available.length > 0) {
+      const suggestion = available[Math.floor(Math.random() * available.length)]
+      setRewardText(suggestion.text)
+      setRewardCost(suggestion.cost.toString())
+    }
+  }
+
+  const toggleRewardEarned = async (id: string, earned: boolean) => {
+    await updateReward(id, { earned: !earned })
+  }
+
+  // Stats calculations
+  const rewardStats = useMemo(() => ({
+    total: rewards.length,
+    earned: rewards.filter(r => r.earned).length,
+    totalValue: rewards.reduce((sum, r) => sum + (Number(r.cost) || 0), 0),
+    earnedValue: rewards.filter(r => r.earned).reduce((sum, r) => sum + (Number(r.cost) || 0), 0),
+  }), [rewards])
+
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
@@ -170,34 +259,9 @@ export default function DashboardPage() {
         setStatusFilter={setStatusFilter}
         periodFilter={periodFilter}
         setPeriodFilter={setPeriodFilter}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
       />
-
-      {/* Tab Navigation */}
-      <div className="max-w-7xl mx-auto px-4 pt-4">
-        <div className="flex gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-lg w-fit">
-          {[
-            { id: 'goals' as const, label: 'Goals', icon: Target },
-            { id: 'blessings' as const, label: 'Blessings', icon: Heart },
-            { id: 'rewards' as const, label: 'Rewards', icon: Gift },
-          ].map(tab => {
-            const Icon = tab.icon
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  activeTab === tab.id
-                    ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-sm'
-                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-                }`}
-              >
-                <Icon size={16} />
-                {tab.label}
-              </button>
-            )
-          })}
-        </div>
-      </div>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-4 pb-16">
@@ -206,10 +270,10 @@ export default function DashboardPage() {
             {/* Desktop: Two columns with resizer */}
             <div
               ref={containerRef}
-              className="hidden md:flex gap-0 h-[calc(100vh-220px)] relative"
+              className="hidden md:flex gap-0 h-[calc(100vh-160px)] relative"
             >
               {/* Personal Column */}
-              <div style={{ width: `${columnSplit}%` }} className="pr-2 overflow-hidden">
+              <div style={{ width: `${columnSplit}%` }} className="pr-1 overflow-hidden">
                 <GoalsColumn category="Personal" filteredGoals={filteredGoals} onOpenTemplates={() => setShowTemplates(true)} />
               </div>
 
@@ -217,17 +281,26 @@ export default function DashboardPage() {
               <div
                 onMouseDown={handleMouseDown}
                 onDoubleClick={() => setColumnSplit(50)}
-                className={`resizer w-1 bg-slate-200 dark:bg-slate-700 hover:gradient-bg rounded-full cursor-col-resize flex-shrink-0 relative ${isResizing ? 'gradient-bg' : ''}`}
+                title="Drag to resize • Double-click to reset 50/50"
+                className={`w-3 cursor-col-resize flex-shrink-0 group relative hidden lg:flex items-center justify-center ${isResizing ? 'select-none' : ''}`}
               >
-                {isResizing && (
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
-                    {Math.round(columnSplit)}:{Math.round(100 - columnSplit)}
-                  </div>
-                )}
+                <div className={`w-1 h-full rounded-full transition-all ${
+                  isResizing
+                    ? (isBlue ? 'bg-blue-500' : 'bg-rose-500')
+                    : 'bg-slate-200 dark:bg-slate-700 group-hover:bg-slate-300 dark:group-hover:bg-slate-600'
+                }`} />
+                <div className={`absolute top-1/2 -translate-y-1/2 px-1.5 py-1 rounded flex flex-col items-center justify-center transition-opacity ${
+                  isResizing ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                } bg-slate-200 dark:bg-slate-700`}>
+                  <GripVertical size={14} className="text-slate-400 dark:text-slate-500" />
+                  <span className="text-[8px] font-bold mt-1 text-slate-500 dark:text-slate-400">
+                    {Math.round(columnSplit)}:{Math.round(100-columnSplit)}
+                  </span>
+                </div>
               </div>
 
               {/* Professional Column */}
-              <div style={{ width: `${100 - columnSplit}%` }} className="pl-2 overflow-hidden">
+              <div style={{ width: `${100 - columnSplit}%` }} className="pl-1 overflow-hidden">
                 <GoalsColumn category="Professional" filteredGoals={filteredGoals} onOpenTemplates={() => setShowTemplates(true)} />
               </div>
             </div>
@@ -245,18 +318,165 @@ export default function DashboardPage() {
         )}
 
         {activeTab === 'blessings' && (
-          <div className="py-4">
-            <Link href="/dashboard/blessings" className="text-blue-500 hover:underline">
-              Go to Blessings page →
-            </Link>
+          <div className="max-w-2xl mx-auto">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-amber-100 dark:border-amber-900/50 overflow-hidden">
+              {/* Header */}
+              <div className="p-4 border-b border-amber-100 dark:border-amber-900/50 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20">
+                <div className="flex items-center gap-2 mb-1">
+                  <h2 className="font-serif font-bold text-lg text-amber-700 dark:text-amber-400">🙏 Blessings</h2>
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full border bg-white dark:bg-slate-700 text-amber-500 border-amber-200 dark:border-amber-800">
+                    {blessings.length}
+                  </span>
+                </div>
+                <p className="text-xs text-amber-600/70 dark:text-amber-400/70">Count your blessings, not your problems</p>
+              </div>
+
+              {/* Add Form */}
+              <div className="p-3 border-b border-amber-100 dark:border-amber-900/50">
+                <form onSubmit={handleAddBlessing} className="flex gap-2">
+                  <input
+                    type="text"
+                    value={blessingValue}
+                    onChange={(e) => setBlessingValue(e.target.value)}
+                    placeholder="What are you grateful for?"
+                    className="flex-1 px-3 py-2 rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-900/20 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-amber-400 outline-none text-sm"
+                  />
+                  <button type="submit" className="p-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:opacity-90">
+                    <Plus size={20} />
+                  </button>
+                  <button type="button" onClick={suggestBlessing} className="p-2 rounded-xl bg-gradient-to-r from-orange-400 to-amber-500 text-white hover:opacity-90" title="Suggest">
+                    <Sparkles size={20} />
+                  </button>
+                </form>
+              </div>
+
+              {/* Blessings List */}
+              <div className="max-h-[60vh] overflow-y-auto p-3 space-y-2">
+                {blessings.length === 0 ? (
+                  <div className="text-center py-16 text-amber-400/50 dark:text-amber-500/50">
+                    <span className="text-4xl">🌟</span>
+                    <p className="mt-2 text-sm">Add your first blessing!</p>
+                  </div>
+                ) : (
+                  blessings.map(b => (
+                    <div key={b.id} className="group p-3 rounded-xl border border-amber-100 dark:border-amber-800/50 bg-gradient-to-r from-amber-50/50 to-orange-50/50 dark:from-amber-900/20 dark:to-orange-900/20 hover:shadow-md">
+                      <div className="flex justify-between items-start gap-3">
+                        <div className="flex-1">
+                          <span className="text-[10px] text-slate-400 dark:text-slate-500">
+                            {new Date(b.created_at).toLocaleDateString()}
+                          </span>
+                          <p className="text-sm text-slate-700 dark:text-slate-200">{b.text}</p>
+                        </div>
+                        <button
+                          onClick={() => deleteBlessing(b.id)}
+                          className="p-1.5 opacity-0 group-hover:opacity-100 text-slate-300 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
           </div>
         )}
 
         {activeTab === 'rewards' && (
-          <div className="py-4">
-            <Link href="/dashboard/rewards" className="text-blue-500 hover:underline">
-              Go to Rewards page →
-            </Link>
+          <div className="max-w-2xl mx-auto">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-purple-100 dark:border-purple-900/50 overflow-hidden">
+              {/* Header */}
+              <div className="p-4 border-b border-purple-100 dark:border-purple-900/50 bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20">
+                <div className="flex items-center gap-2 mb-1">
+                  <h2 className="font-serif font-bold text-lg text-purple-700 dark:text-purple-400">🎁 Rewards</h2>
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full border bg-white dark:bg-slate-700 text-purple-500 border-purple-200 dark:border-purple-800">
+                    {rewardStats.total}
+                  </span>
+                  {rewardStats.earned > 0 && (
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400">
+                      ✓ {rewardStats.earned} earned
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-purple-600/70 dark:text-purple-400/70">Treat yourself when you achieve your goals!</p>
+                <div className="text-[10px] mt-1 text-slate-400 dark:text-slate-500">
+                  Total: ${rewardStats.totalValue.toLocaleString()} • Earned: ${rewardStats.earnedValue.toLocaleString()}
+                </div>
+              </div>
+
+              {/* Add Form */}
+              <div className="p-3 border-b border-purple-100 dark:border-purple-900/50">
+                <form onSubmit={handleAddReward} className="flex gap-2">
+                  <input
+                    type="text"
+                    value={rewardText}
+                    onChange={(e) => setRewardText(e.target.value)}
+                    placeholder="Add a reward..."
+                    className="flex-1 px-3 py-2 rounded-xl border border-purple-200 dark:border-purple-800 bg-purple-50/50 dark:bg-purple-900/20 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-400 outline-none text-sm"
+                  />
+                  <input
+                    type="number"
+                    value={rewardCost}
+                    onChange={(e) => setRewardCost(e.target.value)}
+                    placeholder="$"
+                    className="w-16 px-2 py-2 rounded-xl border border-purple-200 dark:border-purple-800 bg-purple-50/50 dark:bg-purple-900/20 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-400 outline-none text-sm"
+                    min="0"
+                  />
+                  <button type="submit" className={`p-2 rounded-xl text-white ${isBlue ? 'gradient-bg' : 'gradient-bg-pink'} hover:opacity-90`}>
+                    <Plus size={20} />
+                  </button>
+                  <button type="button" onClick={suggestReward} className="p-2 rounded-xl bg-gradient-to-r from-violet-500 to-purple-500 text-white hover:opacity-90" title="Suggest">
+                    <Sparkles size={20} />
+                  </button>
+                </form>
+              </div>
+
+              {/* Rewards List */}
+              <div className="max-h-[60vh] overflow-y-auto p-3 space-y-2">
+                {rewards.length === 0 ? (
+                  <div className="text-center py-16 text-purple-400/50 dark:text-purple-500/50">
+                    <span className="text-4xl">🎁</span>
+                    <p className="mt-2 text-sm">Add rewards to motivate yourself!</p>
+                  </div>
+                ) : (
+                  rewards.map(r => (
+                    <div key={r.id} className={`group px-3 py-2 rounded-xl border hover:shadow-md transition-all ${
+                      r.earned
+                        ? 'border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/30'
+                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800'
+                    }`}>
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => toggleRewardEarned(r.id, r.earned)}
+                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
+                            r.earned
+                              ? 'bg-emerald-500 border-emerald-500 text-white'
+                              : 'border-slate-300 dark:border-slate-600 hover:border-emerald-400 dark:hover:border-emerald-500'
+                          }`}
+                          title={r.earned ? "Mark as not earned" : "Mark as earned!"}
+                        >
+                          {r.earned && <Check size={12} />}
+                        </button>
+                        <p className={`flex-1 text-sm ${r.earned ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-200'}`}>
+                          {r.text}
+                        </p>
+                        {Number(r.cost) > 0 && (
+                          <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400">
+                            ${Number(r.cost).toLocaleString()}
+                          </span>
+                        )}
+                        <button
+                          onClick={() => deleteReward(r.id)}
+                          className="p-1 opacity-0 group-hover:opacity-100 text-slate-300 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
           </div>
         )}
       </main>
@@ -269,7 +489,7 @@ export default function DashboardPage() {
               <path d="M5 12h14M13 6l6 6-6 6" />
             </svg>
           </div>
-          <span className={isBlue ? 'gradient-text' : 'gradient-text-pink'}>Rumo</span>
+          <span className={isBlue ? 'gradient-text font-bold' : 'gradient-text-pink font-bold'}>Rumo</span>
           <span>—</span>
           <span>Set your direction</span>
         </div>
