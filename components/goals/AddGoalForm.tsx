@@ -31,8 +31,6 @@ export function AddGoalForm({ category, onOpenTemplates, onGoalAdded }: AddGoalF
       notes: null,
       pinned: false,
       linked_reward_id: null,
-      progress: 0,
-      due_date: null,
     })
 
     setValue('')
