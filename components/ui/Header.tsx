@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useDashboard } from '@/components/providers/DashboardProvider'
 import {
   Moon, Sun, Palette, BarChart3, Trophy, Trash2,
-  Upload, Search, Check
+  Download, Search, Check
 } from 'lucide-react'
 
 export type TabType = 'goals' | 'blessings' | 'rewards'
@@ -81,8 +81,8 @@ export function Header({
         <button onClick={toggleTheme} className={`p-2 rounded-full ${isBlue ? 'bg-blue-100 text-blue-500' : 'bg-rose-100 text-rose-500'}`} title="Toggle Theme">
           <Palette size={18} />
         </button>
-        <button onClick={onShowImportExport} className={`p-2 rounded-full ${isDark ? 'hover:bg-slate-700 text-slate-400' : 'hover:bg-slate-100 text-slate-500'}`} title="Import">
-          <Upload size={18} />
+        <button onClick={onShowImportExport} className={`p-2 rounded-full ${isDark ? 'hover:bg-slate-700 text-slate-400' : 'hover:bg-slate-100 text-slate-500'}`} title="Export Data">
+          <Download size={18} />
         </button>
         <button onClick={onShowStats} className={`p-2 rounded-full ${isDark ? 'hover:bg-slate-700 text-slate-400' : 'hover:bg-slate-100 text-slate-500'}`} title="Stats Dashboard">
           <BarChart3 size={18} />
