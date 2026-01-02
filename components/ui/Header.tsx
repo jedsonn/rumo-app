@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useDashboard } from '@/components/providers/DashboardProvider'
 import {
   Moon, Sun, Palette, BarChart3, Trophy, Trash2,
-  Download, Search, Check
+  Download, Search, Check, LogOut
 } from 'lucide-react'
 
 export type TabType = 'goals' | 'blessings' | 'rewards'
@@ -47,6 +47,7 @@ export function Header({
     toggleDarkMode,
     isBlue,
     toggleTheme,
+    logout,
   } = useDashboard()
 
   const [editingHeader, setEditingHeader] = useState(false)
@@ -187,6 +188,15 @@ export function Header({
         {/* Review Button */}
         <button onClick={onShowReview} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold text-white text-sm ${isBlue ? 'bg-blue-500' : 'bg-rose-500'}`}>
           <Trophy size={14} /> Review
+        </button>
+
+        {/* Logout Button */}
+        <button
+          onClick={logout}
+          className={`p-2 rounded-full ${isDark ? 'hover:bg-slate-700 text-slate-400 hover:text-red-400' : 'hover:bg-slate-100 text-slate-500 hover:text-red-500'}`}
+          title="Sign Out"
+        >
+          <LogOut size={18} />
         </button>
       </div>
     </div>
