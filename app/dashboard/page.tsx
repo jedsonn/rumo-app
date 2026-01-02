@@ -14,6 +14,8 @@ import { LinkRewardModal } from '@/components/modals/LinkRewardModal'
 import { ShareModal } from '@/components/modals/ShareModal'
 import { ReviewModal } from '@/components/modals/ReviewModal'
 import { ExportModal } from '@/components/modals/ExportModal'
+import { SettingsModal } from '@/components/modals/SettingsModal'
+import { ConfirmModal } from '@/components/modals/ConfirmModal'
 import { QuoteDisplay } from '@/components/motivation/QuoteDisplay'
 import { Goal, GoalCategory } from '@/lib/types'
 import { GoalSuggestion } from '@/lib/suggestions'
@@ -54,6 +56,8 @@ export default function DashboardPage() {
   const [showReview, setShowReview] = useState(false)
   const [showImportExport, setShowImportExport] = useState(false)
   const [showClearAll, setShowClearAll] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
+  const [clearAllLoading, setClearAllLoading] = useState(false)
 
   // Goal modals
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null)
@@ -100,6 +104,7 @@ export default function DashboardPage() {
         setShowReview(false)
         setShowImportExport(false)
         setShowClearAll(false)
+        setShowSettings(false)
         setEditingGoal(null)
         setLinkingGoal(null)
         setSharingGoal(null)
@@ -209,6 +214,7 @@ export default function DashboardPage() {
         onShowReview={() => setShowReview(true)}
         onShowImportExport={() => setShowImportExport(true)}
         onShowClearAll={() => setShowClearAll(true)}
+        onShowSettings={() => setShowSettings(true)}
         search={search}
         setSearch={setSearch}
         statusFilter={statusFilter}
@@ -436,6 +442,38 @@ export default function DashboardPage() {
         blessings={blessings}
         rewards={rewards}
         year={year}
+        isDark={isDark}
+      />
+
+      {/* Settings Modal */}
+      <SettingsModal
+        isOpen={showSettings}
+        onClose={() => setShowSettings(false)}
+        userEmail={profile?.email || ''}
+        isDark={isDark}
+        onShowToast={showToast}
+      />
+
+      {/* Clear All Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showClearAll}
+        onClose={() => setShowClearAll(false)}
+        onConfirm={async () => {
+          setClearAllLoading(true)
+          const yearGoals = goals.filter(g => g.year === year)
+          for (const goal of yearGoals) {
+            await deleteGoal(goal.id)
+          }
+          setClearAllLoading(false)
+          setShowClearAll(false)
+          showToast(`Deleted ${yearGoals.length} goals`)
+        }}
+        title="Delete All Goals?"
+        message={`This will permanently delete all ${goals.filter(g => g.year === year).length} goals for ${year}. This action cannot be undone.`}
+        confirmText="Delete All"
+        cancelText="Cancel"
+        variant="danger"
+        loading={clearAllLoading}
         isDark={isDark}
       />
     </div>
