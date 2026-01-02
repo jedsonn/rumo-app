@@ -1,7 +1,7 @@
 {
-  "name": "rumo-app",
+  "name": "myresolve-app",
   "version": "1.0.0",
-  "description": "Rumo - Premium goal-tracking app for personal and professional growth",
+  "description": "MyResolve - Premium goal-tracking app for personal and professional growth",
   "private": true,
   "scripts": {
     "dev": "next dev",

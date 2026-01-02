@@ -361,9 +361,9 @@ export default function DashboardPage() {
               <path d="M5 12h14M13 6l6 6-6 6" />
             </svg>
           </div>
-          <span className={themeColor === 'blue' ? 'gradient-text font-bold' : 'gradient-text-pink font-bold'}>Rumo</span>
+          <span className={themeColor === 'blue' ? 'gradient-text font-bold' : 'gradient-text-pink font-bold'}>MyResolve</span>
           <span>-</span>
-          <span>Set your direction</span>
+          <span>Achieve your resolutions</span>
         </div>
       </footer>
 

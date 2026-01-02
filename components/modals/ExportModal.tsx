@@ -28,22 +28,22 @@ export function ExportModal({
 
   const handleExportGoalsCSV = () => {
     const csv = goalsToCSV(yearGoals)
-    downloadCSV(csv, `rumo-goals-${year}.csv`)
+    downloadCSV(csv, `myresolve-goals-${year}.csv`)
   }
 
   const handleExportAllGoalsCSV = () => {
     const csv = goalsToCSV(goals)
-    downloadCSV(csv, `rumo-all-goals.csv`)
+    downloadCSV(csv, `myresolve-all-goals.csv`)
   }
 
   const handleExportBlessingsCSV = () => {
     const csv = blessingsToCSV(blessings)
-    downloadCSV(csv, `rumo-blessings.csv`)
+    downloadCSV(csv, `myresolve-blessings.csv`)
   }
 
   const handleExportRewardsCSV = () => {
     const csv = rewardsToCSV(rewards)
-    downloadCSV(csv, `rumo-rewards.csv`)
+    downloadCSV(csv, `myresolve-rewards.csv`)
   }
 
   const handleExportAllJSON = () => {

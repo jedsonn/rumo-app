@@ -1,0 +1,16 @@
+{
+  "name": "MyResolve",
+  "short_name": "MyResolve",
+  "description": "Achieve your resolutions. Premium goal-tracking app for personal and professional growth.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#3b82f6",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

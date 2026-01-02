@@ -80,7 +80,7 @@ export function ShareModal({
               </p>
             )}
             <div className="mt-4 pt-4 border-t border-white/20 text-xs opacity-75">
-              Track your resolutions at rumo.app
+              Track your resolutions at myresolve.ai
             </div>
           </div>
         </div>

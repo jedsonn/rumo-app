@@ -91,7 +91,7 @@ export function exportAllData(goals: Goal[], blessings: Blessing[], rewards: Rew
   const url = URL.createObjectURL(blob)
 
   link.setAttribute('href', url)
-  link.setAttribute('download', `rumo-backup-${new Date().toISOString().split('T')[0]}.json`)
+  link.setAttribute('download', `myresolve-backup-${new Date().toISOString().split('T')[0]}.json`)
   link.style.visibility = 'hidden'
 
   document.body.appendChild(link)

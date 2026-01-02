@@ -90,7 +90,7 @@ export default function ResetPasswordPage() {
                 <path d="M5 12h14M13 6l6 6-6 6" />
               </svg>
             </div>
-            <span className="font-serif text-2xl font-bold gradient-text">Rumo</span>
+            <span className="font-serif text-2xl font-bold gradient-text">MyResolve</span>
           </Link>
         </div>
 
