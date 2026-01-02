@@ -58,7 +58,7 @@ export default function LoginPage() {
                 <path d="M5 12h14M13 6l6 6-6 6" />
               </svg>
             </div>
-            <span className="font-serif text-2xl font-bold gradient-text">Rumo</span>
+            <span className="font-serif text-2xl font-bold gradient-text">MyResolve</span>
           </Link>
         </div>
 
@@ -113,9 +113,14 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                Password
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Password
+                </label>
+                <Link href="/auth/forgot-password" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                  Forgot password?
+                </Link>
+              </div>
               <input
                 type="password"
                 value={password}

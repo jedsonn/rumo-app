@@ -13,9 +13,9 @@ interface OnboardingWizardProps {
 
 const STEPS = [
   {
-    title: 'Welcome to Rumo!',
+    title: 'Welcome to MyResolve!',
     subtitle: 'Your personal goal-tracking companion',
-    content: 'Rumo helps you set meaningful goals, track progress, and stay motivated. Let\'s get you started in just a few steps.',
+    content: 'MyResolve helps you set meaningful goals, track progress, and stay motivated. Let\'s get you started in just a few steps.',
     icon: Sparkles,
   },
   {

@@ -8,7 +8,7 @@ export interface StreakData {
   totalCheckIns: number
 }
 
-const STREAK_STORAGE_KEY = 'rumo_streak_data'
+const STREAK_STORAGE_KEY = 'myresolve_streak_data'
 
 export function getStreakData(): StreakData {
   if (typeof window === 'undefined') {

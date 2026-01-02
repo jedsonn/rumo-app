@@ -13,6 +13,7 @@ import { SuggestionsModal } from '@/components/modals/SuggestionsModal'
 import { LinkRewardModal } from '@/components/modals/LinkRewardModal'
 import { ShareModal } from '@/components/modals/ShareModal'
 import { ReviewModal } from '@/components/modals/ReviewModal'
+import { ExportModal } from '@/components/modals/ExportModal'
 import { QuoteDisplay } from '@/components/motivation/QuoteDisplay'
 import { Goal, GoalCategory } from '@/lib/types'
 import { GoalSuggestion } from '@/lib/suggestions'
@@ -360,9 +361,9 @@ export default function DashboardPage() {
               <path d="M5 12h14M13 6l6 6-6 6" />
             </svg>
           </div>
-          <span className={themeColor === 'blue' ? 'gradient-text font-bold' : 'gradient-text-pink font-bold'}>Rumo</span>
+          <span className={themeColor === 'blue' ? 'gradient-text font-bold' : 'gradient-text-pink font-bold'}>MyResolve</span>
           <span>-</span>
-          <span>Set your direction</span>
+          <span>Achieve your resolutions</span>
         </div>
       </footer>
 
@@ -424,6 +425,17 @@ export default function DashboardPage() {
         ownerName={profile?.display_name || 'User'}
         year={year}
         themeColor={themeColor}
+        isDark={isDark}
+      />
+
+      {/* Export Modal */}
+      <ExportModal
+        isOpen={showImportExport}
+        onClose={() => setShowImportExport(false)}
+        goals={goals}
+        blessings={blessings}
+        rewards={rewards}
+        year={year}
         isDark={isDark}
       />
     </div>

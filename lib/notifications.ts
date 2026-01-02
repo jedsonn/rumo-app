@@ -11,7 +11,7 @@ export interface NotificationPreferences {
   email: string
 }
 
-const NOTIFICATION_STORAGE_KEY = 'rumo_notification_prefs'
+const NOTIFICATION_STORAGE_KEY = 'myresolve_notification_prefs'
 
 export function getDefaultNotificationPreferences(): NotificationPreferences {
   return {

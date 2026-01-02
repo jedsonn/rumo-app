@@ -21,10 +21,10 @@ export default async function Home() {
             </svg>
           </div>
           <h1 className="font-serif text-5xl md:text-6xl font-bold mb-4">
-            <span className="gradient-text">Rumo</span>
+            <span className="gradient-text">MyResolve</span>
           </h1>
           <p className="text-xl text-slate-600 dark:text-slate-400 mb-8">
-            Set your direction. Track your goals. Celebrate your wins.
+            Achieve your resolutions. Track your goals. Celebrate your wins.
           </p>
           <div className="flex items-center justify-center gap-4">
             <Link href="/auth/signup" className="btn-primary text-lg px-8 py-3">
@@ -83,9 +83,9 @@ export default async function Home() {
                 <path d="M5 12h14M13 6l6 6-6 6" />
               </svg>
             </div>
-            <span className="gradient-text font-medium">Rumo</span>
+            <span className="gradient-text font-medium">MyResolve</span>
           </div>
-          <p>Set your direction</p>
+          <p>Achieve your resolutions</p>
         </footer>
       </div>
     </main>
