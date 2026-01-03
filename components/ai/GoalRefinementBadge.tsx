@@ -41,7 +41,7 @@ export function GoalRefinementBadge({
       </button>
 
       {showTooltip && (
-        <div className={`absolute z-50 bottom-full left-0 mb-2 w-72 p-3 rounded-lg shadow-xl ${
+        <div className={`absolute z-50 top-full left-0 mt-2 w-72 p-3 rounded-lg shadow-xl ${
           isDark ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-slate-200'
         }`}>
           <div className="flex items-start justify-between gap-2 mb-2">

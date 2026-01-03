@@ -104,11 +104,14 @@ export async function POST(request: NextRequest) {
     // Save user message to history (non-blocking)
     saveToChatHistory(supabase, user.id, 'user', message)
 
-    // Generate response
+    // Generate response with more tokens for bulk operations
     let response = await chat(messages, {
-      temperature: 0.7,
-      max_tokens: 1024,
+      temperature: 0.5, // Lower for more consistent formatting
+      max_tokens: 4096, // More tokens for bulk operations
     })
+
+    // Log raw response for debugging
+    console.log('[Chat] Raw AI response:', response.substring(0, 500))
 
     // Track actions performed
     const actions: { type: string; success: boolean; data?: unknown }[] = []
@@ -281,17 +284,43 @@ export async function POST(request: NextRequest) {
       response = response.replace(/\[DELETE_REWARD\][\s\S]*?\[\/DELETE_REWARD\]\s*/g, '').trim()
     }
 
+    // Detect if AI claimed to add things but didn't actually output blocks
+    const claimsAdded = /added|created|done|here.*(blessing|reward|goal)/i.test(response)
+    const actuallyAdded = actions.filter(a => a.success).length
+
+    // If AI claimed to add but didn't, append warning
+    if (claimsAdded && actuallyAdded === 0) {
+      console.warn('[Chat] AI claimed to add items but no action blocks found!')
+      response = `⚠️ I tried but my response didn't include the proper action blocks. Let me try again properly:\n\nPlease repeat your request and I'll make sure to output the correct format.`
+    } else if (actuallyAdded > 0) {
+      // Add count of what was actually added
+      const addedCount = actions.filter(a => a.type.startsWith('add_') && a.success).length
+      if (addedCount > 0 && !response.includes('✅')) {
+        response = `✅ Successfully added ${addedCount} item(s)!\n\n${response}`
+      }
+    }
+
     // Save assistant response to history (non-blocking)
     saveToChatHistory(supabase, user.id, 'assistant', response)
 
     // Check if any data-modifying action was performed
     const dataChanged = actions.length > 0
 
+    console.log('[Chat] Actions performed:', actions.length, 'dataChanged:', dataChanged)
+
     return NextResponse.json({
       success: true,
       message: response,
       actions,
       dataChanged,
+      debug: {
+        rawResponseLength: response.length,
+        actionBlocksFound: {
+          goals: addGoalMatches.length,
+          blessings: addBlessingMatches.length,
+          rewards: addRewardMatches.length,
+        }
+      }
     })
 
   } catch (error) {
