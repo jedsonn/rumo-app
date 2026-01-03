@@ -105,10 +105,56 @@ export async function POST(request: NextRequest) {
     saveToChatHistory(supabase, user.id, 'user', message)
 
     // Generate response
-    const response = await chat(messages, {
+    let response = await chat(messages, {
       temperature: 0.7,
       max_tokens: 1024,
     })
+
+    // Check if AI wants to add a goal
+    let addedGoal = null
+    const addGoalMatch = response.match(/\[ADD_GOAL\]([\s\S]*?)\[\/ADD_GOAL\]/)
+    if (addGoalMatch) {
+      try {
+        const goalData = JSON.parse(addGoalMatch[1].trim())
+
+        // Get next goal number for this category
+        const { data: existingGoals } = await supabase
+          .from('goals')
+          .select('number')
+          .eq('user_id', user.id)
+          .eq('category', goalData.category)
+          .eq('year', new Date().getFullYear())
+          .order('number', { ascending: false })
+          .limit(1)
+
+        const nextNumber = (existingGoals?.[0]?.number || 0) + 1
+
+        // Create the goal
+        const { data: newGoal, error: goalError } = await supabase
+          .from('goals')
+          .insert({
+            user_id: user.id,
+            goal: goalData.goal,
+            category: goalData.category || 'Personal',
+            period: goalData.period || 'One-year',
+            status: 'Doing',
+            number: nextNumber,
+            year: new Date().getFullYear(),
+            is_ai_generated: true,
+          })
+          .select()
+          .single()
+
+        if (!goalError && newGoal) {
+          addedGoal = newGoal
+        }
+
+        // Remove the [ADD_GOAL] block from response shown to user
+        response = response.replace(/\[ADD_GOAL\][\s\S]*?\[\/ADD_GOAL\]\s*/g, '').trim()
+      } catch (err) {
+        console.warn('Failed to parse/create goal from AI response:', err)
+      }
+    }
 
     // Save assistant response to history (non-blocking)
     saveToChatHistory(supabase, user.id, 'assistant', response)
@@ -116,6 +162,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: response,
+      addedGoal,
     })
 
   } catch (error) {

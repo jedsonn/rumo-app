@@ -7,9 +7,10 @@ import { AIChatMessage } from '@/lib/types'
 interface ChatCoachProps {
   themeColor: 'blue' | 'rose'
   isDark: boolean
+  onGoalAdded?: () => void
 }
 
-export function ChatCoach({ themeColor, isDark }: ChatCoachProps) {
+export function ChatCoach({ themeColor, isDark, onGoalAdded }: ChatCoachProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<AIChatMessage[]>([])
   const [input, setInput] = useState('')
@@ -91,6 +92,11 @@ export function ChatCoach({ themeColor, isDark }: ChatCoachProps) {
         created_at: new Date().toISOString(),
       }
       setMessages(prev => [...prev, assistantMsg])
+
+      // If a goal was added, trigger refresh
+      if (data.addedGoal && onGoalAdded) {
+        onGoalAdded()
+      }
     } catch (err) {
       // Add error message with details
       const errorContent = err instanceof Error
