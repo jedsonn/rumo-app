@@ -1,9 +1,12 @@
 'use client'
 
-import { Goal, Reward } from '@/lib/types'
+import { useState } from 'react'
+import { Goal, Reward, Subtask } from '@/lib/types'
 import { EditableNumber } from '@/components/ui/EditableNumber'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { PeriodBadge } from '@/components/ui/PeriodBadge'
+import { ActionBreakerButton, SubtasksList } from '@/components/ai/ActionBreakerButton'
+import { GoalRefinementBadge } from '@/components/ai/GoalRefinementBadge'
 import { Flame, Gift, Pencil, Trash2, Share2 } from 'lucide-react'
 
 interface GoalCardProps {
@@ -32,7 +35,33 @@ export function GoalCard({
   isDark,
   linkedReward
 }: GoalCardProps) {
+  const [showSubtasks, setShowSubtasks] = useState(false)
+
   const togglePin = () => onUpdate({ ...goal, pinned: !goal.pinned })
+
+  const handleSubtasksGenerated = (subtasks: Subtask[]) => {
+    onUpdate({ ...goal, subtasks })
+    setShowSubtasks(true)
+  }
+
+  const handleToggleSubtask = (index: number) => {
+    const newSubtasks = [...(goal.subtasks || [])]
+    newSubtasks[index] = { ...newSubtasks[index], completed: !newSubtasks[index].completed }
+    onUpdate({ ...goal, subtasks: newSubtasks })
+  }
+
+  const handleRemoveSubtask = (index: number) => {
+    const newSubtasks = (goal.subtasks || []).filter((_, i) => i !== index)
+    onUpdate({ ...goal, subtasks: newSubtasks })
+  }
+
+  const handleAcceptRefinement = (newGoalText: string) => {
+    onUpdate({ ...goal, goal: newGoalText, is_vague: false, ai_refinement_suggestion: null })
+  }
+
+  const handleDismissRefinement = () => {
+    onUpdate({ ...goal, is_vague: false })
+  }
 
   return (
     <div
@@ -65,6 +94,18 @@ export function GoalCard({
         >
           {goal.goal}
         </h3>
+        {goal.is_vague && goal.ai_refinement_suggestion && (
+          <GoalRefinementBadge
+            goalId={goal.id}
+            goalText={goal.goal}
+            isVague={goal.is_vague}
+            suggestion={goal.ai_refinement_suggestion}
+            onAcceptSuggestion={handleAcceptRefinement}
+            onDismiss={handleDismissRefinement}
+            isDark={isDark}
+            themeColor={themeColor}
+          />
+        )}
         {goal.cost > 0 && (
           <span
             className={`text-[9px] font-bold ${
@@ -116,6 +157,12 @@ export function GoalCard({
               <Share2 size={12} />
             </button>
           )}
+          <ActionBreakerButton
+            goalId={goal.id}
+            existingSubtasks={goal.subtasks || []}
+            onSubtasksGenerated={handleSubtasksGenerated}
+            isDark={isDark}
+          />
           <button
             onClick={togglePin}
             className={`p-0.5 ${
@@ -154,6 +201,16 @@ export function GoalCard({
           </button>
         </div>
       </div>
+
+      {/* Subtasks */}
+      {goal.subtasks && goal.subtasks.length > 0 && (
+        <SubtasksList
+          subtasks={goal.subtasks}
+          onToggle={handleToggleSubtask}
+          onRemove={handleRemoveSubtask}
+          isDark={isDark}
+        />
+      )}
     </div>
   )
 }
