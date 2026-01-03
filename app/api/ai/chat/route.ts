@@ -113,11 +113,11 @@ export async function POST(request: NextRequest) {
     // Track actions performed
     const actions: { type: string; success: boolean; data?: unknown }[] = []
 
-    // 1. ADD GOAL
-    const addGoalMatch = response.match(/\[ADD_GOAL\]([\s\S]*?)\[\/ADD_GOAL\]/)
-    if (addGoalMatch) {
+    // 1. ADD GOALS (supports multiple)
+    const addGoalMatches = [...response.matchAll(/\[ADD_GOAL\]([\s\S]*?)\[\/ADD_GOAL\]/g)]
+    for (const match of addGoalMatches) {
       try {
-        const goalData = JSON.parse(addGoalMatch[1].trim())
+        const goalData = JSON.parse(match[1].trim())
         const { data: existingGoals } = await supabase
           .from('goals')
           .select('number')
@@ -127,7 +127,7 @@ export async function POST(request: NextRequest) {
           .order('number', { ascending: false })
           .limit(1)
 
-        const nextNumber = (existingGoals?.[0]?.number || 0) + 1
+        const nextNumber = (existingGoals?.[0]?.number || 0) + 1 + actions.filter(a => a.type === 'add_goal' && a.success).length
         const { data: newGoal, error } = await supabase
           .from('goals')
           .insert({
@@ -147,14 +147,16 @@ export async function POST(request: NextRequest) {
       } catch (err) {
         console.warn('Failed to add goal:', err)
       }
+    }
+    if (addGoalMatches.length > 0) {
       response = response.replace(/\[ADD_GOAL\][\s\S]*?\[\/ADD_GOAL\]\s*/g, '').trim()
     }
 
-    // 2. DELETE GOAL
-    const deleteGoalMatch = response.match(/\[DELETE_GOAL\]([\s\S]*?)\[\/DELETE_GOAL\]/)
-    if (deleteGoalMatch) {
+    // 2. DELETE GOALS (supports multiple)
+    const deleteGoalMatches = [...response.matchAll(/\[DELETE_GOAL\]([\s\S]*?)\[\/DELETE_GOAL\]/g)]
+    for (const match of deleteGoalMatches) {
       try {
-        const { number, category } = JSON.parse(deleteGoalMatch[1].trim())
+        const { number, category } = JSON.parse(match[1].trim())
         const { error } = await supabase
           .from('goals')
           .delete()
@@ -167,6 +169,8 @@ export async function POST(request: NextRequest) {
       } catch (err) {
         console.warn('Failed to delete goal:', err)
       }
+    }
+    if (deleteGoalMatches.length > 0) {
       response = response.replace(/\[DELETE_GOAL\][\s\S]*?\[\/DELETE_GOAL\]\s*/g, '').trim()
     }
 
