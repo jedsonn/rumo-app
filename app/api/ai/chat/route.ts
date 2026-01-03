@@ -5,8 +5,36 @@ import { getChatCoachSystemPrompt } from '@/lib/ai/prompts'
 import { formatGoalsForChatCoach } from '@/lib/ai/context'
 import { Goal } from '@/lib/types'
 
+// Helper to safely save to chat history (table may not exist)
+async function saveToChatHistory(
+  supabase: ReturnType<typeof createClient>,
+  userId: string,
+  role: 'user' | 'assistant',
+  content: string
+) {
+  try {
+    await supabase.from('ai_chat_history').insert({
+      user_id: userId,
+      role,
+      content,
+    })
+  } catch (err) {
+    // Table might not exist - log but don't fail
+    console.warn('Could not save to chat history:', err)
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
+    // Check API key first
+    if (!process.env.DEEPSEEK_API_KEY) {
+      console.error('DEEPSEEK_API_KEY is not configured')
+      return NextResponse.json(
+        { error: 'AI service not configured. Please add DEEPSEEK_API_KEY to environment.' },
+        { status: 503 }
+      )
+    }
+
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -42,13 +70,19 @@ export async function POST(request: NextRequest) {
 
     const goalsContext = formatGoalsForChatCoach((goals || []) as Goal[])
 
-    // Fetch recent chat history (last 10 messages)
-    const { data: chatHistory } = await supabase
-      .from('ai_chat_history')
-      .select('role, content')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: true })
-      .limit(10)
+    // Try to fetch recent chat history (table may not exist)
+    let chatHistory: { role: string; content: string }[] = []
+    try {
+      const { data } = await supabase
+        .from('ai_chat_history')
+        .select('role, content')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: true })
+        .limit(10)
+      chatHistory = data || []
+    } catch (err) {
+      console.warn('Could not fetch chat history:', err)
+    }
 
     // Build messages array
     const systemPrompt = getChatCoachSystemPrompt(goalsContext, userName)
@@ -57,47 +91,87 @@ export async function POST(request: NextRequest) {
     ]
 
     // Add chat history
-    if (chatHistory) {
-      chatHistory.forEach(msg => {
-        messages.push({
-          role: msg.role as 'user' | 'assistant',
-          content: msg.content,
-        })
+    chatHistory.forEach(msg => {
+      messages.push({
+        role: msg.role as 'user' | 'assistant',
+        content: msg.content,
       })
-    }
+    })
 
     // Add current message
     messages.push({ role: 'user', content: message })
 
-    // Save user message to history
-    await supabase.from('ai_chat_history').insert({
-      user_id: user.id,
-      role: 'user',
-      content: message,
-    })
+    // Save user message to history (non-blocking)
+    saveToChatHistory(supabase, user.id, 'user', message)
 
     // Generate response
-    const response = await chat(messages, {
+    let response = await chat(messages, {
       temperature: 0.7,
       max_tokens: 1024,
     })
 
-    // Save assistant response to history
-    await supabase.from('ai_chat_history').insert({
-      user_id: user.id,
-      role: 'assistant',
-      content: response,
-    })
+    // Check if AI wants to add a goal
+    let addedGoal = null
+    const addGoalMatch = response.match(/\[ADD_GOAL\]([\s\S]*?)\[\/ADD_GOAL\]/)
+    if (addGoalMatch) {
+      try {
+        const goalData = JSON.parse(addGoalMatch[1].trim())
+
+        // Get next goal number for this category
+        const { data: existingGoals } = await supabase
+          .from('goals')
+          .select('number')
+          .eq('user_id', user.id)
+          .eq('category', goalData.category)
+          .eq('year', new Date().getFullYear())
+          .order('number', { ascending: false })
+          .limit(1)
+
+        const nextNumber = (existingGoals?.[0]?.number || 0) + 1
+
+        // Create the goal
+        const { data: newGoal, error: goalError } = await supabase
+          .from('goals')
+          .insert({
+            user_id: user.id,
+            goal: goalData.goal,
+            category: goalData.category || 'Personal',
+            period: goalData.period || 'One-year',
+            status: 'Doing',
+            number: nextNumber,
+            year: new Date().getFullYear(),
+            is_ai_generated: true,
+          })
+          .select()
+          .single()
+
+        if (!goalError && newGoal) {
+          addedGoal = newGoal
+        }
+
+        // Remove the [ADD_GOAL] block from response shown to user
+        response = response.replace(/\[ADD_GOAL\][\s\S]*?\[\/ADD_GOAL\]\s*/g, '').trim()
+      } catch (err) {
+        console.warn('Failed to parse/create goal from AI response:', err)
+      }
+    }
+
+    // Save assistant response to history (non-blocking)
+    saveToChatHistory(supabase, user.id, 'assistant', response)
 
     return NextResponse.json({
       success: true,
       message: response,
+      addedGoal,
     })
 
   } catch (error) {
     console.error('Chat error:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+
+    // Return specific error message for debugging
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: `Chat failed: ${errorMessage}` },
       { status: 500 }
     )
   }

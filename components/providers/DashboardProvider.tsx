@@ -27,6 +27,7 @@ interface DashboardContextType {
   addGoal: (goal: Partial<Goal>) => Promise<void>
   updateGoal: (id: string, updates: Partial<Goal>) => Promise<void>
   deleteGoal: (id: string) => Promise<void>
+  refreshGoals: () => Promise<void>
   // Blessing operations
   addBlessing: (blessing: Partial<Blessing>) => Promise<void>
   deleteBlessing: (id: string) => Promise<void>
@@ -125,6 +126,16 @@ export function DashboardProvider({ children, user, initialProfile }: DashboardP
 
     fetchData()
   }, [user.id, supabase])
+
+  // Refresh goals (used by ChatCoach when AI adds a goal)
+  const refreshGoals = useCallback(async () => {
+    const { data } = await supabase
+      .from('goals')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+    if (data) setGoals(data)
+  }, [supabase, user.id])
 
   // Update profile preferences
   const updateProfilePrefs = useCallback(async (updates: Partial<UserProfile>) => {
@@ -381,6 +392,7 @@ export function DashboardProvider({ children, user, initialProfile }: DashboardP
         addGoal,
         updateGoal,
         deleteGoal,
+        refreshGoals,
         addBlessing,
         deleteBlessing,
         addReward,

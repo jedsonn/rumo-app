@@ -11,6 +11,15 @@ interface RefinementResponse {
 
 export async function POST(request: NextRequest) {
   try {
+    // Check API key first
+    if (!process.env.DEEPSEEK_API_KEY) {
+      console.error('DEEPSEEK_API_KEY is not configured')
+      return NextResponse.json(
+        { error: 'AI service not configured' },
+        { status: 503 }
+      )
+    }
+
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -78,6 +87,15 @@ export async function POST(request: NextRequest) {
 // Batch refinement check for multiple goals
 export async function PUT(request: NextRequest) {
   try {
+    // Check API key first
+    if (!process.env.DEEPSEEK_API_KEY) {
+      console.error('DEEPSEEK_API_KEY is not configured')
+      return NextResponse.json(
+        { error: 'AI service not configured' },
+        { status: 503 }
+      )
+    }
+
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
