@@ -29,6 +29,7 @@ export function ActionBreakerButton({
     setError(null)
 
     try {
+      console.log('[ActionBreaker] Starting for goal:', goalId)
       const response = await fetch('/api/ai/break-action', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -36,15 +37,25 @@ export function ActionBreakerButton({
       })
 
       const data = await response.json()
+      console.log('[ActionBreaker] Response:', response.status, data)
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to generate subtasks')
       }
 
+      if (!data.subtasks || data.subtasks.length === 0) {
+        throw new Error('No subtasks returned')
+      }
+
+      console.log('[ActionBreaker] Generated subtasks:', data.subtasks)
       onSubtasksGenerated(data.subtasks)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong')
-      setTimeout(() => setError(null), 3000)
+      console.error('[ActionBreaker] Error:', err)
+      const errorMsg = err instanceof Error ? err.message : 'Something went wrong'
+      setError(errorMsg)
+      // Show alert for debugging
+      alert(`AI Subtask Error: ${errorMsg}`)
+      setTimeout(() => setError(null), 5000)
     } finally {
       setLoading(false)
     }

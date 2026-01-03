@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { MessageCircle, X, Send, Loader2, Trash2, Sparkles } from 'lucide-react'
+import { MessageCircle, X, Send, Loader2, Trash2, Sparkles, Minus, Maximize2 } from 'lucide-react'
 import { AIChatMessage } from '@/lib/types'
 
 interface ChatCoachProps {
@@ -12,6 +12,7 @@ interface ChatCoachProps {
 
 export function ChatCoach({ themeColor, isDark, onDataChanged }: ChatCoachProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const [isMinimized, setIsMinimized] = useState(false)
   const [messages, setMessages] = useState<AIChatMessage[]>([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -147,33 +148,56 @@ export function ChatCoach({ themeColor, isDark, onDataChanged }: ChatCoachProps)
 
       {/* Chat Panel */}
       {isOpen && (
-        <div className={`fixed bottom-20 right-4 w-96 max-w-[calc(100vw-2rem)] h-[500px] max-h-[calc(100vh-8rem)] rounded-2xl shadow-2xl flex flex-col z-50 overflow-hidden ${
+        <div className={`fixed bottom-20 right-4 w-96 max-w-[calc(100vw-2rem)] rounded-2xl shadow-2xl flex flex-col z-50 overflow-hidden transition-all duration-200 ${
+          isMinimized ? 'h-auto' : 'h-[500px] max-h-[calc(100vh-8rem)]'
+        } ${
           isDark ? 'bg-slate-900 border border-slate-700' : 'bg-white border border-slate-200'
         }`}>
           {/* Header */}
-          <div className={`px-4 py-3 flex items-center justify-between ${buttonGradient}`}>
+          <div
+            className={`px-4 py-3 flex items-center justify-between ${buttonGradient} ${isMinimized ? 'cursor-pointer' : ''}`}
+            onClick={isMinimized ? () => setIsMinimized(false) : undefined}
+          >
             <div className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-white" />
               <span className="font-semibold text-white">Resolve - AI Coach</span>
             </div>
             <div className="flex items-center gap-1">
+              {!isMinimized && (
+                <button
+                  onClick={handleClearHistory}
+                  className="p-1.5 rounded-full hover:bg-white/20 text-white/70 hover:text-white"
+                  title="Clear chat"
+                >
+                  <Trash2 size={16} />
+                </button>
+              )}
               <button
-                onClick={handleClearHistory}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setIsMinimized(!isMinimized)
+                }}
                 className="p-1.5 rounded-full hover:bg-white/20 text-white/70 hover:text-white"
-                title="Clear chat"
+                title={isMinimized ? 'Expand' : 'Minimize'}
               >
-                <Trash2 size={16} />
+                {isMinimized ? <Maximize2 size={16} /> : <Minus size={16} />}
               </button>
               <button
-                onClick={() => setIsOpen(false)}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setIsOpen(false)
+                  setIsMinimized(false)
+                }}
                 className="p-1.5 rounded-full hover:bg-white/20 text-white/70 hover:text-white"
+                title="Close"
               >
                 <X size={18} />
               </button>
             </div>
           </div>
 
-          {/* Messages */}
+          {/* Messages - hidden when minimized */}
+          {!isMinimized && (
           <div className={`flex-1 overflow-y-auto p-4 space-y-4 ${
             isDark ? 'bg-slate-900' : 'bg-slate-50'
           }`}>
@@ -249,8 +273,10 @@ export function ChatCoach({ themeColor, isDark, onDataChanged }: ChatCoachProps)
             )}
             <div ref={messagesEndRef} />
           </div>
+          )}
 
-          {/* Input */}
+          {/* Input - hidden when minimized */}
+          {!isMinimized && (
           <div className={`p-3 border-t ${
             isDark ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'
           }`}>
@@ -278,6 +304,7 @@ export function ChatCoach({ themeColor, isDark, onDataChanged }: ChatCoachProps)
               </button>
             </div>
           </div>
+          )}
         </div>
       )}
     </>
