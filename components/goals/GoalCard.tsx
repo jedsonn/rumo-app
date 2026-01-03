@@ -170,8 +170,8 @@ export function GoalCard({
               isDark={isDark}
             />
           )}
-          {/* Other actions - show on hover */}
-          <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+          {/* Other actions - always visible */}
+          <div className="flex gap-0.5">
             {goal.status === 'Done' && onShare && (
               <button
                 onClick={() => onShare(goal)}
