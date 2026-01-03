@@ -174,11 +174,11 @@ export async function POST(request: NextRequest) {
       response = response.replace(/\[DELETE_GOAL\][\s\S]*?\[\/DELETE_GOAL\]\s*/g, '').trim()
     }
 
-    // 3. ADD BLESSING
-    const addBlessingMatch = response.match(/\[ADD_BLESSING\]([\s\S]*?)\[\/ADD_BLESSING\]/)
-    if (addBlessingMatch) {
+    // 3. ADD BLESSINGS (supports multiple)
+    const addBlessingMatches = [...response.matchAll(/\[ADD_BLESSING\]([\s\S]*?)\[\/ADD_BLESSING\]/g)]
+    for (const match of addBlessingMatches) {
       try {
-        const blessingData = JSON.parse(addBlessingMatch[1].trim())
+        const blessingData = JSON.parse(match[1].trim())
         const { data: newBlessing, error } = await supabase
           .from('blessings')
           .insert({
@@ -193,14 +193,45 @@ export async function POST(request: NextRequest) {
       } catch (err) {
         console.warn('Failed to add blessing:', err)
       }
+    }
+    if (addBlessingMatches.length > 0) {
       response = response.replace(/\[ADD_BLESSING\][\s\S]*?\[\/ADD_BLESSING\]\s*/g, '').trim()
     }
 
-    // 4. ADD REWARD
-    const addRewardMatch = response.match(/\[ADD_REWARD\]([\s\S]*?)\[\/ADD_REWARD\]/)
-    if (addRewardMatch) {
+    // 4. DELETE BLESSINGS (supports multiple)
+    const deleteBlessingMatches = [...response.matchAll(/\[DELETE_BLESSING\]([\s\S]*?)\[\/DELETE_BLESSING\]/g)]
+    for (const match of deleteBlessingMatches) {
       try {
-        const rewardData = JSON.parse(addRewardMatch[1].trim())
+        const { text } = JSON.parse(match[1].trim())
+        if (text === '*') {
+          // Delete all blessings
+          const { error } = await supabase
+            .from('blessings')
+            .delete()
+            .eq('user_id', user.id)
+          actions.push({ type: 'delete_all_blessings', success: !error })
+        } else {
+          // Delete by partial text match
+          const { error } = await supabase
+            .from('blessings')
+            .delete()
+            .eq('user_id', user.id)
+            .ilike('text', `%${text}%`)
+          actions.push({ type: 'delete_blessing', success: !error })
+        }
+      } catch (err) {
+        console.warn('Failed to delete blessing:', err)
+      }
+    }
+    if (deleteBlessingMatches.length > 0) {
+      response = response.replace(/\[DELETE_BLESSING\][\s\S]*?\[\/DELETE_BLESSING\]\s*/g, '').trim()
+    }
+
+    // 5. ADD REWARDS (supports multiple)
+    const addRewardMatches = [...response.matchAll(/\[ADD_REWARD\]([\s\S]*?)\[\/ADD_REWARD\]/g)]
+    for (const match of addRewardMatches) {
+      try {
+        const rewardData = JSON.parse(match[1].trim())
         const { data: newReward, error } = await supabase
           .from('rewards')
           .insert({
@@ -216,7 +247,38 @@ export async function POST(request: NextRequest) {
       } catch (err) {
         console.warn('Failed to add reward:', err)
       }
+    }
+    if (addRewardMatches.length > 0) {
       response = response.replace(/\[ADD_REWARD\][\s\S]*?\[\/ADD_REWARD\]\s*/g, '').trim()
+    }
+
+    // 6. DELETE REWARDS (supports multiple)
+    const deleteRewardMatches = [...response.matchAll(/\[DELETE_REWARD\]([\s\S]*?)\[\/DELETE_REWARD\]/g)]
+    for (const match of deleteRewardMatches) {
+      try {
+        const { text } = JSON.parse(match[1].trim())
+        if (text === '*') {
+          // Delete all rewards
+          const { error } = await supabase
+            .from('rewards')
+            .delete()
+            .eq('user_id', user.id)
+          actions.push({ type: 'delete_all_rewards', success: !error })
+        } else {
+          // Delete by partial text match
+          const { error } = await supabase
+            .from('rewards')
+            .delete()
+            .eq('user_id', user.id)
+            .ilike('text', `%${text}%`)
+          actions.push({ type: 'delete_reward', success: !error })
+        }
+      } catch (err) {
+        console.warn('Failed to delete reward:', err)
+      }
+    }
+    if (deleteRewardMatches.length > 0) {
+      response = response.replace(/\[DELETE_REWARD\][\s\S]*?\[\/DELETE_REWARD\]\s*/g, '').trim()
     }
 
     // Save assistant response to history (non-blocking)
