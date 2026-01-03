@@ -4,6 +4,12 @@ export type GoalStatus = 'Doing' | 'On Track' | 'For Later' | 'Done' | 'Dropped'
 export type GoalPeriod = 'One-year' | 'Three-years' | 'Five-years';
 export type GoalCategory = 'Personal' | 'Professional';
 
+export interface Subtask {
+  text: string;
+  completed: boolean;
+  estimated_time?: string;
+}
+
 export interface Goal {
   id: string;
   user_id: string;
@@ -16,8 +22,13 @@ export interface Goal {
   action: string | null;
   cost: number;
   notes: string | null;
+  subtasks: Subtask[];
   pinned: boolean;
   linked_reward_id: string | null;
+  // AI fields
+  is_ai_generated: boolean;
+  is_vague: boolean;
+  ai_refinement_suggestion: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -58,8 +69,19 @@ export interface UserProfile {
   life_stage: LifeStage | null;
   priorities: Priority[];
   onboarding_completed: boolean;
+  // AI fields
+  ai_onboarding_completed: boolean;
+  last_digest_sent_at: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface AIChatMessage {
+  id: string;
+  user_id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  created_at: string;
 }
 
 export interface Quote {

@@ -18,6 +18,7 @@ import { SettingsModal } from '@/components/modals/SettingsModal'
 import { ConfirmModal } from '@/components/modals/ConfirmModal'
 import { AIOnboardingModal } from '@/components/modals/AIOnboardingModal'
 import { QuoteDisplay } from '@/components/motivation/QuoteDisplay'
+import { ChatCoach } from '@/components/ai/ChatCoach'
 import { Goal, GoalCategory, LifeStage, Priority, GoalPeriod } from '@/lib/types'
 import { GoalSuggestion } from '@/lib/suggestions'
 
@@ -78,7 +79,19 @@ export default function DashboardPage() {
   const [suggestionsType, setSuggestionsType] = useState<'goal' | 'blessing' | 'reward' | null>(null)
   const [suggestionsCategory, setSuggestionsCategory] = useState<GoalCategory>('Personal')
 
+  // AI Onboarding
+  const [showOnboarding, setShowOnboarding] = useState(false)
+
   const themeColor = isBlue ? 'blue' : 'rose'
+
+  // Show AI onboarding for new users who haven't completed it
+  useEffect(() => {
+    if (profile && !profile.ai_onboarding_completed && goals.length === 0 && !loading) {
+      // Delay to let the page settle
+      const timer = setTimeout(() => setShowOnboarding(true), 500)
+      return () => clearTimeout(timer)
+    }
+  }, [profile, goals.length, loading])
 
   // Filter goals
   const filteredGoals = useMemo(() => {
@@ -493,6 +506,9 @@ export default function DashboardPage() {
         year={year}
         isDark={isDark}
       />
+
+      {/* AI Chat Coach - Floating Button */}
+      <ChatCoach themeColor={themeColor} isDark={isDark} />
 
       {/* Settings Modal */}
       <SettingsModal
