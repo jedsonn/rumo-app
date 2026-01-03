@@ -40,6 +40,9 @@ export interface Reward {
   updated_at: string;
 }
 
+export type LifeStage = 'student' | 'early_career' | 'mid_career' | 'senior' | 'entrepreneur' | 'retired';
+export type Priority = 'career' | 'health' | 'family' | 'finance' | 'learning' | 'balance';
+
 export interface UserProfile {
   id: string;
   email: string;
@@ -51,6 +54,10 @@ export interface UserProfile {
   check_in_dates: string[]; // Array of ISO date strings for weekly check-ins
   last_check_in: string | null;
   email_digest_enabled: boolean;
+  // Onboarding preferences
+  life_stage: LifeStage | null;
+  priorities: Priority[];
+  onboarding_completed: boolean;
   created_at: string;
   updated_at: string;
 }
