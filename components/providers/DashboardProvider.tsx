@@ -127,14 +127,16 @@ export function DashboardProvider({ children, user, initialProfile }: DashboardP
     fetchData()
   }, [user.id, supabase])
 
-  // Refresh goals (used by ChatCoach when AI adds a goal)
+  // Refresh all data (used by ChatCoach when AI modifies data)
   const refreshGoals = useCallback(async () => {
-    const { data } = await supabase
-      .from('goals')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-    if (data) setGoals(data)
+    const [goalsRes, blessingsRes, rewardsRes] = await Promise.all([
+      supabase.from('goals').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
+      supabase.from('blessings').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
+      supabase.from('rewards').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
+    ])
+    if (goalsRes.data) setGoals(goalsRes.data)
+    if (blessingsRes.data) setBlessings(blessingsRes.data)
+    if (rewardsRes.data) setRewards(rewardsRes.data)
   }, [supabase, user.id])
 
   // Update profile preferences

@@ -110,14 +110,14 @@ export async function POST(request: NextRequest) {
       max_tokens: 1024,
     })
 
-    // Check if AI wants to add a goal
-    let addedGoal = null
+    // Track actions performed
+    const actions: { type: string; success: boolean; data?: unknown }[] = []
+
+    // 1. ADD GOAL
     const addGoalMatch = response.match(/\[ADD_GOAL\]([\s\S]*?)\[\/ADD_GOAL\]/)
     if (addGoalMatch) {
       try {
         const goalData = JSON.parse(addGoalMatch[1].trim())
-
-        // Get next goal number for this category
         const { data: existingGoals } = await supabase
           .from('goals')
           .select('number')
@@ -128,9 +128,7 @@ export async function POST(request: NextRequest) {
           .limit(1)
 
         const nextNumber = (existingGoals?.[0]?.number || 0) + 1
-
-        // Create the goal
-        const { data: newGoal, error: goalError } = await supabase
+        const { data: newGoal, error } = await supabase
           .from('goals')
           .insert({
             user_id: user.id,
@@ -145,24 +143,89 @@ export async function POST(request: NextRequest) {
           .select()
           .single()
 
-        if (!goalError && newGoal) {
-          addedGoal = newGoal
-        }
-
-        // Remove the [ADD_GOAL] block from response shown to user
-        response = response.replace(/\[ADD_GOAL\][\s\S]*?\[\/ADD_GOAL\]\s*/g, '').trim()
+        actions.push({ type: 'add_goal', success: !error, data: newGoal })
       } catch (err) {
-        console.warn('Failed to parse/create goal from AI response:', err)
+        console.warn('Failed to add goal:', err)
       }
+      response = response.replace(/\[ADD_GOAL\][\s\S]*?\[\/ADD_GOAL\]\s*/g, '').trim()
+    }
+
+    // 2. DELETE GOAL
+    const deleteGoalMatch = response.match(/\[DELETE_GOAL\]([\s\S]*?)\[\/DELETE_GOAL\]/)
+    if (deleteGoalMatch) {
+      try {
+        const { number, category } = JSON.parse(deleteGoalMatch[1].trim())
+        const { error } = await supabase
+          .from('goals')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('number', number)
+          .eq('category', category)
+          .eq('year', new Date().getFullYear())
+
+        actions.push({ type: 'delete_goal', success: !error })
+      } catch (err) {
+        console.warn('Failed to delete goal:', err)
+      }
+      response = response.replace(/\[DELETE_GOAL\][\s\S]*?\[\/DELETE_GOAL\]\s*/g, '').trim()
+    }
+
+    // 3. ADD BLESSING
+    const addBlessingMatch = response.match(/\[ADD_BLESSING\]([\s\S]*?)\[\/ADD_BLESSING\]/)
+    if (addBlessingMatch) {
+      try {
+        const blessingData = JSON.parse(addBlessingMatch[1].trim())
+        const { data: newBlessing, error } = await supabase
+          .from('blessings')
+          .insert({
+            user_id: user.id,
+            text: blessingData.text,
+            category: blessingData.category || 'Personal',
+          })
+          .select()
+          .single()
+
+        actions.push({ type: 'add_blessing', success: !error, data: newBlessing })
+      } catch (err) {
+        console.warn('Failed to add blessing:', err)
+      }
+      response = response.replace(/\[ADD_BLESSING\][\s\S]*?\[\/ADD_BLESSING\]\s*/g, '').trim()
+    }
+
+    // 4. ADD REWARD
+    const addRewardMatch = response.match(/\[ADD_REWARD\]([\s\S]*?)\[\/ADD_REWARD\]/)
+    if (addRewardMatch) {
+      try {
+        const rewardData = JSON.parse(addRewardMatch[1].trim())
+        const { data: newReward, error } = await supabase
+          .from('rewards')
+          .insert({
+            user_id: user.id,
+            text: rewardData.text,
+            cost: rewardData.cost || 0,
+            earned: false,
+          })
+          .select()
+          .single()
+
+        actions.push({ type: 'add_reward', success: !error, data: newReward })
+      } catch (err) {
+        console.warn('Failed to add reward:', err)
+      }
+      response = response.replace(/\[ADD_REWARD\][\s\S]*?\[\/ADD_REWARD\]\s*/g, '').trim()
     }
 
     // Save assistant response to history (non-blocking)
     saveToChatHistory(supabase, user.id, 'assistant', response)
 
+    // Check if any data-modifying action was performed
+    const dataChanged = actions.length > 0
+
     return NextResponse.json({
       success: true,
       message: response,
-      addedGoal,
+      actions,
+      dataChanged,
     })
 
   } catch (error) {

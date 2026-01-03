@@ -7,10 +7,10 @@ import { AIChatMessage } from '@/lib/types'
 interface ChatCoachProps {
   themeColor: 'blue' | 'rose'
   isDark: boolean
-  onGoalAdded?: () => void
+  onDataChanged?: () => void
 }
 
-export function ChatCoach({ themeColor, isDark, onGoalAdded }: ChatCoachProps) {
+export function ChatCoach({ themeColor, isDark, onDataChanged }: ChatCoachProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<AIChatMessage[]>([])
   const [input, setInput] = useState('')
@@ -93,9 +93,9 @@ export function ChatCoach({ themeColor, isDark, onGoalAdded }: ChatCoachProps) {
       }
       setMessages(prev => [...prev, assistantMsg])
 
-      // If a goal was added, trigger refresh
-      if (data.addedGoal && onGoalAdded) {
-        onGoalAdded()
+      // If any data was changed, trigger refresh
+      if (data.dataChanged && onDataChanged) {
+        onDataChanged()
       }
     } catch (err) {
       // Add error message with details

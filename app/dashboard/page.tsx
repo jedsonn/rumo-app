@@ -497,7 +497,7 @@ export default function DashboardPage() {
       />
 
       {/* AI Chat Coach - Floating Button */}
-      <ChatCoach themeColor={themeColor} isDark={isDark} onGoalAdded={refreshGoals} />
+      <ChatCoach themeColor={themeColor} isDark={isDark} onDataChanged={refreshGoals} />
 
       {/* Settings Modal */}
       <SettingsModal
