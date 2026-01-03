@@ -79,19 +79,7 @@ export default function DashboardPage() {
   const [suggestionsType, setSuggestionsType] = useState<'goal' | 'blessing' | 'reward' | null>(null)
   const [suggestionsCategory, setSuggestionsCategory] = useState<GoalCategory>('Personal')
 
-  // AI Onboarding
-  const [showOnboarding, setShowOnboarding] = useState(false)
-
   const themeColor = isBlue ? 'blue' : 'rose'
-
-  // Show AI onboarding for new users who haven't completed it
-  useEffect(() => {
-    if (profile && !profile.ai_onboarding_completed && goals.length === 0 && !loading) {
-      // Delay to let the page settle
-      const timer = setTimeout(() => setShowOnboarding(true), 500)
-      return () => clearTimeout(timer)
-    }
-  }, [profile, goals.length, loading])
 
   // Filter goals
   const filteredGoals = useMemo(() => {
