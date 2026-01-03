@@ -5,8 +5,36 @@ import { getChatCoachSystemPrompt } from '@/lib/ai/prompts'
 import { formatGoalsForChatCoach } from '@/lib/ai/context'
 import { Goal } from '@/lib/types'
 
+// Helper to safely save to chat history (table may not exist)
+async function saveToChatHistory(
+  supabase: ReturnType<typeof createClient>,
+  userId: string,
+  role: 'user' | 'assistant',
+  content: string
+) {
+  try {
+    await supabase.from('ai_chat_history').insert({
+      user_id: userId,
+      role,
+      content,
+    })
+  } catch (err) {
+    // Table might not exist - log but don't fail
+    console.warn('Could not save to chat history:', err)
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
+    // Check API key first
+    if (!process.env.DEEPSEEK_API_KEY) {
+      console.error('DEEPSEEK_API_KEY is not configured')
+      return NextResponse.json(
+        { error: 'AI service not configured. Please add DEEPSEEK_API_KEY to environment.' },
+        { status: 503 }
+      )
+    }
+
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -42,13 +70,19 @@ export async function POST(request: NextRequest) {
 
     const goalsContext = formatGoalsForChatCoach((goals || []) as Goal[])
 
-    // Fetch recent chat history (last 10 messages)
-    const { data: chatHistory } = await supabase
-      .from('ai_chat_history')
-      .select('role, content')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: true })
-      .limit(10)
+    // Try to fetch recent chat history (table may not exist)
+    let chatHistory: { role: string; content: string }[] = []
+    try {
+      const { data } = await supabase
+        .from('ai_chat_history')
+        .select('role, content')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: true })
+        .limit(10)
+      chatHistory = data || []
+    } catch (err) {
+      console.warn('Could not fetch chat history:', err)
+    }
 
     // Build messages array
     const systemPrompt = getChatCoachSystemPrompt(goalsContext, userName)
@@ -57,24 +91,18 @@ export async function POST(request: NextRequest) {
     ]
 
     // Add chat history
-    if (chatHistory) {
-      chatHistory.forEach(msg => {
-        messages.push({
-          role: msg.role as 'user' | 'assistant',
-          content: msg.content,
-        })
+    chatHistory.forEach(msg => {
+      messages.push({
+        role: msg.role as 'user' | 'assistant',
+        content: msg.content,
       })
-    }
+    })
 
     // Add current message
     messages.push({ role: 'user', content: message })
 
-    // Save user message to history
-    await supabase.from('ai_chat_history').insert({
-      user_id: user.id,
-      role: 'user',
-      content: message,
-    })
+    // Save user message to history (non-blocking)
+    saveToChatHistory(supabase, user.id, 'user', message)
 
     // Generate response
     const response = await chat(messages, {
@@ -82,12 +110,8 @@ export async function POST(request: NextRequest) {
       max_tokens: 1024,
     })
 
-    // Save assistant response to history
-    await supabase.from('ai_chat_history').insert({
-      user_id: user.id,
-      role: 'assistant',
-      content: response,
-    })
+    // Save assistant response to history (non-blocking)
+    saveToChatHistory(supabase, user.id, 'assistant', response)
 
     return NextResponse.json({
       success: true,
@@ -96,8 +120,11 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Chat error:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+
+    // Return specific error message for debugging
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: `Chat failed: ${errorMessage}` },
       { status: 500 }
     )
   }
