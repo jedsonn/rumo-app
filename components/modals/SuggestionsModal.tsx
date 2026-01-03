@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import { Modal } from '@/components/ui/Modal'
-import { SUGGESTIONS, BLESSING_SUGGESTIONS, REWARD_SUGGESTIONS, TEMPLATE_PACKS, GoalSuggestion, TemplatePack } from '@/lib/suggestions'
+import { SUGGESTIONS, BLESSING_SUGGESTIONS, REWARD_SUGGESTIONS, TEMPLATE_PACKS, LIFE_STAGE_TEMPLATES, GoalSuggestion, TemplatePack, LifeStageTemplatePack } from '@/lib/suggestions'
 import { GoalCategory } from '@/lib/types'
-import { Check, Plus, User, Briefcase, Sparkles, Package, ArrowLeft, ChevronRight } from 'lucide-react'
+import { Check, Plus, User, Briefcase, Sparkles, Package, ArrowLeft, ChevronRight, CheckCircle2 } from 'lucide-react'
 
 type SuggestionType = 'goal' | 'blessing' | 'reward'
 type ViewMode = 'packs' | 'browse' | 'pack-detail'
@@ -60,6 +60,20 @@ export function SuggestionsModal({
 
   const suggestions = getSuggestions()
   const categoryPacks = TEMPLATE_PACKS.filter(p => p.category === activeCategory)
+  const lifeStagePacks = LIFE_STAGE_TEMPLATES.filter(p => p.category === activeCategory)
+
+  const selectAll = () => {
+    if (!suggestions) return
+    const allIndices = new Set<number>()
+    for (let i = 0; i < suggestions.length; i++) {
+      allIndices.add(i)
+    }
+    setSelected(allIndices)
+  }
+
+  const selectNone = () => {
+    setSelected(new Set())
+  }
 
   const toggleItem = (index: number) => {
     const next = new Set(selected)
@@ -173,12 +187,51 @@ export function SuggestionsModal({
 
         {/* PACKS VIEW - Show template packs for goals */}
         {type === 'goal' && viewMode === 'packs' && (
-          <div className="space-y-4">
-            {/* Template Packs Grid */}
+          <div className="space-y-4 max-h-[500px] overflow-y-auto">
+            {/* Life Stage Templates (if any for this category) */}
+            {lifeStagePacks.length > 0 && (
+              <div>
+                <h3 className={`text-sm font-bold uppercase mb-3 flex items-center gap-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                  <User size={14} />
+                  For Your Life Stage (20 goals each)
+                </h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {lifeStagePacks.map(pack => (
+                    <button
+                      key={pack.id}
+                      onClick={() => openPack(pack)}
+                      className={`text-left p-4 rounded-xl border-2 transition-all hover:scale-[1.02] ${
+                        isDark
+                          ? 'bg-gradient-to-br from-slate-700 to-slate-800 border-violet-500/50 hover:border-violet-400'
+                          : 'bg-gradient-to-br from-violet-50 to-indigo-50 border-violet-200 hover:border-violet-300 hover:shadow-md'
+                      }`}
+                    >
+                      <div className="text-3xl mb-2">{pack.emoji}</div>
+                      <h4 className={`font-bold text-sm ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                        {pack.name}
+                      </h4>
+                      <p className={`text-xs mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                        {pack.description}
+                      </p>
+                      <div className={`flex items-center justify-between mt-2`}>
+                        <span className={`text-xs px-2 py-0.5 rounded-full ${isDark ? 'bg-violet-900/50 text-violet-300' : 'bg-violet-100 text-violet-700'}`}>
+                          {pack.lifeStage}
+                        </span>
+                        <span className={`text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                          {pack.goals.length} goals →
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Regular Template Packs Grid */}
             <div>
               <h3 className={`text-sm font-bold uppercase mb-3 flex items-center gap-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                 <Package size={14} />
-                Template Packs
+                Template Packs (20 goals each)
               </h3>
               <div className="grid grid-cols-2 gap-3">
                 {categoryPacks.map(pack => (
@@ -323,9 +376,24 @@ export function SuggestionsModal({
         {/* Footer - only show when items can be added */}
         {(viewMode !== 'packs' || type !== 'goal') && (
           <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
-            <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-              {selected.size} selected
-            </p>
+            <div className="flex items-center gap-3">
+              <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                {selected.size} selected
+              </p>
+              {suggestions && suggestions.length > 0 && (
+                <button
+                  onClick={selected.size === suggestions.length ? selectNone : selectAll}
+                  className={`text-xs px-2 py-1 rounded flex items-center gap-1 ${
+                    isDark
+                      ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  <CheckCircle2 size={12} />
+                  {selected.size === suggestions.length ? 'Deselect All' : 'Select All'}
+                </button>
+              )}
+            </div>
             <div className="flex gap-2">
               <button
                 onClick={onClose}

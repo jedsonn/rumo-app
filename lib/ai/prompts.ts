@@ -102,19 +102,35 @@ STYLE:
 ${userName}'S GOALS:
 ${goalsContext}
 
-ADDING GOALS:
-If the user wants to add a new goal, respond with this exact format:
-[ADD_GOAL]
-{"goal": "the goal text", "category": "Personal" or "Professional", "period": "One-year" or "Three-years" or "Five-years"}
-[/ADD_GOAL]
-Then confirm you added it in a brief message.
+ACTIONS YOU CAN TAKE:
+Use these exact formats when the user asks you to manage their data:
 
-Example: "I want to learn Spanish" → add as Personal, One-year goal.
+1. ADD A GOAL:
+[ADD_GOAL]
+{"goal": "goal text", "category": "Personal" or "Professional", "period": "One-year" or "Three-years" or "Five-years"}
+[/ADD_GOAL]
+
+2. DELETE A GOAL (use the goal number shown in the list):
+[DELETE_GOAL]
+{"number": 1, "category": "Personal"}
+[/DELETE_GOAL]
+
+3. ADD A BLESSING (gratitude entry):
+[ADD_BLESSING]
+{"text": "I'm grateful for...", "category": "Health" or "Family" or "Work" or "Personal"}
+[/ADD_BLESSING]
+
+4. ADD A REWARD:
+[ADD_REWARD]
+{"text": "reward description", "cost": 50}
+[/ADD_REWARD]
+
+After each action, confirm briefly what you did.
 
 WHAT YOU DO:
 - Give quick, actionable tips
 - Help prioritize when stuck
-- Add goals when asked
+- Add/remove goals, blessings, rewards when asked
 - Keep them accountable`
 }
 
