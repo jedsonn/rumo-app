@@ -16,8 +16,9 @@ import { ReviewModal } from '@/components/modals/ReviewModal'
 import { ExportModal } from '@/components/modals/ExportModal'
 import { SettingsModal } from '@/components/modals/SettingsModal'
 import { ConfirmModal } from '@/components/modals/ConfirmModal'
+import { AIOnboardingModal } from '@/components/modals/AIOnboardingModal'
 import { QuoteDisplay } from '@/components/motivation/QuoteDisplay'
-import { Goal, GoalCategory } from '@/lib/types'
+import { Goal, GoalCategory, LifeStage, Priority, GoalPeriod } from '@/lib/types'
 import { GoalSuggestion } from '@/lib/suggestions'
 
 export default function DashboardPage() {
@@ -43,6 +44,7 @@ export default function DashboardPage() {
     updateReward,
     deleteReward,
     showToast,
+    updateProfile,
   } = useDashboard()
 
   // Tab and filter state
@@ -58,6 +60,14 @@ export default function DashboardPage() {
   const [showClearAll, setShowClearAll] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [clearAllLoading, setClearAllLoading] = useState(false)
+  const [showOnboarding, setShowOnboarding] = useState(false)
+
+  // Check if user needs onboarding
+  useEffect(() => {
+    if (!loading && profile && !profile.onboarding_completed && goals.length === 0) {
+      setShowOnboarding(true)
+    }
+  }, [loading, profile, goals.length])
 
   // Goal modals
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null)
@@ -191,6 +201,45 @@ export default function DashboardPage() {
   const openRewardSuggestions = useCallback(() => {
     setSuggestionsType('reward')
   }, [])
+
+  // Handle AI onboarding completion
+  const handleOnboardingComplete = useCallback(async (
+    selectedGoals: { goal: string; action: string; period: GoalPeriod; category: GoalCategory }[],
+    lifeStage: LifeStage,
+    priorities: Priority[]
+  ) => {
+    // Save profile preferences
+    await updateProfile({
+      life_stage: lifeStage,
+      priorities,
+      onboarding_completed: true,
+    })
+
+    // Add selected goals
+    for (const goalData of selectedGoals) {
+      const categoryGoals = goals.filter(g => g.category === goalData.category)
+      const existingNumbers = categoryGoals.map(g => g.number)
+      const nextNum = existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1
+
+      await addGoal({
+        number: nextNum,
+        year,
+        goal: goalData.goal,
+        period: goalData.period,
+        category: goalData.category,
+        status: 'Doing',
+        action: goalData.action,
+        cost: 0,
+        notes: null,
+        pinned: false,
+        linked_reward_id: null,
+      })
+    }
+
+    if (selectedGoals.length > 0) {
+      showToast(`Added ${selectedGoals.length} goals!`)
+    }
+  }, [updateProfile, goals, year, addGoal, showToast])
 
   if (loading) {
     return (
@@ -475,6 +524,20 @@ export default function DashboardPage() {
         variant="danger"
         loading={clearAllLoading}
         isDark={isDark}
+      />
+
+      {/* AI Onboarding Modal */}
+      <AIOnboardingModal
+        isOpen={showOnboarding}
+        onClose={() => {
+          setShowOnboarding(false)
+          // Mark as completed even if skipped
+          updateProfile({ onboarding_completed: true })
+        }}
+        onComplete={handleOnboardingComplete}
+        isDark={isDark}
+        isBlue={isBlue}
+        year={year}
       />
     </div>
   )
