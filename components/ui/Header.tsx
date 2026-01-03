@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useDashboard } from '@/components/providers/DashboardProvider'
 import {
   Moon, Sun, Palette, BarChart3, Trophy, Trash2,
-  Download, Search, Check
+  Download, Search, Check, LogOut, Settings, User, ChevronDown
 } from 'lucide-react'
 
 export type TabType = 'goals' | 'blessings' | 'rewards'
@@ -14,6 +14,7 @@ interface HeaderProps {
   onShowReview: () => void
   onShowImportExport: () => void
   onShowClearAll: () => void
+  onShowSettings: () => void
   search: string
   setSearch: (search: string) => void
   statusFilter: string
@@ -30,6 +31,7 @@ export function Header({
   onShowReview,
   onShowImportExport,
   onShowClearAll,
+  onShowSettings,
   search,
   setSearch,
   statusFilter,
@@ -47,9 +49,11 @@ export function Header({
     toggleDarkMode,
     isBlue,
     toggleTheme,
+    logout,
   } = useDashboard()
 
   const [editingHeader, setEditingHeader] = useState(false)
+  const [showUserMenu, setShowUserMenu] = useState(false)
   const [ownerName, setOwnerName] = useState(profile?.display_name || 'My')
   const [currentYear, setCurrentYear] = useState(year)
 
@@ -188,6 +192,74 @@ export function Header({
         <button onClick={onShowReview} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold text-white text-sm ${isBlue ? 'bg-blue-500' : 'bg-rose-500'}`}>
           <Trophy size={14} /> Review
         </button>
+
+        {/* User Menu Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setShowUserMenu(!showUserMenu)}
+            className={`flex items-center gap-1.5 px-2 py-1.5 rounded-full transition-colors ${
+              isDark
+                ? 'hover:bg-slate-700 text-slate-300'
+                : 'hover:bg-slate-100 text-slate-600'
+            }`}
+          >
+            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold ${isBlue ? 'bg-blue-500' : 'bg-rose-500'}`}>
+              {(profile?.display_name || 'U')[0].toUpperCase()}
+            </div>
+            <ChevronDown size={14} className={showUserMenu ? 'rotate-180 transition-transform' : 'transition-transform'} />
+          </button>
+
+          {showUserMenu && (
+            <>
+              {/* Backdrop */}
+              <div className="fixed inset-0 z-40" onClick={() => setShowUserMenu(false)} />
+
+              {/* Dropdown */}
+              <div className={`absolute right-0 top-full mt-1 w-48 rounded-xl shadow-lg border z-50 py-1 ${
+                isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
+              }`}>
+                {/* User info */}
+                <div className={`px-3 py-2 border-b ${isDark ? 'border-slate-700' : 'border-slate-100'}`}>
+                  <p className={`font-medium text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                    {profile?.display_name || 'User'}
+                  </p>
+                  <p className={`text-xs truncate ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                    {profile?.email || ''}
+                  </p>
+                </div>
+
+                {/* Menu items */}
+                <button
+                  onClick={() => {
+                    setShowUserMenu(false)
+                    onShowSettings()
+                  }}
+                  className={`w-full flex items-center gap-2 px-3 py-2 text-sm ${
+                    isDark ? 'text-slate-300 hover:bg-slate-700' : 'text-slate-700 hover:bg-slate-50'
+                  }`}
+                >
+                  <Settings size={16} />
+                  Settings
+                </button>
+
+                <div className={`my-1 border-t ${isDark ? 'border-slate-700' : 'border-slate-100'}`} />
+
+                <button
+                  onClick={() => {
+                    setShowUserMenu(false)
+                    logout()
+                  }}
+                  className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-red-500 ${
+                    isDark ? 'hover:bg-red-900/20' : 'hover:bg-red-50'
+                  }`}
+                >
+                  <LogOut size={16} />
+                  Sign Out
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   )

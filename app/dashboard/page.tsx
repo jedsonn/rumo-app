@@ -14,10 +14,12 @@ import { LinkRewardModal } from '@/components/modals/LinkRewardModal'
 import { ShareModal } from '@/components/modals/ShareModal'
 import { ReviewModal } from '@/components/modals/ReviewModal'
 import { ExportModal } from '@/components/modals/ExportModal'
+import { SettingsModal } from '@/components/modals/SettingsModal'
+import { ConfirmModal } from '@/components/modals/ConfirmModal'
+import { AIOnboardingModal } from '@/components/modals/AIOnboardingModal'
 import { QuoteDisplay } from '@/components/motivation/QuoteDisplay'
 import { ChatCoach } from '@/components/ai/ChatCoach'
-import { OnboardingFlow } from '@/components/ai/OnboardingFlow'
-import { Goal, GoalCategory } from '@/lib/types'
+import { Goal, GoalCategory, LifeStage, Priority, GoalPeriod } from '@/lib/types'
 import { GoalSuggestion } from '@/lib/suggestions'
 
 export default function DashboardPage() {
@@ -43,6 +45,7 @@ export default function DashboardPage() {
     updateReward,
     deleteReward,
     showToast,
+    updateProfile,
   } = useDashboard()
 
   // Tab and filter state
@@ -56,6 +59,16 @@ export default function DashboardPage() {
   const [showReview, setShowReview] = useState(false)
   const [showImportExport, setShowImportExport] = useState(false)
   const [showClearAll, setShowClearAll] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
+  const [clearAllLoading, setClearAllLoading] = useState(false)
+  const [showOnboarding, setShowOnboarding] = useState(false)
+
+  // Check if user needs onboarding
+  useEffect(() => {
+    if (!loading && profile && !profile.onboarding_completed && goals.length === 0) {
+      setShowOnboarding(true)
+    }
+  }, [loading, profile, goals.length])
 
   // Goal modals
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null)
@@ -114,6 +127,7 @@ export default function DashboardPage() {
         setShowReview(false)
         setShowImportExport(false)
         setShowClearAll(false)
+        setShowSettings(false)
         setEditingGoal(null)
         setLinkingGoal(null)
         setSharingGoal(null)
@@ -201,6 +215,45 @@ export default function DashboardPage() {
     setSuggestionsType('reward')
   }, [])
 
+  // Handle AI onboarding completion
+  const handleOnboardingComplete = useCallback(async (
+    selectedGoals: { goal: string; action: string; period: GoalPeriod; category: GoalCategory }[],
+    lifeStage: LifeStage,
+    priorities: Priority[]
+  ) => {
+    // Save profile preferences
+    await updateProfile({
+      life_stage: lifeStage,
+      priorities,
+      onboarding_completed: true,
+    })
+
+    // Add selected goals
+    for (const goalData of selectedGoals) {
+      const categoryGoals = goals.filter(g => g.category === goalData.category)
+      const existingNumbers = categoryGoals.map(g => g.number)
+      const nextNum = existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1
+
+      await addGoal({
+        number: nextNum,
+        year,
+        goal: goalData.goal,
+        period: goalData.period,
+        category: goalData.category,
+        status: 'Doing',
+        action: goalData.action,
+        cost: 0,
+        notes: null,
+        pinned: false,
+        linked_reward_id: null,
+      })
+    }
+
+    if (selectedGoals.length > 0) {
+      showToast(`Added ${selectedGoals.length} goals!`)
+    }
+  }, [updateProfile, goals, year, addGoal, showToast])
+
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
@@ -223,6 +276,7 @@ export default function DashboardPage() {
         onShowReview={() => setShowReview(true)}
         onShowImportExport={() => setShowImportExport(true)}
         onShowClearAll={() => setShowClearAll(true)}
+        onShowSettings={() => setShowSettings(true)}
         search={search}
         setSearch={setSearch}
         statusFilter={statusFilter}
@@ -456,16 +510,50 @@ export default function DashboardPage() {
       {/* AI Chat Coach - Floating Button */}
       <ChatCoach themeColor={themeColor} isDark={isDark} />
 
-      {/* AI Onboarding Flow */}
-      <OnboardingFlow
-        isOpen={showOnboarding}
-        onClose={() => setShowOnboarding(false)}
-        onComplete={() => {
-          // Refresh the page to load new goals
-          window.location.reload()
-        }}
-        themeColor={themeColor}
+      {/* Settings Modal */}
+      <SettingsModal
+        isOpen={showSettings}
+        onClose={() => setShowSettings(false)}
+        userEmail={profile?.email || ''}
         isDark={isDark}
+        onShowToast={showToast}
+      />
+
+      {/* Clear All Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showClearAll}
+        onClose={() => setShowClearAll(false)}
+        onConfirm={async () => {
+          setClearAllLoading(true)
+          const yearGoals = goals.filter(g => g.year === year)
+          for (const goal of yearGoals) {
+            await deleteGoal(goal.id)
+          }
+          setClearAllLoading(false)
+          setShowClearAll(false)
+          showToast(`Deleted ${yearGoals.length} goals`)
+        }}
+        title="Delete All Goals?"
+        message={`This will permanently delete all ${goals.filter(g => g.year === year).length} goals for ${year}. This action cannot be undone.`}
+        confirmText="Delete All"
+        cancelText="Cancel"
+        variant="danger"
+        loading={clearAllLoading}
+        isDark={isDark}
+      />
+
+      {/* AI Onboarding Modal */}
+      <AIOnboardingModal
+        isOpen={showOnboarding}
+        onClose={() => {
+          setShowOnboarding(false)
+          // Mark as completed even if skipped
+          updateProfile({ onboarding_completed: true })
+        }}
+        onComplete={handleOnboardingComplete}
+        isDark={isDark}
+        isBlue={isBlue}
+        year={year}
       />
     </div>
   )

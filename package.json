@@ -12,8 +12,9 @@
     "db:push": "supabase db push"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.39.0",
+    "@anthropic-ai/sdk": "^0.71.2",
     "@supabase/ssr": "^0.1.0",
+    "@supabase/supabase-js": "^2.39.0",
     "canvas-confetti": "^1.9.2",
     "lucide-react": "^0.303.0",
     "next": "14.0.4",
