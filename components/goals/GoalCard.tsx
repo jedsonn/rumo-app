@@ -6,7 +6,7 @@ import { EditableNumber } from '@/components/ui/EditableNumber'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { PeriodBadge } from '@/components/ui/PeriodBadge'
 import { ActionBreakerButton, SubtasksList } from '@/components/ai/ActionBreakerButton'
-import { GoalRefinementBadge } from '@/components/ai/GoalRefinementBadge'
+import { GoalRefinementBadge, RefineCheckButton } from '@/components/ai/GoalRefinementBadge'
 import { Flame, Gift, Pencil, Trash2, Share2 } from 'lucide-react'
 
 interface GoalCardProps {
@@ -61,6 +61,10 @@ export function GoalCard({
 
   const handleDismissRefinement = () => {
     onUpdate({ ...goal, is_vague: false })
+  }
+
+  const handleRefinementResult = (isVague: boolean, suggestion: string | null) => {
+    onUpdate({ ...goal, is_vague: isVague, ai_refinement_suggestion: suggestion })
   }
 
   return (
@@ -147,58 +151,73 @@ export function GoalCard({
             </span>
           )}
         </div>
-        <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-          {goal.status === 'Done' && onShare && (
-            <button
-              onClick={() => onShare(goal)}
-              className={`p-0.5 ${isDark ? 'text-blue-400 hover:text-blue-300' : 'text-blue-500 hover:text-blue-600'}`}
-              title="Share achievement"
-            >
-              <Share2 size={12} />
-            </button>
+        <div className="flex gap-0.5">
+          {/* AI buttons - always visible */}
+          {!goal.is_vague && goal.status !== 'Done' && goal.status !== 'Dropped' && (
+            <RefineCheckButton
+              goalId={goal.id}
+              goalText={goal.goal}
+              category={goal.category}
+              onResult={handleRefinementResult}
+              isDark={isDark}
+            />
           )}
-          <ActionBreakerButton
-            goalId={goal.id}
-            existingSubtasks={goal.subtasks || []}
-            onSubtasksGenerated={handleSubtasksGenerated}
-            isDark={isDark}
-          />
-          <button
-            onClick={togglePin}
-            className={`p-0.5 ${
-              goal.pinned
-                ? 'text-amber-500'
-                : (isDark ? 'text-slate-600 hover:text-amber-400' : 'text-slate-300 hover:text-amber-500')
-            }`}
-            title={goal.pinned ? 'Unpin' : 'Pin'}
-          >
-            <Flame size={12} />
-          </button>
-          <button
-            onClick={() => onLinkReward(goal)}
-            className={`p-0.5 ${
-              goal.linked_reward_id
-                ? 'text-emerald-500'
-                : (isDark ? 'text-slate-600 hover:text-emerald-400' : 'text-slate-300 hover:text-emerald-500')
-            }`}
-            title="Link reward"
-          >
-            <Gift size={12} />
-          </button>
-          <button
-            onClick={() => onEdit(goal)}
-            className={`p-0.5 ${isDark ? 'text-slate-600 hover:text-blue-400' : 'text-slate-300 hover:text-blue-500'}`}
-            title="Edit"
-          >
-            <Pencil size={12} />
-          </button>
-          <button
-            onClick={() => onDelete(goal.id)}
-            className={`p-0.5 ${isDark ? 'text-slate-600 hover:text-red-400' : 'text-slate-300 hover:text-red-500'}`}
-            title="Delete"
-          >
-            <Trash2 size={12} />
-          </button>
+          {goal.status !== 'Done' && goal.status !== 'Dropped' && (
+            <ActionBreakerButton
+              goalId={goal.id}
+              existingSubtasks={goal.subtasks || []}
+              onSubtasksGenerated={handleSubtasksGenerated}
+              isDark={isDark}
+            />
+          )}
+          {/* Other actions - show on hover */}
+          <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+            {goal.status === 'Done' && onShare && (
+              <button
+                onClick={() => onShare(goal)}
+                className={`p-0.5 ${isDark ? 'text-blue-400 hover:text-blue-300' : 'text-blue-500 hover:text-blue-600'}`}
+                title="Share achievement"
+              >
+                <Share2 size={12} />
+              </button>
+            )}
+            <button
+              onClick={togglePin}
+              className={`p-0.5 ${
+                goal.pinned
+                  ? 'text-amber-500'
+                  : (isDark ? 'text-slate-600 hover:text-amber-400' : 'text-slate-300 hover:text-amber-500')
+              }`}
+              title={goal.pinned ? 'Unpin' : 'Pin'}
+            >
+              <Flame size={12} />
+            </button>
+            <button
+              onClick={() => onLinkReward(goal)}
+              className={`p-0.5 ${
+                goal.linked_reward_id
+                  ? 'text-emerald-500'
+                  : (isDark ? 'text-slate-600 hover:text-emerald-400' : 'text-slate-300 hover:text-emerald-500')
+              }`}
+              title="Link reward"
+            >
+              <Gift size={12} />
+            </button>
+            <button
+              onClick={() => onEdit(goal)}
+              className={`p-0.5 ${isDark ? 'text-slate-600 hover:text-blue-400' : 'text-slate-300 hover:text-blue-500'}`}
+              title="Edit"
+            >
+              <Pencil size={12} />
+            </button>
+            <button
+              onClick={() => onDelete(goal.id)}
+              className={`p-0.5 ${isDark ? 'text-slate-600 hover:text-red-400' : 'text-slate-300 hover:text-red-500'}`}
+              title="Delete"
+            >
+              <Trash2 size={12} />
+            </button>
+          </div>
         </div>
       </div>
 
