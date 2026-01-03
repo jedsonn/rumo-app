@@ -14,11 +14,13 @@ interface SubtaskResponse {
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('[break-action] Starting request')
+
     // Check API key first
     if (!process.env.DEEPSEEK_API_KEY) {
-      console.error('DEEPSEEK_API_KEY is not configured')
+      console.error('[break-action] DEEPSEEK_API_KEY is not configured')
       return NextResponse.json(
-        { error: 'AI service not configured' },
+        { error: 'AI service not configured. Please add DEEPSEEK_API_KEY to your environment.' },
         { status: 503 }
       )
     }
@@ -27,11 +29,13 @@ export async function POST(request: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
+      console.error('[break-action] No user found')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const body = await request.json()
     const { goalId } = body
+    console.log('[break-action] Goal ID:', goalId)
 
     if (!goalId) {
       return NextResponse.json(
@@ -49,11 +53,14 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (goalError || !goal) {
+      console.error('[break-action] Goal not found:', goalError)
       return NextResponse.json(
         { error: 'Goal not found' },
         { status: 404 }
       )
     }
+
+    console.log('[break-action] Found goal:', goal.goal)
 
     // Fetch all goals for context
     const { data: allGoals } = await supabase
@@ -65,15 +72,20 @@ export async function POST(request: NextRequest) {
 
     // Generate subtasks using AI
     const prompt = getActionBreakerPrompt(goal.goal, goal.action, context)
+    console.log('[break-action] Sending to AI...')
+
     const response = await chat([
       { role: 'user', content: prompt }
     ], { temperature: 0.7 })
 
+    console.log('[break-action] AI response received:', response.substring(0, 200))
+
     const parsed = parseJsonResponse<SubtaskResponse>(response)
 
     if (!parsed || !parsed.subtasks) {
+      console.error('[break-action] Failed to parse response:', response)
       return NextResponse.json(
-        { error: 'Failed to parse AI response' },
+        { error: 'Failed to parse AI response. The AI returned invalid data.' },
         { status: 500 }
       )
     }
@@ -85,6 +97,8 @@ export async function POST(request: NextRequest) {
       estimated_time: s.estimated_time || '1 hour',
     }))
 
+    console.log('[break-action] Generated subtasks:', subtasks)
+
     // Update the goal with new subtasks
     const { data: updatedGoal, error: updateError } = await supabase
       .from('goals')
@@ -94,12 +108,14 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (updateError) {
-      console.error('Error updating goal:', updateError)
+      console.error('[break-action] Error updating goal:', updateError)
       return NextResponse.json(
-        { error: 'Failed to save subtasks' },
+        { error: 'Failed to save subtasks to database' },
         { status: 500 }
       )
     }
+
+    console.log('[break-action] Success! Updated goal with subtasks')
 
     return NextResponse.json({
       success: true,
@@ -108,9 +124,9 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Break action error:', error)
+    console.error('[break-action] Unexpected error:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: error instanceof Error ? error.message : 'Internal server error' },
       { status: 500 }
     )
   }
