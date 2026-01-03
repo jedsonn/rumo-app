@@ -81,6 +81,19 @@ export function DashboardProvider({ children, user, initialProfile }: DashboardP
     document.documentElement.classList.toggle('dark', isDark)
   }, [isDark])
 
+  // Session expiry detection
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
+        if (event === 'SIGNED_OUT') {
+          window.location.href = '/auth/login?expired=true'
+        }
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [supabase])
+
   // Fetch initial data
   useEffect(() => {
     async function fetchData() {
@@ -92,6 +105,15 @@ export function DashboardProvider({ children, user, initialProfile }: DashboardP
         supabase.from('rewards').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
         supabase.from('quotes').select('*'),
       ])
+
+      // Check for auth errors (session expired)
+      const hasAuthError = [goalsRes, blessingsRes, rewardsRes].some(
+        res => res.error?.message?.includes('JWT') || res.error?.code === 'PGRST301'
+      )
+      if (hasAuthError) {
+        window.location.href = '/auth/login?expired=true'
+        return
+      }
 
       if (goalsRes.data) setGoals(goalsRes.data)
       if (blessingsRes.data) setBlessings(blessingsRes.data)
@@ -172,6 +194,8 @@ export function DashboardProvider({ children, user, initialProfile }: DashboardP
       setGoals(prev => [data, ...prev])
       fireConfetti(isBlue ? ['#3b82f6', '#60a5fa'] : ['#f43f5e', '#fb7185'])
       showToast('Goal added')
+    } else if (error) {
+      showToast('Failed to add goal. Please try again.')
     }
   }, [supabase, user.id, year, showToast, isBlue, fireConfetti])
 
@@ -209,8 +233,9 @@ export function DashboardProvider({ children, user, initialProfile }: DashboardP
     if (error && oldGoal) {
       // Revert on error
       setGoals(prev => prev.map(g => g.id === id ? oldGoal : g))
+      showToast('Failed to update goal. Please try again.')
     }
-  }, [supabase, goals, isBlue, fireConfetti])
+  }, [supabase, goals, isBlue, fireConfetti, showToast])
 
   const deleteGoal = useCallback(async (id: string) => {
     const goal = goals.find(g => g.id === id)
@@ -223,6 +248,7 @@ export function DashboardProvider({ children, user, initialProfile }: DashboardP
 
     if (error) {
       setGoals(prev => [goal, ...prev])
+      showToast('Failed to delete goal. Please try again.')
     } else {
       showToast('Goal deleted', () => {
         // Undo: re-insert
@@ -244,7 +270,11 @@ export function DashboardProvider({ children, user, initialProfile }: DashboardP
       .select()
       .single()
 
-    if (data && !error) {
+    if (error) {
+      showToast('Failed to add blessing. Please try again.')
+      return
+    }
+    if (data) {
       setBlessings(prev => [data, ...prev])
       fireConfetti(['#f59e0b', '#fbbf24'])
       showToast('Blessing added')
@@ -261,6 +291,7 @@ export function DashboardProvider({ children, user, initialProfile }: DashboardP
 
     if (error) {
       setBlessings(prev => [blessing, ...prev])
+      showToast('Failed to delete blessing. Please try again.')
     } else {
       showToast('Blessing deleted')
     }
@@ -277,7 +308,11 @@ export function DashboardProvider({ children, user, initialProfile }: DashboardP
       .select()
       .single()
 
-    if (data && !error) {
+    if (error) {
+      showToast('Failed to add reward. Please try again.')
+      return
+    }
+    if (data) {
       setRewards(prev => [data, ...prev])
       fireConfetti(['#10b981', '#34d399'])
       showToast('Reward added')
@@ -298,8 +333,9 @@ export function DashboardProvider({ children, user, initialProfile }: DashboardP
 
     if (error && oldReward) {
       setRewards(prev => prev.map(r => r.id === id ? oldReward : r))
+      showToast('Failed to update reward. Please try again.')
     }
-  }, [supabase, rewards, fireConfetti])
+  }, [supabase, rewards, fireConfetti, showToast])
 
   const deleteReward = useCallback(async (id: string) => {
     const reward = rewards.find(r => r.id === id)
@@ -311,6 +347,7 @@ export function DashboardProvider({ children, user, initialProfile }: DashboardP
 
     if (error) {
       setRewards(prev => [reward, ...prev])
+      showToast('Failed to delete reward. Please try again.')
     } else {
       showToast('Reward deleted')
     }
